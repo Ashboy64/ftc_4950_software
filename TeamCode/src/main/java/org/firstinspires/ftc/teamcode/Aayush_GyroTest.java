@@ -26,6 +26,7 @@ public class Aayush_GyroTest extends LinearOpMode{
 
         while (gyro.isCalibrating() && opModeIsActive()) {
             telemetry.addData(">", "Calibrating Sensor. Please Wait");
+            telemetry.update();
         }
 
         LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -42,6 +43,7 @@ public class Aayush_GyroTest extends LinearOpMode{
 
         while (LeftMotor.getCurrentPosition()<LeftMotor.getTargetPosition() && RightMotor.getTargetPosition()>RightMotor.getCurrentPosition() && opModeIsActive()) {
             telemetry.addData(">", gyro.getHeading());
+            telemetry.update();
         }
 
         LeftMotor.setTargetPosition(4000);
@@ -61,6 +63,7 @@ public class Aayush_GyroTest extends LinearOpMode{
 
         while (LeftMotor.getCurrentPosition()<LeftMotor.getTargetPosition() && RightMotor.getTargetPosition()>RightMotor.getCurrentPosition() && opModeIsActive()) {
             telemetry.addData(">", gyro.getHeading());
+            telemetry.update();
         }
     }
 }
