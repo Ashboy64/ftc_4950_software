@@ -46,6 +46,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import java.lang.Math;
 
 /**
  * This OpMode illustrates the basics of using the Vuforia engine to determine
@@ -155,16 +156,20 @@ public class Carter_ConceptVuMarkIdentification extends LinearOpMode {
                         double tY = trans.get(1);
                         double tZ = trans.get(2);
 
+                        double distance = Math.sqrt(tX*tX + tY*tY + tZ*tZ);
+                        telemetry.addData("Distance: ", distance);
+
                         // Extract the rotational components of the target relative to the robot
                         double rX = rot.firstAngle;
                         double rY = rot.secondAngle;
                         double rZ = rot.thirdAngle;
+                        break;
                     }
                 } else {
-                    telemetry.addData("VuMark", "not visible");
-                    break;
+                        telemetry.addData("VuMark", "not visible");
                 }
             }
+
             telemetry.update();
         }
     }
