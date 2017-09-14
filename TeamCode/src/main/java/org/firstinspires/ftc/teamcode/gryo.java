@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 
-@Autonomous(name="First autonomous", group="group")
+@Autonomous(name="FirstAutonomousCantSpellGyro", group="group")
 //@Disabled
 public class gryo extends LinearOpMode{
     GyroSensor gyro;

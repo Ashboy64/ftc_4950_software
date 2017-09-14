@@ -67,7 +67,7 @@ import java.lang.Math;
  * is explained in {@link ConceptVuforiaNavigation}.
  */
 
-@Autonomous(name="Concept: VuMark Id", group ="Concept")
+@Autonomous(name="CarterVuforia", group ="Concept")
 //@Disabled
 public class Carter_ConceptVuMarkIdentification extends LinearOpMode {
 
@@ -93,7 +93,9 @@ public class Carter_ConceptVuMarkIdentification extends LinearOpMode {
         // OR...  Do Not Activate the Camera Monitor View, to save power
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-        parameters.vuforiaLicenseKey = "ATsODcD/////AAAAAVw2lR...d45oGpdljdOh5LuFB9nDNfckoxb8COxKSFX";
+        //parameters.vuforiaLicenseKey = "ATsODcD/////AAAAAVw2lR...d45oGpdljdOh5LuFB9nDNfckoxb8COxKSFX";
+
+        parameters.vuforiaLicenseKey = "AWnZ5xz/////AAAAGYmbM16TXEdKscTtfaECY6FzIRnxfc6SV0uwUV+dwPVIWbGyu9567BTp2qzh6ohnawdFrbL290ECRr04ew/QX0Q90SUrGh52+s55yVFPN429A93YJm6AlnV/TEJKb8omxdlqC+Hfy0SLPZSu+UEq9xQMOIfeW+OiRNQyFlUTZNCtQDNuK5jwObgulF83zrexs+c95Cd1jU7PnoX+NgHPjmUWS5H+WVr4yZsewES+oa0jRjGrcGU0/P5USRnqVbKh4976SNjPBGy6fanxJZmQb2Pam56UROtERcdaPDSWg4Nrr0MFlHCvi3PcfyLfdPtBW06JZGWBXu23VJCBQFw3SxGm/IO057P4kbTFti3W5xkU";
 
         /*
          * We also indicate which camera on the RC that we wish to use.
@@ -120,6 +122,9 @@ public class Carter_ConceptVuMarkIdentification extends LinearOpMode {
 
         relicTrackables.activate();
 
+        //telemetry.addData("at while","");
+        //telemetry.update();
+
         while (opModeIsActive()) {
 
             /**
@@ -129,24 +134,37 @@ public class Carter_ConceptVuMarkIdentification extends LinearOpMode {
              * UNKNOWN will be returned by {@link RelicRecoveryVuMark#from(VuforiaTrackable)}.
              */
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-            for(int i = 0; i < 3; i++) {
+            //telemetry.addData("guau","");
+            //telemetry.update();
+
+            for(int i = 0; i < 1; i++) {
                 relicTemplate = relicTrackables.get(i);
                 vuMark = RelicRecoveryVuMark.from(relicTemplate);
+
+                //telemetry.addData("at if statement","");
+                //telemetry.update();
+
                 if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
 
                     /* Found an instance of the template. In the actual game, you will probably
                      * loop until this condition occurs, then move on to act accordingly depending
                      * on which VuMark was visible. */
-                    telemetry.addData("VuMark", "%s visible", vuMark);
+                  //  telemetry.addData("VuMark", "%s visible", vuMark);
+                    //telemetry.update();
 
                     /* For fun, we also exhibit the navigational pose. In the Relic Recovery game,
                      * it is perhaps unlikely that you will actually need to act on this pose information, but
                      * we illustrate it nevertheless, for completeness. */
                     OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) relicTemplate.getListener()).getPose();
-                    telemetry.addData("Pose", format(pose));
+                    //telemetry.addData("Pose", format(pose));
+                    //telemetry.update();
 
                     /* We further illustrate how to decompose the pose into useful rotational and
                      * translational components */
+
+                    //telemetry.addData("at pose if","");
+                    //telemetry.update();
+
                     if (pose != null) {
                         VectorF trans = pose.getTranslation();
                         Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
@@ -167,6 +185,8 @@ public class Carter_ConceptVuMarkIdentification extends LinearOpMode {
                     }
                 } else {
                         telemetry.addData("VuMark", "not visible");
+                        telemetry.update();
+
                 }
             }
 
