@@ -67,7 +67,7 @@ import java.lang.Math;
  * is explained in {@link ConceptVuforiaNavigation}.
  */
 
-@Autonomous(name="Concept: VuMark Id", group ="Concept")
+@Autonomous(name="Concept: VuMark Id2", group ="Concept")
 //@Disabled
 public class Carter_ConceptVuMarkIdentification extends LinearOpMode {
 

@@ -22,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Created by Aayushiron on 9/14/17.
  */
 
-@Autonomous(name="Concept: VuMark Id", group ="Concept")
+@Autonomous(name="Concept: H", group ="Concept")
 //@Disabled
 public class Vuforia_Aayush extends LinearOpMode{
 
