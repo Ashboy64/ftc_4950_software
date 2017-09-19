@@ -16,13 +16,14 @@ public class Carter_TelyOp extends OpMode{
     private DcMotor leftMotor;
     private DcMotor rightMotor;
     private DcMotor leftJoyStick;
+    @Override
     public void init(){
         telemetry.addData("Status", "Initialized");
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
         leftJoyStick = hardwareMap.dcMotor.get("leftJoyStick");
     }
-
+    @Override
     public void loop(){
         if(gamepad1.left_stick_x != 0){
             leftMotor.setPower(scaleInput(gamepad1.left_stick_x * 1));
