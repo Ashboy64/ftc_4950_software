@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  */
 
 @TeleOp(name="end my suffering", group ="Concept")
-@Disabled
+//@Disabled
 public class Aayush_TeleOpTest extends OpMode {
     DcMotor motorRight;
     DcMotor motorLeft;

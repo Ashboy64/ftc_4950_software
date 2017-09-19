@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Created by yinghuang on 9/19/17.
  */
 
+@TeleOp(name = "swag", group = "Concept")
+//@Disabled
 public class Carter_TelyOp extends OpMode{
     private DcMotor leftMotor;
     private DcMotor rightMotor;
