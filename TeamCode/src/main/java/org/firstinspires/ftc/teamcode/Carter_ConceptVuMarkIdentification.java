@@ -129,7 +129,7 @@ public class Carter_ConceptVuMarkIdentification extends LinearOpMode {
              * UNKNOWN will be returned by {@link RelicRecoveryVuMark#from(VuforiaTrackable)}.
              */
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-            for(int i = 0; i < 1; i++) {
+            for(int i = 0; i < 3; i++) {
                 relicTemplate = relicTrackables.get(i);
                 vuMark = RelicRecoveryVuMark.from(relicTemplate);
                 if (vuMark != RelicRecoveryVuMark.UNKNOWN) {

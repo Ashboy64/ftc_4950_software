@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.GyroSensor;
  * Created by Aayushiron on 9/12/17.
  */
 
-@Autonomous(name="First autonomous", group="group")
+@Autonomous(name="No", group="group")
 //@Disabled
 public class Aayush_GyroTest extends LinearOpMode{
     DcMotor LeftMotor;
