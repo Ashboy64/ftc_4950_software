@@ -32,14 +32,14 @@ public class Aayush_TeleOpTest extends OpMode {
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         if (x > 0.0) {
-            motorLeft.setPower((y * -1) + (x*-1));
-            motorRight.setPower(y * -1);
+            motorLeft.setPower(scaleInput((y * -1) + (x*-1)));
+            motorRight.setPower(scaleInput(y * -1));
         } else if (x < 0.0) {
-            motorRight.setPower((y * -1) + (x*-1));
-            motorLeft.setPower(y * -1);
+            motorRight.setPower(scaleInput((y * -1) + (x*-1)));
+            motorLeft.setPower(scaleInput(y * -1));
         } else {
-            motorRight.setPower(y*-1);
-            motorLeft.setPower(y*-1);
+            motorRight.setPower(scaleInput(y * -1));
+            motorLeft.setPower(scaleInput(y * -1));
         }
 
 
