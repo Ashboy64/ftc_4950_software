@@ -19,19 +19,57 @@ public class Aayush_TeleOpTest extends OpMode {
     DcMotor motorLeft;
     @Override
     public void init() {
-        motorRight = hardwareMap.dcMotor.get("right_drive");
-        motorLeft = hardwareMap.dcMotor.get("left_drive");
+        motorRight = hardwareMap.dcMotor.get("rightmotor");
+        motorLeft = hardwareMap.dcMotor.get("leftmotor");
     }
 
     @Override
     public void loop() {
-        float yvert = gamepad1.left_stick_y;
+        float y = gamepad1.left_stick_y;
+        float x = gamepad1.left_stick_x;
 
         motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        motorRight.setPower(yvert);
-        motorLeft.setPower(yvert);
+        if (x > 0.0) {
+            motorLeft.setPower((y * -1) + (x*-1));
+            motorRight.setPower(y * -1);
+        } else if (x < 0.0) {
+            motorRight.setPower((y * -1) + (x*-1));
+            motorLeft.setPower(y * -1);
+        } else {
+            motorRight.setPower(y*-1);
+            motorLeft.setPower(y*-1);
+        }
+
+
+        /*if (xvert != 0.0) {
+            if (yvert == 0.0) {
+                if (xvert < 0.0) {
+                    motorRight.setPower(0);
+                    motorLeft.setPower(xvert * -1);
+                } else if (xvert > 0.0) {
+                    motorRight.setPower(xvert * -1);
+                    motorLeft.setPower(0);
+                }
+            }
+            if (yvert > 0.0) {
+                if (xvert < 0.0) {
+
+                } else if (xvert > 0.0) {
+
+                }
+            } else if (yvert < 0.0) {
+                if (xvert < 0.0) {
+
+                } else if (xvert > 0.0) {
+
+                }
+            }
+        } else if (xvert == 0.0) {
+            motorRight.setPower(yvert * -1);
+            motorLeft.setPower(yvert * -1);
+        }*/
     }
 
     public double scaleInput(double dVal)  {
