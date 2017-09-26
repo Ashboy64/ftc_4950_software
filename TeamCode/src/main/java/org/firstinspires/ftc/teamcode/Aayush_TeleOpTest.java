@@ -17,7 +17,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 public class Aayush_TeleOpTest extends OpMode {
     DcMotor motorRight;
     DcMotor motorLeft;
-    int state;
     @Override
     public void init() {
         motorRight = hardwareMap.dcMotor.get("rightmotor");
@@ -29,7 +28,7 @@ public class Aayush_TeleOpTest extends OpMode {
         float y = gamepad1.left_stick_y;
         float x = gamepad1.left_stick_x;
         float y2 = gamepad1.right_stick_y;
-        state = 0;
+        int state = 0;
 
         if (gamepad1.x) {
             state = 0;
