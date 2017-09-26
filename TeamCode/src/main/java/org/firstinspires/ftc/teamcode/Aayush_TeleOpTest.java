@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 public class Aayush_TeleOpTest extends OpMode {
     DcMotor motorRight;
     DcMotor motorLeft;
+    int state;
     @Override
     public void init() {
         motorRight = hardwareMap.dcMotor.get("rightmotor");
@@ -27,7 +28,27 @@ public class Aayush_TeleOpTest extends OpMode {
     public void loop() {
         float y = gamepad1.left_stick_y;
         float x = gamepad1.left_stick_x;
+        float y2 = gamepad1.right_stick_y;
+        state = 0;
 
+        if (gamepad1.x) {
+            state = 0;
+        } else if (gamepad1.y) {
+            state = 1;
+        } else if (gamepad1.b) {
+            state = 2;
+        }
+
+        if (state==0) {
+            arcade(x, y);
+        } else if (state == 1) {
+            tank(y, y2);
+        } else if (state == 2) {
+            slow(x, y);
+        }
+    }
+
+    public void arcade(float x, float y) {
         motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -41,35 +62,30 @@ public class Aayush_TeleOpTest extends OpMode {
             motorRight.setPower(scaleInput(y * -1));
             motorLeft.setPower(scaleInput(y * -1));
         }
+    }
 
+    public void tank(float y, float y2) {
+        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        /*if (xvert != 0.0) {
-            if (yvert == 0.0) {
-                if (xvert < 0.0) {
-                    motorRight.setPower(0);
-                    motorLeft.setPower(xvert * -1);
-                } else if (xvert > 0.0) {
-                    motorRight.setPower(xvert * -1);
-                    motorLeft.setPower(0);
-                }
-            }
-            if (yvert > 0.0) {
-                if (xvert < 0.0) {
+        motorLeft.setPower(scaleInput(y*-1));
+        motorRight.setPower(scaleInput(y2*-1));
+    }
 
-                } else if (xvert > 0.0) {
+    public void slow(float x, float y) {
+        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-                }
-            } else if (yvert < 0.0) {
-                if (xvert < 0.0) {
-
-                } else if (xvert > 0.0) {
-
-                }
-            }
-        } else if (xvert == 0.0) {
-            motorRight.setPower(yvert * -1);
-            motorLeft.setPower(yvert * -1);
-        }*/
+        if (x > 0.0) {
+            motorLeft.setPower(scaleInput(((y * -1) + (x*-1))*0.25));
+            motorRight.setPower(scaleInput((y * -1) * 0.25));
+        } else if (x < 0.0) {
+            motorRight.setPower(scaleInput(((y * -1) + (x*-1))*0.25));
+            motorLeft.setPower(scaleInput((y * -1) * 0.25));
+        } else {
+            motorRight.setPower(scaleInput((y * -1) * 0.25));
+            motorLeft.setPower(scaleInput((y * -1) * 0.25));
+        }
     }
 
     public double scaleInput(double dVal)  {
