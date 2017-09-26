@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  * Created by Aayushiron on 9/19/17.
  */
 
-@TeleOp(name="end my suffering", group ="Concept")
+@TeleOp(name="Driving Robots Simulator", group ="Concept")
 //@Disabled
 public class Aayush_TeleOpTest extends OpMode {
     DcMotor motorRight;
