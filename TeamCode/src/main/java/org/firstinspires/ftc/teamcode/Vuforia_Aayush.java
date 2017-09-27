@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -30,6 +32,10 @@ public class Vuforia_Aayush extends LinearOpMode{
 
     OpenGLMatrix lastLocation = null;
 
+    DcMotor LeftMotor;
+    DcMotor RightMotor;
+    GyroSensor gyro;
+
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
@@ -37,6 +43,43 @@ public class Vuforia_Aayush extends LinearOpMode{
     VuforiaLocalizer vuforia;
 
     @Override public void runOpMode() {
+
+        LeftMotor = hardwareMap.dcMotor.get("motor1");
+        RightMotor = hardwareMap.dcMotor.get("motor2");
+        gyro = hardwareMap.gyroSensor.get("gyro1");
+
+        gyro.calibrate();
+
+        while (gyro.isCalibrating() && opModeIsActive()) {
+            telemetry.addData(">", "Calibrating Sensor. Please Wait");
+            telemetry.update();
+        }
+
+        LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        LeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        LeftMotor.setTargetPosition(4000);
+        RightMotor.setTargetPosition(4000);
+
+        LeftMotor.setPower(1.0);
+        RightMotor.setPower(1.0);
+
+        while (LeftMotor.getCurrentPosition()<LeftMotor.getTargetPosition() && RightMotor.getTargetPosition()>RightMotor.getCurrentPosition() && opModeIsActive()) {
+            telemetry.addData(">", gyro.getHeading());
+            telemetry.update();
+        }
+
+        LeftMotor.setTargetPosition(4000);
+        RightMotor.setTargetPosition(4000);
+
+        while (gyro.getHeading() < 90) {
+            LeftMotor.setPower(1.0);
+            RightMotor.setPower(0.0);
+            telemetry.addData(">", gyro.getHeading());
+        }
 
         /*
          * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
@@ -89,6 +132,7 @@ public class Vuforia_Aayush extends LinearOpMode{
         while (opModeIsActive()) {
 
             for (int i = 0; i<3; i++) {
+
                 relicTemplate = relicTrackables.get(i);
 
                 /**
@@ -114,6 +158,18 @@ public class Vuforia_Aayush extends LinearOpMode{
                 /* We further illustrate how to decompose the pose into useful rotational and
                  * translational components */
                     if (pose != null) {
+
+                        LeftMotor.setTargetPosition(4000);
+                        RightMotor.setTargetPosition(4000);
+
+                        LeftMotor.setPower(-1.0);
+                        RightMotor.setPower(-1.0);
+
+                        while (LeftMotor.getCurrentPosition()<LeftMotor.getTargetPosition() && RightMotor.getTargetPosition()>RightMotor.getCurrentPosition() && opModeIsActive()) {
+                            telemetry.addData(">", gyro.getHeading());
+                            telemetry.update();
+                        }
+
                         VectorF trans = pose.getTranslation();
                         Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
 
