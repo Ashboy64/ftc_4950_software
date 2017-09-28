@@ -11,25 +11,25 @@ import com.qualcomm.robotcore.hardware.GyroSensor;
  * Created by Aayushiron on 9/12/17.
  */
 
-@Autonomous(name="No", group="group")
+@Autonomous(name="GyroTest", group="group")
 //@Disabled
 public class Aayush_GyroTest extends LinearOpMode{
-    DcMotor LeftMotor;
-    DcMotor RightMotor;
+    //DcMotor LeftMotor;
+    //DcMotor RightMotor;
     GyroSensor gyro;
     public void runOpMode(){
-        LeftMotor = hardwareMap.dcMotor.get("motor1");
-        RightMotor = hardwareMap.dcMotor.get("motor2");
+        //LeftMotor = hardwareMap.dcMotor.get("motor1");
+        //RightMotor = hardwareMap.dcMotor.get("motor2");
         gyro = hardwareMap.gyroSensor.get("gyro1");
 
         gyro.calibrate();
 
         while (gyro.isCalibrating() && opModeIsActive()) {
-            telemetry.addData(">", "Calibrating Sensor. Please Wait");
+            telemetry.addData(">", "Calibrating Sensor. Please Wait.");
             telemetry.update();
         }
 
-        LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        /* LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         LeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -62,6 +62,10 @@ public class Aayush_GyroTest extends LinearOpMode{
         RightMotor.setPower(1.0);
 
         while (LeftMotor.getCurrentPosition()<LeftMotor.getTargetPosition() && RightMotor.getTargetPosition()>RightMotor.getCurrentPosition() && opModeIsActive()) {
+            telemetry.addData(">", gyro.getHeading());
+            telemetry.update();*/
+
+        while (opModeIsActive()) {
             telemetry.addData(">", gyro.getHeading());
             telemetry.update();
         }
