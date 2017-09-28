@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 public class Aayush_TeleOpTest extends OpMode {
     DcMotor motorRight;
     DcMotor motorLeft;
+    public int state;
     @Override
     public void init() {
         motorRight = hardwareMap.dcMotor.get("rightmotor");
@@ -28,17 +29,11 @@ public class Aayush_TeleOpTest extends OpMode {
         float y = gamepad1.left_stick_y;
         float x = gamepad1.left_stick_x;
         float y2 = gamepad1.right_stick_y;
-        int state = 0;
+        state = 0;
 
-        if (gamepad1.x) {
-            state = 0;
-        } else if (gamepad1.y) {
-            state = 1;
-        } else if (gamepad1.b) {
-            state = 2;
-        }
+        modeSwitch();
 
-        if (state==0) {
+        if (state == 0) {
             arcade(x, y);
         } else if (state == 1) {
             tank(y, y2);
@@ -53,6 +48,8 @@ public class Aayush_TeleOpTest extends OpMode {
 
         motorLeft.setPower(scaleInput(-y-x));
         motorRight.setPower(scaleInput(-y+x));
+
+        modeSwitch();
 
         /*if (x > 0.0) {
             motorLeft.setPower(scaleInput((y * -1) + (x*-1)));
@@ -72,6 +69,8 @@ public class Aayush_TeleOpTest extends OpMode {
 
         motorLeft.setPower(scaleInput(y*-1));
         motorRight.setPower(scaleInput(y2*-1));
+
+        modeSwitch();
     }
 
     public void slow(float x, float y) {
@@ -88,6 +87,18 @@ public class Aayush_TeleOpTest extends OpMode {
             motorRight.setPower(scaleInput((y * -1) * 0.25));
             motorLeft.setPower(scaleInput((y * -1) * 0.25));
         }
+
+        modeSwitch();
+    }
+
+    public void modeSwitch () {
+        if (gamepad1.x) {
+            state = 0;
+        } else if (gamepad1.y) {
+            state = 1;
+        } else if (gamepad1.b) {
+            state = 2;
+        }
     }
 
     public double scaleInput(double dVal)  {
@@ -102,6 +113,8 @@ public class Aayush_TeleOpTest extends OpMode {
         if (index < 0) {
             index = -index;
         }
+
+        modeSwitch();
 
         // index cannot exceed size of array minus 1.
         if (index > 16) {
