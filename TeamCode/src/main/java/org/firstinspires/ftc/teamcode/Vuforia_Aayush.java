@@ -75,7 +75,7 @@ public class Vuforia_Aayush extends LinearOpMode{
         LeftMotor.setTargetPosition(4000);
         RightMotor.setTargetPosition(4000);
 
-        while (gyro.getHeading() < 90) {
+        while (gyro.getHeading() < 270) {
             LeftMotor.setPower(1.0);
             RightMotor.setPower(0.0);
             telemetry.addData(">", gyro.getHeading());
