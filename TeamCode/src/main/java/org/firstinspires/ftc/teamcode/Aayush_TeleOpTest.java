@@ -22,6 +22,7 @@ public class Aayush_TeleOpTest extends OpMode {
     public void init() {
         motorRight = hardwareMap.dcMotor.get("rightmotor");
         motorLeft = hardwareMap.dcMotor.get("leftmotor");
+        state = 0;
     }
 
     @Override
@@ -29,7 +30,6 @@ public class Aayush_TeleOpTest extends OpMode {
         float y = gamepad1.left_stick_y;
         float x = gamepad1.left_stick_x;
         float y2 = gamepad1.right_stick_y;
-        state = 0;
 
         modeSwitch();
 
