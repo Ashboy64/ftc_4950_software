@@ -12,82 +12,26 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  * Created by Aayushiron on 9/19/17.
  */
 
-@TeleOp(name="tele op 1 arcade", group ="Concept")
+@TeleOp(name="end my suffering", group ="Concept")
 //@Disabled
 public class Aayush_TeleOpTest extends OpMode {
     DcMotor motorRight;
     DcMotor motorLeft;
     @Override
     public void init() {
-        motorRight = hardwareMap.dcMotor.get("rightmotor");
-        motorLeft = hardwareMap.dcMotor.get("leftmotor");
+        motorRight = hardwareMap.dcMotor.get("right_drive");
+        motorLeft = hardwareMap.dcMotor.get("left_drive");
     }
 
     @Override
     public void loop() {
-        float y = gamepad1.left_stick_y;
-        float x = gamepad1.left_stick_x;
-        float y2 = gamepad1.right_stick_y;
-        int state = 0;
+        float yvert = gamepad1.left_stick_y;
 
-        if (gamepad1.x) {
-            state = 0;
-        } else if (gamepad1.y) {
-            state = 1;
-        } else if (gamepad1.b) {
-            state = 2;
-        }
-
-        if (state==0) {
-            arcade(x, y);
-        } else if (state == 1) {
-            tank(y, y2);
-        } else if (state == 2) {
-            slow(x, y);
-        }
-    }
-
-    public void arcade(float x, float y) {
         motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        motorLeft.setPower(scaleInput(-y-x));
-        motorRight.setPower(scaleInput(-y+x));
-
-        /*if (x > 0.0) {
-            motorLeft.setPower(scaleInput((y * -1) + (x*-1)));
-            motorRight.setPower(scaleInput(y * -1));
-        } else if (x < 0.0) {
-            motorRight.setPower(scaleInput((y * -1) + (x*-1)));
-            motorLeft.setPower(scaleInput(y * -1));
-        } else {
-            motorRight.setPower(scaleInput(y * -1));
-            motorLeft.setPower(scaleInput(y * -1));
-        } */
-    }
-
-    public void tank(float y, float y2) {
-        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        motorLeft.setPower(scaleInput(y*-1));
-        motorRight.setPower(scaleInput(y2*-1));
-    }
-
-    public void slow(float x, float y) {
-        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        if (x > 0.0) {
-            motorLeft.setPower(scaleInput(((y * -1) + (x*-1))*0.25));
-            motorRight.setPower(scaleInput((y * -1) * 0.25));
-        } else if (x < 0.0) {
-            motorRight.setPower(scaleInput(((y * -1) + (x*-1))*0.25));
-            motorLeft.setPower(scaleInput((y * -1) * 0.25));
-        } else {
-            motorRight.setPower(scaleInput((y * -1) * 0.25));
-            motorLeft.setPower(scaleInput((y * -1) * 0.25));
-        }
+        motorRight.setPower(yvert);
+        motorLeft.setPower(yvert);
     }
 
     public double scaleInput(double dVal)  {

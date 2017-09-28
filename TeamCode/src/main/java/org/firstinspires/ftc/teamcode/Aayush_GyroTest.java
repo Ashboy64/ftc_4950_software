@@ -18,8 +18,8 @@ public class Aayush_GyroTest extends LinearOpMode{
     DcMotor RightMotor;
     GyroSensor gyro;
     public void runOpMode(){
-        LeftMotor = hardwareMap.dcMotor.get("motor1");
-        RightMotor = hardwareMap.dcMotor.get("motor2");
+        LeftMotor = hardwareMap.dcMotor.get("leftmotor");
+        RightMotor = hardwareMap.dcMotor.get("rightmotor");
         gyro = hardwareMap.gyroSensor.get("gyro1");
 
         gyro.calibrate();

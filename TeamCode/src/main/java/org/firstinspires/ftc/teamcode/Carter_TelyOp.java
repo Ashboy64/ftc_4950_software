@@ -13,24 +13,22 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "swag", group = "Concept")
 //@Disabled
 public class Carter_TelyOp extends OpMode{
-    private DcMotor leftMotor;
-    private DcMotor rightMotor;
-    private DcMotor leftJoyStick;
+    private DcMotor leftmotor;
+    private DcMotor rightmotor;
     @Override
     public void init(){
         telemetry.addData("Status", "Initialized");
-        leftMotor = hardwareMap.dcMotor.get("leftMotor");
-        rightMotor = hardwareMap.dcMotor.get("rightMotor");
-        leftJoyStick = hardwareMap.dcMotor.get("leftJoyStick");
+        leftmotor = hardwareMap.dcMotor.get("leftmotor");
+        rightmotor = hardwareMap.dcMotor.get("rightmotor");
     }
     @Override
     public void loop(){
         if(gamepad1.left_stick_x != 0){
-            leftMotor.setPower(scaleInput(gamepad1.left_stick_x * 1));
-            rightMotor.setPower(scaleInput(gamepad1.left_stick_x * 1));
+            leftmotor.setPower(scaleInput(gamepad1.left_stick_x * 1));
+            rightmotor.setPower(scaleInput(gamepad1.left_stick_x * 1));
         }else{
-            leftMotor.setPower(0);
-            rightMotor.setPower(0);
+            leftmotor.setPower(0);
+            rightmotor.setPower(0);
         }
     }
 
