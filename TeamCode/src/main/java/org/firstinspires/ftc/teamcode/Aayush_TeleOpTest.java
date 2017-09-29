@@ -48,19 +48,6 @@ public class Aayush_TeleOpTest extends OpMode {
 
         motorLeft.setPower(scaleInput(-y-x));
         motorRight.setPower(scaleInput(-y+x));
-
-        modeSwitch();
-
-        /*if (x > 0.0) {
-            motorLeft.setPower(scaleInput((y * -1) + (x*-1)));
-            motorRight.setPower(scaleInput(y * -1));
-        } else if (x < 0.0) {
-            motorRight.setPower(scaleInput((y * -1) + (x*-1)));
-            motorLeft.setPower(scaleInput(y * -1));
-        } else {
-            motorRight.setPower(scaleInput(y * -1));
-            motorLeft.setPower(scaleInput(y * -1));
-        } */
     }
 
     public void tank(float y, float y2) {
@@ -69,26 +56,14 @@ public class Aayush_TeleOpTest extends OpMode {
 
         motorLeft.setPower(scaleInput(y*-1));
         motorRight.setPower(scaleInput(y2*-1));
-
-        modeSwitch();
     }
 
     public void slow(float x, float y) {
         motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        if (x > 0.0) {
-            motorLeft.setPower(scaleInput(((y * -1) + (x*-1))*0.25));
-            motorRight.setPower(scaleInput((y * -1) * 0.25));
-        } else if (x < 0.0) {
-            motorRight.setPower(scaleInput(((y * -1) + (x*-1))*0.25));
-            motorLeft.setPower(scaleInput((y * -1) * 0.25));
-        } else {
-            motorRight.setPower(scaleInput((y * -1) * 0.25));
-            motorLeft.setPower(scaleInput((y * -1) * 0.25));
-        }
-
-        modeSwitch();
+        motorLeft.setPower(scaleInput((-y-x)*0.5));
+        motorRight.setPower(scaleInput((-y+x)*0.5));
     }
 
     public void modeSwitch () {
