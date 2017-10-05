@@ -12,26 +12,68 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  * Created by Aayushiron on 9/19/17.
  */
 
-@TeleOp(name="end my suffering", group ="Concept")
+@TeleOp(name="tele_op_1_arcade", group ="Concept")
 //@Disabled
 public class Aayush_TeleOpTest extends OpMode {
     DcMotor motorRight;
     DcMotor motorLeft;
+    public int state;
     @Override
     public void init() {
-        motorRight = hardwareMap.dcMotor.get("right_drive");
-        motorLeft = hardwareMap.dcMotor.get("left_drive");
+        motorRight = hardwareMap.dcMotor.get("rightmotor");
+        motorLeft = hardwareMap.dcMotor.get("leftmotor");
+        state = 0;
     }
 
     @Override
     public void loop() {
-        float yvert = gamepad1.left_stick_y;
+        float y = gamepad1.left_stick_y;
+        float x = gamepad1.left_stick_x;
+        float y2 = gamepad1.right_stick_y;
 
+        modeSwitch();
+
+        if (state == 0) {
+            arcade(x, y);
+        } else if (state == 1) {
+            tank(y, y2);
+        } else if (state == 2) {
+            slow(x, y);
+        }
+    }
+
+    public void arcade(float x, float y) {
         motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        motorRight.setPower(yvert);
-        motorLeft.setPower(yvert);
+        motorLeft.setPower(scaleInput(-y-x));
+        motorRight.setPower(scaleInput(-y+x));
+    }
+
+    public void tank(float y, float y2) {
+        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        motorLeft.setPower(scaleInput(y*-1));
+        motorRight.setPower(scaleInput(y2*-1));
+    }
+
+    public void slow(float x, float y) {
+        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        motorLeft.setPower(scaleInput((-y-x)*0.5));
+        motorRight.setPower(scaleInput((-y+x)*0.5));
+    }
+
+    public void modeSwitch () {
+        if (gamepad1.x) {
+            state = 0;
+        } else if (gamepad1.y) {
+            state = 1;
+        } else if (gamepad1.b) {
+            state = 2;
+        }
     }
 
     public double scaleInput(double dVal)  {
@@ -46,6 +88,8 @@ public class Aayush_TeleOpTest extends OpMode {
         if (index < 0) {
             index = -index;
         }
+
+        modeSwitch();
 
         // index cannot exceed size of array minus 1.
         if (index > 16) {

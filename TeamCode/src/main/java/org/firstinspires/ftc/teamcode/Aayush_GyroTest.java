@@ -25,7 +25,7 @@ public class Aayush_GyroTest extends LinearOpMode{
         gyro.calibrate();
 
         while (gyro.isCalibrating() && opModeIsActive()) {
-            telemetry.addData(">", "Calibrating Sensor. Please Wait");
+            telemetry.addData(">", "Calibrating Sensor. Please Wait.");
             telemetry.update();
         }
 
@@ -67,6 +67,7 @@ public class Aayush_GyroTest extends LinearOpMode{
 
         while (opModeIsActive()) {
             telemetry.addData(">", gyro.getHeading());
+            telemetry.update();
         }
     }
 }
