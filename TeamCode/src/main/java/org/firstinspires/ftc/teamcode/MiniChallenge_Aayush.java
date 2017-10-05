@@ -5,7 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -46,10 +48,21 @@ public class MiniChallenge_Aayush extends LinearOpMode{
 
     @Override public void runOpMode() {
 
+        ElapsedTime opmodeRunTime = new ElapsedTime();
+
+
+        while (!isStarted()) {
+            telemetry.addData("time", "%.1f seconds", opmodeRunTime.seconds());
+            telemetry.update();
+            idle();
+        }
+
         LeftMotor = hardwareMap.dcMotor.get("motor1");
         RightMotor = hardwareMap.dcMotor.get("motor2");
         colorSensor = hardwareMap.colorSensor.get("colorSensor1");
         gyro = hardwareMap.gyroSensor.get("gyro1");
+
+        RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         gyro.calibrate();
 
@@ -61,8 +74,8 @@ public class MiniChallenge_Aayush extends LinearOpMode{
         LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        LeftMotor.setTargetPosition(2000);
-        RightMotor.setTargetPosition(2000);
+        LeftMotor.setTargetPosition(3588);
+        RightMotor.setTargetPosition(3588);
 
         LeftMotor.setPower(1.0);
         RightMotor.setPower(1.0);
@@ -71,9 +84,50 @@ public class MiniChallenge_Aayush extends LinearOpMode{
 
         }
 
+        RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         colorSensor.enableLed(true);
 
-        /*
+        if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green()) {
+            telemetry.addData(">", "red");
+            telemetry.update();
+        } else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green()) {
+            telemetry.addData(">", "blue");
+            telemetry.update();
+        }
+
+        RightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        RightMotor.setPower(-0.5);
+        LeftMotor.setPower(0.5);
+
+        while (gyro.getHeading() != 0) {
+
+        }
+
+        while (gyro.getHeading() < 90) {
+
+        }
+
+        RightMotor.setPower(0);
+        LeftMotor.setPower(0);
+
+        RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        LeftMotor.setTargetPosition(3588);
+        RightMotor.setTargetPosition(3588);
+
+        LeftMotor.setPower(1.0);
+        RightMotor.setPower(1.0);
+
+        while (LeftMotor.getCurrentPosition() < LeftMotor.getTargetPosition() && RightMotor.getCurrentPosition() < RightMotor.getTargetPosition()) {
+
+        }
+
+         /*
          * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
          * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
          */
@@ -169,7 +223,8 @@ public class MiniChallenge_Aayush extends LinearOpMode{
                         double rY = rot.secondAngle;
                         double rZ = rot.thirdAngle;
 
-                        break;
+                        telemetry.addData(">", "Picture" + i);
+                        telemetry.update();
                     }
                 }
                 else {
