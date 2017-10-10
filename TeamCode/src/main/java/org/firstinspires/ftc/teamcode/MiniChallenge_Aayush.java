@@ -62,6 +62,9 @@ public class MiniChallenge_Aayush extends LinearOpMode{
         colorSensor = hardwareMap.colorSensor.get("colorSensor1");
         gyro = hardwareMap.gyroSensor.get("gyro1");
 
+        RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         gyro.calibrate();
@@ -73,6 +76,9 @@ public class MiniChallenge_Aayush extends LinearOpMode{
 
         LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        LeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         LeftMotor.setTargetPosition(3588);
         RightMotor.setTargetPosition(3588);
@@ -117,6 +123,9 @@ public class MiniChallenge_Aayush extends LinearOpMode{
         RightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        LeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         LeftMotor.setTargetPosition(3588);
         RightMotor.setTargetPosition(3588);
 
@@ -126,6 +135,9 @@ public class MiniChallenge_Aayush extends LinearOpMode{
         while (LeftMotor.getCurrentPosition() < LeftMotor.getTargetPosition() && RightMotor.getCurrentPosition() < RightMotor.getTargetPosition()) {
 
         }
+
+        RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
          /*
          * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
