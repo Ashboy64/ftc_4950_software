@@ -44,6 +44,8 @@ public class MiniChallenge_Aayush extends LinearOpMode{
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
+
+    //0 is left 1 is right
     VuforiaLocalizer vuforia;
 
     @Override public void runOpMode() {
@@ -109,11 +111,8 @@ public class MiniChallenge_Aayush extends LinearOpMode{
         RightMotor.setPower(-0.5);
         LeftMotor.setPower(0.5);
 
-        while (gyro.getHeading() != 0) {
 
-        }
-
-        while (gyro.getHeading() < 90) {
+        while (opModeIsActive() && gyro.getHeading() < 90) {
 
         }
 
@@ -146,7 +145,8 @@ public class MiniChallenge_Aayush extends LinearOpMode{
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
-        // OR...  Do Not Activate the Camera Monitor View, to save power
+        // OR...  Do Not Activate the Camera Monitor View
+        // w, to save power
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         /*
@@ -224,11 +224,6 @@ public class MiniChallenge_Aayush extends LinearOpMode{
                         double tX = trans.get(0);
                         double tY = trans.get(1);
                         double tZ = trans.get(2);
-
-                        double distance = Math.sqrt(tX*tX + tY*tY + tZ*tZ);
-
-                        telemetry.addData("Distance: ", distance);
-                        telemetry.update();
 
                         // Extract the rotational components of the target relative to the robot
                         double rX = rot.firstAngle;
