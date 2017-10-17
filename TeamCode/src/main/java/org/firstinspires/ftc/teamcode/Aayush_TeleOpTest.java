@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 /**
@@ -22,6 +23,7 @@ public class Aayush_TeleOpTest extends OpMode {
     public void init() {
         motorRight = hardwareMap.dcMotor.get("rightmotor");
         motorLeft = hardwareMap.dcMotor.get("leftmotor");
+        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         state = 0;
     }
 
