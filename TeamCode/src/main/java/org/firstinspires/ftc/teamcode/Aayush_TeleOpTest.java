@@ -23,7 +23,6 @@ public class Aayush_TeleOpTest extends OpMode {
     public void init() {
         motorRight = hardwareMap.dcMotor.get("rightmotor");
         motorLeft = hardwareMap.dcMotor.get("leftmotor");
-        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         state = 0;
     }
 
@@ -49,7 +48,7 @@ public class Aayush_TeleOpTest extends OpMode {
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motorLeft.setPower(scaleInput(-y-x));
-        motorRight.setPower(scaleInput(-y+x));
+        motorRight.setPower(scaleInput(-(-y+x)));
     }
 
     public void tank(float y, float y2) {
@@ -57,7 +56,7 @@ public class Aayush_TeleOpTest extends OpMode {
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motorLeft.setPower(scaleInput(y*-1));
-        motorRight.setPower(scaleInput(y2*-1));
+        motorRight.setPower(scaleInput((y2*-1)));
     }
 
     public void slow(float x, float y) {
@@ -65,7 +64,7 @@ public class Aayush_TeleOpTest extends OpMode {
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motorLeft.setPower(scaleInput((-y-x)*0.5));
-        motorRight.setPower(scaleInput((-y+x)*0.5));
+        motorRight.setPower(scaleInput((-y+x)*-0.5));
     }
 
     public void modeSwitch () {
