@@ -21,9 +21,9 @@ public class Aayush_TeleOpTest extends OpMode {
     public int state;
     @Override
     public void init() {
-        motorRight = hardwareMap.dcMotor.get("rightmotor");
-        motorLeft = hardwareMap.dcMotor.get("leftmotor");
-        state = 0;
+        motorRight = hardwareMap.dcMotor.get("rightMotor");
+        motorLeft = hardwareMap.dcMotor.get("leftMotor");
+        state = 1;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class Aayush_TeleOpTest extends OpMode {
         motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        motorLeft.setPower(scaleInput(-y-x));
+        motorLeft.setPower(scaleInput((-y-x)));
         motorRight.setPower(scaleInput(-(-y+x)));
     }
 
@@ -55,8 +55,8 @@ public class Aayush_TeleOpTest extends OpMode {
         motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        motorLeft.setPower(scaleInput(y*-1));
-        motorRight.setPower(scaleInput((y2*-1)));
+        motorLeft.setPower(scaleInput((y*-1)));
+        motorRight.setPower(scaleInput(y2));
     }
 
     public void slow(float x, float y) {
