@@ -49,6 +49,8 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
 
         gyro.calibrate();
 
+        color_sensor.enableLed(true);
+
         while (gyro.isCalibrating() && opModeIsActive()) {
             telemetry.addData(">", "Calibrating Gyro. Do not touch or the grim Ashish Rao will find you");
             telemetry.update();
@@ -115,8 +117,143 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
                         double rY = rot.secondAngle;
                         double rZ = rot.thirdAngle;
 
-                        telemetry.addData(">", "Picture" + i);
-                        telemetry.update();
+                        if (i == 0) {
+                            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                            rightMotor.setPower(0.5);
+                            leftMotor.setPower(0.5);
+
+                            while (gyro.getHeading() != 0 && opModeIsActive()) {
+
+                            }
+
+                            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                            leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                            leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                            leftMotor.setTargetPosition(23091);
+                            rightMotor.setTargetPosition(23091);
+
+                            leftMotor.setPower(-1);
+                            rightMotor.setPower(1);
+
+                            while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition() && rightMotor.getCurrentPosition() < rightMotor.getTargetPosition()) {
+
+                            }
+
+                            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                            rightMotor.setPower(0.5);
+                            leftMotor.setPower(0.5);
+
+                            while (gyro.getHeading() != 270 && opModeIsActive()) {
+
+                            }
+
+                            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                            leftMotor.setPower(-1);
+                            rightMotor.setPower(1);
+
+                            while (!(color_sensor.red() > color_sensor.blue() && color_sensor.red() > color_sensor.green()) && opModeIsActive()) {
+
+                            }
+
+                        } else if (i==1) {
+                            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                            rightMotor.setPower(-0.5);
+                            leftMotor.setPower(-0.5);
+
+                            while (gyro.getHeading() != 0 && opModeIsActive()) {
+
+                            }
+
+                            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                            leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                            leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                            leftMotor.setTargetPosition(23091);
+                            rightMotor.setTargetPosition(23091);
+
+                            leftMotor.setPower(-1);
+                            rightMotor.setPower(1);
+
+                            while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition() && rightMotor.getCurrentPosition() < rightMotor.getTargetPosition()) {
+
+                            }
+
+                            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                            rightMotor.setPower(0.5);
+                            leftMotor.setPower(0.5);
+
+                            while (gyro.getHeading() != 0 && opModeIsActive()) {
+
+                            }
+
+                            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                            leftMotor.setPower(-1);
+                            rightMotor.setPower(1);
+
+                            while (!(color_sensor.red() > color_sensor.blue() && color_sensor.red() > color_sensor.green()) && opModeIsActive()) {
+
+                            }
+                        } else if (i==2){
+                            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                            rightMotor.setPower(0.5);
+                            leftMotor.setPower(0.5);
+
+                            while (gyro.getHeading() != 315 && opModeIsActive()) {
+
+                            }
+
+                            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                            leftMotor.setPower(-1);
+                            rightMotor.setPower(1);
+
+                            while (!(color_sensor.red() > color_sensor.blue() && color_sensor.red() > color_sensor.green()) && opModeIsActive()) {
+
+                            }
+                        }
+
+                        break;
                     }
 
 
@@ -125,6 +262,7 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
                     telemetry.addData("VuMark", "not visible");
                 }
             }
+            break;
         }
     }
 
