@@ -16,7 +16,6 @@ public class Servo_Aayush extends LinearOpMode{
     @Override
     public void runOpMode(){
         ElapsedTime opmodeRunTime = new ElapsedTime();
-       // long startTime = System.currentTimeMillis();
 
         while (!isStarted()) {
             telemetry.addData("time", "%.1f seconds", opmodeRunTime.seconds());
@@ -24,24 +23,23 @@ public class Servo_Aayush extends LinearOpMode{
             idle();
         }
         servo1 = hardwareMap.servo.get("servo1");
+
+        double counterStart = opmodeRunTime.seconds();
+
         servo1.setPosition(0.0);
 
-        while(System.currentTimeMillis() < 5){
-            telemetry.addData("timings", "%0.1f", System.currentTimeMillis());
+
+        while(opmodeRunTime.seconds() < counterStart + 5){
+            telemetry.addData("timings", "In first loop");
             telemetry.update();
         }
 
-        while (servo1.getPosition() != 0 && opModeIsActive()) {
-            telemetry.addData("GUILLLLLOOTTTIIIINNEE"," ROBESPIERRE");
-            telemetry.update();
-        }
-        telemetry.addData(servo1.getPosition()+ "", "port number");
-        telemetry.update();
+        counterStart = opmodeRunTime.seconds();
 
         servo1.setPosition(1);
 
-        while(System.currentTimeMillis() < 10){
-            telemetry.addData("timings", "%0.1f", System.currentTimeMillis());
+        while(opmodeRunTime.seconds() < counterStart + 5){
+            telemetry.addData("timings", "Rachit is the best");
             telemetry.update();
         }
     }
