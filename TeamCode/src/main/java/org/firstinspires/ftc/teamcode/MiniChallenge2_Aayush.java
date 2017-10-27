@@ -34,13 +34,6 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
     VuforiaLocalizer vuforia;
     @Override
     public void runOpMode() throws InterruptedException {
-        ElapsedTime opmodeRunTime = new ElapsedTime();
-
-        while (!isStarted()) {
-            telemetry.addData("time", "%.1f seconds", opmodeRunTime.seconds());
-            telemetry.update();
-            idle();
-        }
 
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
@@ -56,26 +49,10 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
             telemetry.update();
         }
 
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        rightMotor.setPower(0.5);
-        leftMotor.setPower(0.5);
-
-        while (gyro.getHeading() != 90 && opModeIsActive()) {
-
-        }
-
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
-        parameters.vuforiaLicenseKey = "ATsODcD/////AAAAAVw2lR...d45oGpdljdOh5LuFB9nDNfckoxb8COxKSFX";
+        parameters.vuforiaLicenseKey = "AWnZ5xz/////AAAAGYmbM16TXEdKscTtfaECY6FzIRnxfc6SV0uwUV+dwPVIWbGyu9567BTp2qzh6ohnawdFrbL290ECRr04ew/QX0Q90SUrGh52+s55yVFPN429A93YJm6AlnV/TEJKb8omxdlqC+Hfy0SLPZSu+UEq9xQMOIfeW+OiRNQyFlUTZNCtQDNuK5jwObgulF83zrexs+c95Cd1jU7PnoX+NgHPjmUWS5H+WVr4yZsewES+oa0jRjGrcGU0/P5USRnqVbKh4976SNjPBGy6fanxJZmQb2Pam56UROtERcdaPDSWg4Nrr0MFlHCvi3PcfyLfdPtBW06JZGWBXu23VJCBQFw3SxGm/IO057P4kbTFti3W5xkU";
 
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
@@ -90,9 +67,25 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
 
         relicTrackables.activate();
 
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rightMotor.setPower(-0.5);
+        leftMotor.setPower(-0.5);
+
+        while (gyro.getHeading() < 90 && opModeIsActive()) {
+
+        }
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         while (opModeIsActive()) {
 
-            for (int i = 0; i<3; i++) {
+            for (int i = 0; i<relicTrackables.size(); i++) {
 
                 relicTemplate = relicTrackables.get(i);
 
@@ -124,7 +117,7 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
                             rightMotor.setPower(0.5);
                             leftMotor.setPower(0.5);
 
-                            while (gyro.getHeading() != 0 && opModeIsActive()) {
+                            while (gyro.getHeading() > 300 && opModeIsActive()) {
 
                             }
 
@@ -156,7 +149,7 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
                             rightMotor.setPower(0.5);
                             leftMotor.setPower(0.5);
 
-                            while (gyro.getHeading() != 270 && opModeIsActive()) {
+                            while (gyro.getHeading() < 272 && opModeIsActive()) {
 
                             }
 
@@ -180,7 +173,7 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
                             rightMotor.setPower(-0.5);
                             leftMotor.setPower(-0.5);
 
-                            while (gyro.getHeading() != 0 && opModeIsActive()) {
+                            while (gyro.getHeading() > 269 && opModeIsActive()) {
 
                             }
 
@@ -209,10 +202,10 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
                             leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                             rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-                            rightMotor.setPower(0.5);
-                            leftMotor.setPower(0.5);
+                            rightMotor.setPower(-0.5);
+                            leftMotor.setPower(-0.5);
 
-                            while (gyro.getHeading() != 0 && opModeIsActive()) {
+                            while (gyro.getHeading() < 10 && opModeIsActive()) {
 
                             }
 
@@ -235,7 +228,7 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
                             rightMotor.setPower(0.5);
                             leftMotor.setPower(0.5);
 
-                            while (gyro.getHeading() != 315 && opModeIsActive()) {
+                            while (gyro.getHeading() < 315 && opModeIsActive()) {
 
                             }
 
