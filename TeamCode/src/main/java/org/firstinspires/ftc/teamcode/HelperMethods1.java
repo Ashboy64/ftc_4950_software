@@ -49,31 +49,20 @@ public class HelperMethods1 extends LinearOpMode{
 
     public void armMoving() {
         armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         armMotor.setTargetPosition(1120);
-
         armMotor.setPower(1);
-
         while (armMotor.getCurrentPosition() < armMotor.getTargetPosition() && opModeIsActive()) {
 
         }
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armGrabbing();
-
         armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         armMotor.setTargetPosition(1120);
-
         armMotor.setPower(1);
     }
 
