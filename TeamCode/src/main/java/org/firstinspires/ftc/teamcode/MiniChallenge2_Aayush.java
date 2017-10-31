@@ -32,8 +32,10 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
     GyroSensor gyro;
     ColorSensor color_sensor;
     VuforiaLocalizer vuforia;
+    public int done;
     @Override
     public void runOpMode() throws InterruptedException {
+
 
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
@@ -85,7 +87,7 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
 
         while (opModeIsActive()) {
 
-            for (int i = 0; i<relicTrackables.size(); i++) {
+            for (int i = 0; i < relicTrackables.size(); i++) {
 
                 relicTemplate = relicTrackables.get(i);
 
@@ -166,6 +168,9 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
 
                             }
 
+                            done = 1;
+                            break;
+
                         } else if (i==1) {
                             leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                             rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -221,6 +226,9 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
                             while (!(color_sensor.red() > color_sensor.blue() && color_sensor.red() > color_sensor.green()) && opModeIsActive()) {
 
                             }
+
+                            done = 1;
+                            break;
                         } else if (i==2){
                             leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                             rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -244,9 +252,10 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
                             while (!(color_sensor.red() > color_sensor.blue() && color_sensor.red() > color_sensor.green()) && opModeIsActive()) {
 
                             }
-                        }
 
-                        break;
+                            done = 1;
+                            break;
+                        }
                     }
 
 
@@ -255,7 +264,9 @@ public class MiniChallenge2_Aayush extends LinearOpMode{
                     telemetry.addData("VuMark", "not visible");
                 }
             }
-            break;
+            if (done == 1) {
+                break;
+            }
         }
     }
 

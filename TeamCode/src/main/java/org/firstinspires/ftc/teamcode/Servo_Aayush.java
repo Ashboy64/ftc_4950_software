@@ -29,7 +29,7 @@ public class Servo_Aayush extends LinearOpMode{
         servo1.setPosition(0.0);
 
 
-        while(opmodeRunTime.seconds() < counterStart + 5){
+         while(opmodeRunTime.seconds() < counterStart + 5){
             telemetry.addData("timings", "In first loop");
             telemetry.update();
         }
