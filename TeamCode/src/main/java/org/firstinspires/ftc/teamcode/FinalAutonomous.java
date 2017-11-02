@@ -23,19 +23,24 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  */
 
 public class FinalAutonomous extends LinearOpMode{
-    double wheel_circumference;
-    double wheel_diameter = 3.5;
-    DcMotor leftMotor;
-    DcMotor rightMotor;
-    int ticksPerRevolution = 2240;
-    DcMotor armMotor;
-    GyroSensor gyro;
-    VuforiaLocalizer vuforia;
+    double wheel_diameter = 3.5; //the diameter of the wheels of our robot
+    double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter
+    DcMotor leftMotor; //allows for control of the robot’s left motor’s actions
+    DcMotor rightMotor; //allows for control of the robot’s right motor’s actions
+    int ticksPerRevolution = 2240; //the amount of ticks the encoder takes to revolve one wheel
+    DcMotor armMotor; //allows for control of our robot’s arm
+    GyroSensor gyro; //receives information about the direction of our robot
+    VuforiaLocalizer vuforia; //an image-processing library that allows us to analyze pictures
 
+    /*
+       *******HELPER METHOD DESCRIPTIONS*********
+       *armMoving - moves the arm from the resting position to the dropping position and then back again
+       *movingForward - takes in a parameter for distance (inches) and then moves the robot forward by the specified distance
+       *armGrabbing - allows the robot to move its clamp to a specified position by offsetting from the center
+       *gyroTurning - takes in a degree parameter and then turns the robot to the specified degree
+     */
     @Override
     public void runOpMode() throws InterruptedException {
-        wheel_circumference = 2 * 3.14 * (wheel_diameter/2);
-
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
