@@ -16,6 +16,15 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 @TeleOp(name="TeleOp", group ="Concept")
 //@Disabled
 public class Aayush_TeleOpTest extends OpMode {
+    /*
+    Hardware map maps the variables in the code to the parts on the physical robot
+    motorRight allows for control of the right motor’s actions
+    motorLeft allows for control of the left motor’s actions
+    state allows for distinction between the three aforementioned driving modes
+    State 0 maps to arcade mode
+    State 1 maps to tank mode
+    State 2 maps to slow mode*/
+
     DcMotor motorRight;
     DcMotor motorLeft;
     public int state;
@@ -44,7 +53,8 @@ public class Aayush_TeleOpTest extends OpMode {
 
         telemetry.addData("How to change modes: ", "Press ");
     }
-
+    // allows for control of the robot with a single joystick
+    // is activated when the X button is pressed on the gamepad
     public void arcade(float x, float y) {
         motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -52,6 +62,9 @@ public class Aayush_TeleOpTest extends OpMode {
         motorLeft.setPower(scaleInput((-y-x)));
         motorRight.setPower(scaleInput(-(-y+x)));
     }
+
+    // allows for control of the robot using both joysticks
+    // is activated when the Y button is pressed on the gamepad
 
     public void tank(float y, float y2) {
         motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -61,6 +74,8 @@ public class Aayush_TeleOpTest extends OpMode {
         motorRight.setPower(scaleInput(y2));
     }
 
+    // allows for a slower control (half that of arcade mode) of the robot with a single joystick
+    // is activated when the B button is pressed on the gamepad
     public void slow(float x, float y) {
         motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -69,6 +84,8 @@ public class Aayush_TeleOpTest extends OpMode {
         motorRight.setPower(scaleInput((-y+x)*-0.5));
     }
 
+    // allows the driver to switch between the three aforementioned driving modes
+    // (by pressing X for arcade, Y for tank, and B for slow)
     public void modeSwitch () {
         if (gamepad1.x) {
             state = 0;
@@ -79,6 +96,8 @@ public class Aayush_TeleOpTest extends OpMode {
         }
     }
 
+    // takes an input (for motor power) that is not scaled in a way the computer can interpret correctly
+    // then changes it to instructions– from a scale of 0 to 1–  for setting motor power the computer can understand
     public double scaleInput(double dVal)  {
 
         double[] scaleArray = { 0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
