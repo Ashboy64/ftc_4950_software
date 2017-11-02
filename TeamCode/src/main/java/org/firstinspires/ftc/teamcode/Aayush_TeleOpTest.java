@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 @TeleOp(name="TeleOp", group ="Concept")
 //@Disabled
+// allows driver to choose between three driver modes explained in further detail below
 public class Aayush_TeleOpTest extends OpMode {
     /*
     Hardware map maps the variables in the code to the parts on the physical robot
