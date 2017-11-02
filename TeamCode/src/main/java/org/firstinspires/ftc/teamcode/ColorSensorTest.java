@@ -30,7 +30,7 @@ public class ColorSensorTest extends LinearOpMode {
             idle();
         }
 
-        color_sensor =  hardwareMap.get(ColorSensor.class, "colorSensor1");
+        color_sensor = hardwareMap.get(ColorSensor.class, "colorSensor1");
         while (opModeIsActive()) {
             color_sensor.enableLed(true);
             telemetry.addData(">", color_sensor.argb());
