@@ -23,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  */
 
 public class FinalAutonomous extends LinearOpMode{
-    double wheel_diameter = 3.5; //the diameter of the wheels of our robot
+    double wheel_diameter = 3.5; //the diameter of the wheels of our robot.
     double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter
     DcMotor leftMotor; //allows for control of the robot’s left motor’s actions
     DcMotor rightMotor; //allows for control of the robot’s right motor’s actions
