@@ -41,6 +41,8 @@ public class Aayush_TeleOpTest extends OpMode {
         } else if (state == 2) {
             slow(x, y);
         }
+
+        telemetry.addData("How to change modes: ", "Press ");
     }
 
     public void arcade(float x, float y) {
