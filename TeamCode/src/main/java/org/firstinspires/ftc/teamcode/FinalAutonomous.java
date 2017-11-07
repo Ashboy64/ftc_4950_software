@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -31,7 +33,8 @@ public class FinalAutonomous extends LinearOpMode{
     DcMotor armMotor; //allows for control of our robot’s arm
     GyroSensor gyro; //receives information about the direction of our robot
     VuforiaLocalizer vuforia; //an image-processing library that allows us to analyze pictures
-
+    CRServo clampServo;
+    double armWaiting = 2.0;
     /*
        *******HELPER METHOD DESCRIPTIONS*********
        *armMoving - moves the arm from the resting position to the dropping position and then back again
@@ -44,10 +47,9 @@ public class FinalAutonomous extends LinearOpMode{
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
         armMotor = hardwareMap.dcMotor.get("armMotor");
-
         gyro = hardwareMap.gyroSensor.get("gyro");
+        clampServo = hardwareMap.crservo.get("clampServo");
 
         gyro.calibrate();
         while (gyro.isCalibrating() && opModeIsActive()) {
@@ -154,7 +156,27 @@ public class FinalAutonomous extends LinearOpMode{
     }
 
     public void armGrabbing() {
+        ElapsedTime opmodeRunTime = new ElapsedTime();
+        clampServo.setPower(1);
+        while (opmodeRunTime.seconds() < armWaiting) {
+            telemetry.addData("waiting for arm to get to position", "");
+            telemetry.update();
+            idle();
+        }
+        clampServo.setPower(0);
+    }
 
+    public void armRelease() {
+        ElapsedTime opmodeRunTime = new ElapsedTime();
+        clampServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        clampServo.setPower(1);
+        while (opmodeRunTime.seconds() < armWaiting) {
+            telemetry.addData("waiting for arm to get to position", "");
+            telemetry.update();
+            idle();
+        }
+        clampServo.setPower(0);
+        clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void gyroTurning (double degrees) {
