@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
@@ -20,6 +21,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import static com.sun.tools.javac.util.Constants.format;
+
 /**
  * Created by Aayushiron on 10/31/17.
  */
@@ -35,6 +38,10 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
     VuforiaLocalizer vuforia; //an image-processing library that allows us to analyze pictures
     CRServo clampServo;
     double armWaiting = 2.0;
+    float getToJewel = 0;
+    CRServo jewelServo;
+    ColorSensor colorSensor;
+    int trackableViewed;
     /*
        *******HELPER METHOD DESCRIPTIONS*********
        *armMoving - moves the arm from the resting position to the dropping position and then back again
@@ -50,7 +57,8 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
         armMotor = hardwareMap.dcMotor.get("armMotor");
         gyro = hardwareMap.gyroSensor.get("gyro");
         clampServo = hardwareMap.crservo.get("clampServo");
-
+        colorSensor = hardwareMap.colorSensor.get("colorSensor");
+        jewelServo = hardwareMap.crservo.get("jewelServo");
         gyro.calibrate();
         while (gyro.isCalibrating() && opModeIsActive()) {
             telemetry.addData(">", "Calibrating Gyro.");
@@ -80,6 +88,31 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         while (opModeIsActive()) {
+            movingForward(getToJewel);
+
+            if (colorSensor.blue() > colorSensor.green() && colorSensor.blue() > colorSensor.red()) {
+                ElapsedTime opmodeRunTime = new ElapsedTime();
+                jewelServo.setPower(1);
+                while (opmodeRunTime.seconds() < armWaiting) {
+                    telemetry.addData("waiting for arm to get to position", "");
+                    telemetry.update();
+                    idle();
+                }
+                jewelServo.setPower(0);
+                ElapsedTime opModeRunTime = new ElapsedTime();
+                jewelServo.setDirection(DcMotorSimple.Direction.REVERSE);
+                jewelServo.setPower(1);
+                while (opmodeRunTime.seconds() < armWaiting) {
+                    telemetry.addData("waiting for arm to get to position", "");
+                    telemetry.update();
+                    idle();
+                }
+                clampServo.setPower(0);
+                clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
+            }
+
+            movingForward(7.00);
+            gyroTurning(90.00);
 
             for (int i = 0; i < relicTrackables.size(); i++) {
 
@@ -90,7 +123,7 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
 
                     telemetry.addData("VuMark", "%s visible", vuMark);
 
-                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
+                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) relicTemplate.getListener()).getPose();
                     telemetry.addData("Pose", format(pose));
 
                     if (pose != null) {
@@ -107,16 +140,22 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
                         double rZ = rot.thirdAngle;
 
                         if (i == 0) {
-
+                            trackableViewed = 0;
+                        } else if (i == 1) {
+                            trackableViewed = 1;
+                        } else {
+                            trackableViewed = 2;
                         }
                     }
                 } else {
                     telemetry.addData("VuMark", "not visible");
                 }
             }
+            gyroTurning(-90.00);
+            movingForward(36.00);
+            gyroTurning(90.00);
         }
     }
-
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
