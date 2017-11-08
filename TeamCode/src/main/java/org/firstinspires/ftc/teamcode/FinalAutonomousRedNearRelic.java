@@ -24,7 +24,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Created by Aayushiron on 10/31/17.
  */
 
-public class FinalAutonomous extends LinearOpMode{
+public class FinalAutonomousRedNearRelic extends LinearOpMode{
     double wheel_diameter = 3.5; //the diameter of the wheels of our robot.
     double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter
     DcMotor leftMotor; //allows for control of the robot’s left motor’s actions
@@ -105,6 +105,10 @@ public class FinalAutonomous extends LinearOpMode{
                         double rX = rot.firstAngle;
                         double rY = rot.secondAngle;
                         double rZ = rot.thirdAngle;
+
+                        if (i == 0) {
+
+                        }
                     }
                 } else {
                     telemetry.addData("VuMark", "not visible");
