@@ -95,6 +95,7 @@ public class armTest extends LinearOpMode {
         ElapsedTime opmodeRunTime = new ElapsedTime();
         clampServo.setDirection(DcMotorSimple.Direction.REVERSE);
         clampServo.setPower(1);
+
         while (opmodeRunTime.seconds() < armWaiting) {
             telemetry.addData("waiting for arm to get to position", "");
             telemetry.update();
