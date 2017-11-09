@@ -28,11 +28,13 @@ public class Aayush_TeleOpTest extends OpMode {
 
     DcMotor motorRight;
     DcMotor motorLeft;
+    DcMotor armMotor;
     public int state;
     @Override
     public void init() {
         motorRight = hardwareMap.dcMotor.get("rightMotor");
         motorLeft = hardwareMap.dcMotor.get("leftMotor");
+        armMotor = hardwareMap.dcMotor.get("armMotor");
         state = 1;
     }
 
@@ -41,6 +43,17 @@ public class Aayush_TeleOpTest extends OpMode {
         float y = gamepad1.left_stick_y;
         float x = gamepad1.left_stick_x;
         float y2 = gamepad1.right_stick_y;
+        boolean r1 = gamepad1.right_bumper;
+        boolean r2 = gamepad1.left_bumper;
+        if(r1){
+            armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            armMotor.setPower(0.25);
+        }
+        if(r2){
+            armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            armMotor.setPower(-0.25);
+        }
+
 
         modeSwitch();
 
