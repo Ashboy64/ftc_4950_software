@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -30,10 +31,12 @@ public class Aayush_TeleOpTest extends OpMode {
     DcMotor motorLeft;
     DcMotor armMotor;
     public int state;
+    CRServo armClamp;
     @Override
     public void init() {
         motorRight = hardwareMap.dcMotor.get("rightMotor");
         motorLeft = hardwareMap.dcMotor.get("leftMotor");
+        armClamp = hardwareMap.crservo.get("crServo");
         armMotor = hardwareMap.dcMotor.get("armMotor");
         state = 1;
     }
@@ -56,6 +59,14 @@ public class Aayush_TeleOpTest extends OpMode {
 
 
         modeSwitch();
+
+        if (gamepad1.left_trigger > 0.5) {
+            armClamp.setPower(-1.0);
+        } else if (gamepad1.right_trigger > 0.5) {
+            armClamp.setPower(1.0);
+        } else if (gamepad1.right_trigger == 0 && gamepad1.left_trigger == 0) {
+            armClamp.setPower(0.0);
+        }
 
         if (state == 0) {
             arcade(x, y);

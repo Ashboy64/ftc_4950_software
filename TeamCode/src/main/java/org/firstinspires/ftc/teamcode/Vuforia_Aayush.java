@@ -33,9 +33,9 @@ public class Vuforia_Aayush extends LinearOpMode{
 
     OpenGLMatrix lastLocation = null;
 
-    DcMotor LeftMotor;
-    DcMotor RightMotor;
-    ColorSensor colorSensor;
+//    DcMotor LeftMotor;
+//    DcMotor RightMotor;
+//    ColorSensor colorSensor;
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -45,15 +45,15 @@ public class Vuforia_Aayush extends LinearOpMode{
 
     @Override public void runOpMode() {
 
-        LeftMotor = hardwareMap.dcMotor.get("motor1");
-        RightMotor = hardwareMap.dcMotor.get("motor2");
-        colorSensor = hardwareMap.colorSensor.get("colorSensor1");
-
-        colorSensor.enableLed(true);
-
-        knockOffJewel();
-
-        goToPattern();
+//        LeftMotor = hardwareMap.dcMotor.get("motor1");
+//        RightMotor = hardwareMap.dcMotor.get("motor2");
+//        colorSensor = hardwareMap.colorSensor.get("colorSensor1");
+//
+//        colorSensor.enableLed(true);
+//
+//        knockOffJewel();
+//
+//        goToPattern();
 
         /*
          * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
@@ -77,7 +77,7 @@ public class Vuforia_Aayush extends LinearOpMode{
          * Once you've obtained a license key, copy the string from the Vuforia web site
          * and paste it in to your code onthe next line, between the double quotes.
          */
-        parameters.vuforiaLicenseKey = "ATsODcD/////AAAAAVw2lR...d45oGpdljdOh5LuFB9nDNfckoxb8COxKSFX";
+        parameters.vuforiaLicenseKey = "AWnZ5xz/////AAAAGYmbM16TXEdKscTtfaECY6FzIRnxfc6SV0uwUV+dwPVIWbGyu9567BTp2qzh6ohnawdFrbL290ECRr04ew/QX0Q90SUrGh52+s55yVFPN429A93YJm6AlnV/TEJKb8omxdlqC+Hfy0SLPZSu+UEq9xQMOIfeW+OiRNQyFlUTZNCtQDNuK5jwObgulF83zrexs+c95Cd1jU7PnoX+NgHPjmUWS5H+WVr4yZsewES+oa0jRjGrcGU0/P5USRnqVbKh4976SNjPBGy6fanxJZmQb2Pam56UROtERcdaPDSWg4Nrr0MFlHCvi3PcfyLfdPtBW06JZGWBXu23VJCBQFw3SxGm/IO057P4kbTFti3W5xkU";
 
         /*
          * We also indicate which camera on the RC that we wish to use.
@@ -105,7 +105,7 @@ public class Vuforia_Aayush extends LinearOpMode{
 
         while (opModeIsActive()) {
 
-            for (int i = 0; i<3; i++) {
+            for (int i = 0; i < relicTrackables.size(); i++) {
 
                 relicTemplate = relicTrackables.get(i);
 
@@ -133,13 +133,13 @@ public class Vuforia_Aayush extends LinearOpMode{
                  * translational components */
                     if (pose != null) {
 
-                        if (i==0) {
-                            goAndPutInLeftCryptobox();
-                        } else if (i==1) {
-                            goAndPutInCenterCryptobox();
-                        } else {
-                            goAndPutInRightCryptobox();
-                        }
+//                        if (i==0) {
+//                            goAndPutInLeftCryptobox();
+//                        } else if (i==1) {
+//                            goAndPutInCenterCryptobox();
+//                        } else {
+//                            goAndPutInRightCryptobox();
+//                        }
 
                         VectorF trans = pose.getTranslation();
                         Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
@@ -151,13 +151,13 @@ public class Vuforia_Aayush extends LinearOpMode{
 
                         double distance = Math.sqrt(tX*tX + tY*tY + tZ*tZ);
 
-                        telemetry.addData("Distance: ", distance);
-                        telemetry.update();
-
                         // Extract the rotational components of the target relative to the robot
                         double rX = rot.firstAngle;
                         double rY = rot.secondAngle;
                         double rZ = rot.thirdAngle;
+
+                        telemetry.addData(">","seeing pic");
+                        telemetry.update();
 
                         break;
                     }
@@ -175,29 +175,29 @@ public class Vuforia_Aayush extends LinearOpMode{
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
 
-    public void knockOffJewel() {
-        if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green()) {
-            knockOff();
-        }
-    }
-
-    public void knockOff() {
-
-    }
-
-    public void goToPattern() {
-
-    }
-
-    public void goAndPutInLeftCryptobox() {
-
-    }
-
-    public void goAndPutInCenterCryptobox() {
-
-    }
-
-    public void goAndPutInRightCryptobox() {
-
-    }
+//    public void knockOffJewel() {
+//        if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green()) {
+//            knockOff();
+//        }
+//    }
+//
+//    public void knockOff() {
+//
+//    }
+//
+//    public void goToPattern() {
+//
+//    }
+//
+//    public void goAndPutInLeftCryptobox() {
+//
+//    }
+//
+//    public void goAndPutInCenterCryptobox() {
+//
+//    }
+//
+//    public void goAndPutInRightCryptobox() {
+//
+//    }
 }
