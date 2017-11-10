@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -27,6 +28,7 @@ import static com.sun.tools.javac.util.Constants.format;
  * Created by Aayushiron on 10/31/17.
  */
 
+@Autonomous(name = "FinalAutononousRedNearRelic", group = "Concept")
 public class FinalAutonomousRedNearRelic extends LinearOpMode{
     double wheel_diameter = 3.5; //the diameter of the wheels of our robot.
     double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter
@@ -60,6 +62,7 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
         clampServo = hardwareMap.crservo.get("clampServo");
         colorSensor = hardwareMap.colorSensor.get("colorSensor");
         jewelServo = hardwareMap.crservo.get("jewelServo");
+
         gyro.calibrate();
         while (gyro.isCalibrating() && opModeIsActive()) {
             telemetry.addData(">", "Calibrating Gyro.");

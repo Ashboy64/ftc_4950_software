@@ -24,7 +24,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 /**
  * Created by mnawani on 10/19/2017.
  */
-@Autonomous(name = "MiniChallenge2", group = "concept")
+@Autonomous(name = "MiniChallenge2_Manvi", group = "concept")
 public class MiniChallenge2_Manvi extends LinearOpMode {
     GyroSensor gyro;
     ColorSensor color_sensor;

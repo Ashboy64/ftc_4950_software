@@ -32,6 +32,8 @@ public class Aayush_TeleOpTest extends OpMode {
     DcMotor armMotor;
     public int state;
     CRServo armClamp;
+    float armGroundState;
+    boolean isInitalState;
     @Override
     public void init() {
         motorRight = hardwareMap.dcMotor.get("rightMotor");
@@ -39,6 +41,8 @@ public class Aayush_TeleOpTest extends OpMode {
         armClamp = hardwareMap.crservo.get("crServo");
         armMotor = hardwareMap.dcMotor.get("armMotor");
         state = 1;
+        armGroundState = armMotor.getCurrentPosition();
+
     }
 
     @Override
@@ -48,13 +52,46 @@ public class Aayush_TeleOpTest extends OpMode {
         float y2 = gamepad1.right_stick_y;
         boolean r1 = gamepad1.right_bumper;
         boolean r2 = gamepad1.left_bumper;
-        if(r1){
+
+        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //gravity = 0.05, anything above moves clockwise, below counterclockwise
+        if(armMotor.getCurrentPosition()<(2240/4) && (r1 || armMotor.getCurrentPosition() > armGroundState)){
+            if(r1) {
+                armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                armMotor.setPower(0.25);
+            } else if(r2){
+                armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                armMotor.setPower(0.01);
+            } else {
+                armMotor.setPower(0.05);
+            }
+        } else if(armMotor.getCurrentPosition()>armGroundState) {
+            if(r1) {
+                armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                armMotor.setPower(-0.01);
+            } else if(r2){
+                armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                armMotor.setPower(-0.25);
+            } else {
+                armMotor.setPower(-0.05);
+            }
+        }
+
+//        if(armMotor.getCurrentPosition()<=armGroundState){
+//            armMotor.setPower(0);
+//        }
+
+
+
+        if(r1) {
             armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             armMotor.setPower(0.25);
-        }
-        if(r2){
+        } else if(r2){
             armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             armMotor.setPower(-0.25);
+        } else {
+            armMotor.setPower(0.05);
         }
 
 
@@ -75,7 +112,7 @@ public class Aayush_TeleOpTest extends OpMode {
         } else if (state == 2) {
             slow(x, y);
         }
-
+        if(isInitalState) isInitalState = false;
         telemetry.addData("How to change modes: ", "Press ");
     }
     // allows for control of the robot with a single joystick
