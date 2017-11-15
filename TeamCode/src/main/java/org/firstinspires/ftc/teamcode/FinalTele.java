@@ -44,14 +44,14 @@ public class FinalTele extends OpMode{
 
     public void loop() {
         // Setting values to gamepad controls
-        rt = gamepad1.right_trigger;
-        lt = gamepad1.left_trigger;
-        rb = gamepad1.right_bumper;
-        lb = gamepad1.left_bumper;
+        rt = gamepad2.right_trigger;
+        lt = gamepad2.left_trigger;
+        rb = gamepad2.right_bumper;
+        lb = gamepad2.left_bumper;
         rj = gamepad1.right_stick_y;
         lj = gamepad1.left_stick_y;
-        disableArmControl = gamepad1.x;
-        enableArmControl = gamepad1.a;
+        disableArmControl = gamepad2.x;
+        enableArmControl = gamepad2.a;
 
         // Enabling/disabling arm control
         if(disableArmControl){
@@ -75,28 +75,29 @@ public class FinalTele extends OpMode{
 
             if (currPos <= 2240 / 4 + 5) {
                 if (rt > 0.5) {
-                    armMotor.setPower(pr1);
+                    armMotor.setPower(pr1); // Power set to a large positive number due to the necessity of more power to raise it as it moves against the force of gravity
                 } else if (lt > 0.5) {
-                    armMotor.setPower(pl1);
+                    armMotor.setPower(pl1); // Power set to a small positive number to gently lower the mechanism
                 } else {
-                    armMotor.setPower(0);
+                    armMotor.setPower(0); // Power set to 0
                 }
             } else {
                 if (rt > 0.5) {
+                    // Power set to small negative number to gently push over the mechanism. Here, since gravity acts in the direction of movement, for smooth motion a power against it must be applied
                     armMotor.setPower(pr2);
                 } else if (lt > 0.5) {
-                    armMotor.setPower(pl2);
+                    armMotor.setPower(pl2); // Power set to negative number with large abs value as gravity is acting against the desired motion of the mechanism and must be opposed by another strong force to move the mechanism
                 } else {
-                    armMotor.setPower(0);
+                    armMotor.setPower(0); // Power set to 0
                 }
             }
-        } else {
+        } else { // No software assistance
             if (rt > 0.5) {
-                armMotor.setPower(pr1);
+                armMotor.setPower(pr1); // Set arm to a large positive power
             } else if (lt > 0.5) {
-                armMotor.setPower(pl1);
+                armMotor.setPower(pl1); // Set arm to a small positive value
             } else {
-                armMotor.setPower(0);
+                armMotor.setPower(0); // Set arm power to 0
             }
         }
 
