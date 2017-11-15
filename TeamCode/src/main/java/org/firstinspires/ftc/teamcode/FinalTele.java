@@ -63,15 +63,15 @@ public class FinalTele extends OpMode{
         }
 
         if(armControl) {
-        //Starting encoder process to get current position of glyph mechanism
-        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            //Starting encoder process to get current position of glyph mechanism
+            armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        currPos = armMotor.getCurrentPosition();
+            currPos = armMotor.getCurrentPosition();
 
-        // If statement that checks the position of the glyph mechanism and changes the values
-        // assignes as powers to the armMotor based off of it. Used to enable smoother control of
-        // the glyph mechanism.
+            // If statement that checks the position of the glyph mechanism and changes the values
+            // assignes as powers to the armMotor based off of it. Used to enable smoother control of
+            // the glyph mechanism.
 
             if (currPos <= 2240 / 4 + 5) {
                 if (rt > 0.5) {
