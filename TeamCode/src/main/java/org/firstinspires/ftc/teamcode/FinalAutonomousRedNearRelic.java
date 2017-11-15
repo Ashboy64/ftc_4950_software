@@ -63,13 +63,6 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
         colorSensor = hardwareMap.colorSensor.get("colorSensor");
         jewelServo = hardwareMap.crservo.get("jewelServo");
 
-        gyro.calibrate();
-        while (gyro.isCalibrating() && opModeIsActive()) {
-            telemetry.addData(">", "Calibrating Gyro.");
-            telemetry.update();
-        }
-        waitForStart();
-
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
@@ -81,6 +74,13 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
+
+
+        gyro.calibrate();
+        while (gyro.isCalibrating() && opModeIsActive()) {
+            telemetry.addData(">", "Calibrating Gyro.");
+            telemetry.update();
+        }
 
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
@@ -115,7 +115,7 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
                 clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
             }
 
-            movingForward(7.00);
+            movingForward(8.5);
             gyroTurning(90.00);
 
             for (int i = 0; i < relicTrackables.size(); i++) {
@@ -156,8 +156,10 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
                 }
             }
             gyroTurning(-90.00);
-            movingForward(36.00);
-            gyroTurning(90.00);
+            movingForward(27.50);
+            gyroTurning(-90.00);
+            // add depositing cube code here
+            movingForward(-2);
         }
     }
     String format(OpenGLMatrix transformationMatrix) {
