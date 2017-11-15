@@ -26,6 +26,7 @@ public class FinalTele extends OpMode{
     double pr2 = -0.05; // Power to raise the glyph mechanism while it's position is past the highest
     double pl1 = 0.05; // Power to lower the glyph mechanism gently
     double pl2 = -0.5; // Power to raise the glyph mechanism after it is past the highest
+    double ticksPerRev = 2240; // Encoder ticks in one revolution
     float currPos; // Current position of the glyph mechanism
     boolean disableArmControl; // Disable software assisted arm control
     boolean enableArmControl; // Enable software assisted arm control
@@ -73,7 +74,7 @@ public class FinalTele extends OpMode{
             // assignes as powers to the armMotor based off of it. Used to enable smoother control of
             // the glyph mechanism.
 
-            if (currPos <= 2240 / 4 + 5) {
+            if (currPos <= ticksPerRev / 4 + 5) {
                 if (rt > 0.5) {
                     armMotor.setPower(pr1); // Power set to a large positive number due to the necessity of more power to raise it as it moves against the force of gravity
                 } else if (lt > 0.5) {
