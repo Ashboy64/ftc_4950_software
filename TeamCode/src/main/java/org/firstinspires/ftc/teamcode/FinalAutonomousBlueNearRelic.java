@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -22,14 +21,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import static com.sun.tools.javac.util.Constants.format;
-
 /**
- * Created by Aayushiron on 10/31/17.
+ * Created by mnawani on 11/16/2017.
  */
 
-@Autonomous(name = "FinalAutononousRedNearRelic", group = "Concept")
-public class FinalAutonomousRedNearRelic extends LinearOpMode{
+public class FinalAutonomousBlueNearRelic extends LinearOpMode{
     double wheel_diameter = 3.5; //the diameter of the wheels of our robot.
     double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter
     DcMotor leftMotor; //allows for control of the robot’s left motor’s actions
@@ -93,8 +89,8 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
 
         while (opModeIsActive()) {
             movingForward(getToJewel);
-
-            if (colorSensor.blue() > colorSensor.green() && colorSensor.blue() > colorSensor.red()) {
+            gyroTurning(180.00);
+            if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.blue()) {
                 ElapsedTime opmodeRunTime = new ElapsedTime();
                 jewelServo.setPower(1);
                 while (opmodeRunTime.seconds() < armWaiting) {
@@ -115,8 +111,9 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
                 clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
             }
 
+            gyroTurning(180.00);
             movingForward(8.5);
-            gyroTurning(90.00);
+            gyroTurning(-90.00);
 
             for (int i = 0; i < relicTrackables.size(); i++) {
 
@@ -157,7 +154,7 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
             }
             gyroTurning(-90.00);
             movingForward(27.50);
-            gyroTurning(-90.00);
+            gyroTurning(90.00);
             // add depositing cube code here
             movingForward(-2);
         }
