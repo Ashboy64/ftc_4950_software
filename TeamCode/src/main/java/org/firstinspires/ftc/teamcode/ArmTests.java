@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
  * Created by rao_a on 11/16/2017.
  */
 
+@Autonomous(name = "touchSensorTest", group = "Concept")
 public class ArmTests extends LinearOpMode {
     DigitalChannel tsClosed;
     DigitalChannel tsOpen;
@@ -15,5 +17,14 @@ public class ArmTests extends LinearOpMode {
         tsClosed = hardwareMap.get(DigitalChannel.class, "tsClosed");
         tsOpen = hardwareMap.get(DigitalChannel.class, "tsOpen");
 
+        waitForStart();
+
+        tsClosed.setMode(DigitalChannel.Mode.INPUT);
+        tsOpen.setMode(DigitalChannel.Mode.INPUT);
+
+        while (opModeIsActive()) {
+            telemetry.addData("Closed -> " + tsClosed.getState(), "Open -> ", tsOpen.getState());
+            telemetry.update();
+        }
     }
 }
