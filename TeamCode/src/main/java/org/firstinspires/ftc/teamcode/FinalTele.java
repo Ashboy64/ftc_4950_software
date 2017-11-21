@@ -41,6 +41,8 @@ public class FinalTele extends OpMode{
     boolean armControlButton2; // Enable software assisted arm control
     boolean bpressed1; // B button enabling backwards drive pressed on gamepad 1
     boolean bpressed2; // B button enabling backwards drive pressed on gamepad 2
+    int leftMotorMultiplier = 1; // Controls direction of leftMotor
+    int rightMotorMultiplier = -1; // Controls direction of  rightMotor
 
     @Override
     public void init(){
@@ -75,7 +77,7 @@ public class FinalTele extends OpMode{
         bpressed1 = gamepad1.b;
         bpressed2 = gamepad2.b;
 
-        // Touch sensor test
+        // Touch sensor testing code
         tsClosed.setMode(DigitalChannel.Mode.INPUT);
         tsOpen.setMode(DigitalChannel.Mode.INPUT);
 
@@ -83,30 +85,30 @@ public class FinalTele extends OpMode{
         telemetry.update();
 
         if(!bpressed1 || !bpressed2){  // If the robot is not being driven in reverse
-            motorLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-            motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightMotorMultiplier = -1;
+            leftMotorMultiplier = 1;
 
             if(rj!=0 || lj!=0){
-                motorLeft.setPower(lj);
-                motorRight.setPower(rj);
+                motorLeft.setPower(leftMotorMultiplier*lj);
+                motorRight.setPower(rightMotorMultiplier*rj);
             } else if(rj2!=0 || lj2!=0){
-                motorLeft.setPower(lj2);
-                motorRight.setPower(rj2);
+                motorLeft.setPower(leftMotorMultiplier*lj2);
+                motorRight.setPower(rightMotorMultiplier*rj2);
             } else {
                 motorLeft.setPower(0);
                 motorRight.setPower(0);
             }
 
         } else { // Robot driven in reverse, so motor directions reversed and joysticks assigned to motors switch
-            motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-            motorRight.setDirection(DcMotorSimple.Direction.FORWARD);
+            rightMotorMultiplier = 1;
+            leftMotorMultiplier = -1;
 
             if(rj!=0 || lj!=0){
-                motorLeft.setPower(rj);
-                motorRight.setPower(lj);
+                motorLeft.setPower(rightMotorMultiplier*rj);
+                motorRight.setPower(leftMotorMultiplier*lj);
             } else if(rj2!=0 || lj2!=0){
-                motorLeft.setPower(rj2);
-                motorRight.setPower(lj2);
+                motorLeft.setPower(rightMotorMultiplier*rj2);
+                motorRight.setPower(leftMotorMultiplier*lj2);
             } else {
                 motorLeft.setPower(0);
                 motorRight.setPower(0);
