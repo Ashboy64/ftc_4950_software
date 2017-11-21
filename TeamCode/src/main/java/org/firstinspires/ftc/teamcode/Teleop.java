@@ -12,12 +12,12 @@ public class Teleop extends OpMode {
     private boolean swapTouchSensors = false;
     private boolean swapDriveMotors = false;
 
-    private float drivePower = 1;
+    private float drivePower = 0.75f;
     private float drivePowerSlow = 0.25f;
     private float armPower = 1;
     private float clampPower = 1;
 
-    private boolean touchLimit = true;
+    private boolean touchLimit = false;
 
     private CRServo servoClamp;
 
@@ -69,15 +69,15 @@ public class Teleop extends OpMode {
 
         driveLeft = gamepad1.left_stick_y;
         if (driveLeft == 0) driveLeft = gamepad2.left_stick_y;
-        if (driveLeft == 0) driveLeft = gamepad1.left_stick_x * drivePowerSlow;
-        if (driveLeft == 0) driveLeft = gamepad2.left_stick_x * drivePowerSlow;
+        //if (driveLeft == 0) driveLeft = gamepad1.left_stick_x * drivePowerSlow;
+        //if (driveLeft == 0) driveLeft = gamepad2.left_stick_x * drivePowerSlow;
 
         driveRight = gamepad1.right_stick_y;
         if (driveRight == 0) driveRight = gamepad2.right_stick_y;
-        if (driveRight == 0) driveRight = gamepad1.right_stick_x * -drivePowerSlow;
-        if (driveRight == 0) driveRight = gamepad2.right_stick_x * -drivePowerSlow;
+        //if (driveRight == 0) driveRight = gamepad1.right_stick_x * -drivePowerSlow;
+        //if (driveRight == 0) driveRight = gamepad2.right_stick_x * -drivePowerSlow;
 
-        driveReverse = gamepad1.x || gamepad2.x;
+        driveReverse = !gamepad1.y || !gamepad2.y;
 
         //touch sensor setup
         touchOpen.setMode(DigitalChannel.Mode.INPUT);
@@ -86,7 +86,7 @@ public class Teleop extends OpMode {
         touchOpenPressed = touchOpen.getState();
         touchClosedPressed = touchClosed.getState();
 
-        telemetry.addData("Open: " + touchOpenPressed, "Closed: ", touchClosedPressed);
+        telemetry.addData("Open: " + touchOpenPressed, "Closed: "+ touchClosedPressed);
         telemetry.update();
 
         //driving
@@ -107,7 +107,7 @@ public class Teleop extends OpMode {
         } else if (bumperLeft && (!touchClosedPressed || !touchLimit)) {
             servoClamp.setPower(-clampPower);
         } else {
-            servoClamp.setPower(0);
+            servoClamp.setPower(0.0);
         }
     }
 }
