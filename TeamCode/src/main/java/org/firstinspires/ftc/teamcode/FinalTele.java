@@ -39,9 +39,8 @@ public class FinalTele extends OpMode{
     float currPos; // Current position of the glyph mechanism
     boolean armControlButton; // Enable/Disable software assisted arm control
     boolean armControlButton2; // Enable software assisted arm control
-    boolean armControl; // Boolean storing the state of whether software assisted arm control is activated
-    boolean reversed;
-    boolean bpressed;
+    boolean bpressed1; // B button enabling backwards drive pressed on gamepad 1
+    boolean bpressed2; // B button enabling backwards drive pressed on gamepad 2
 
     @Override
     public void init(){
@@ -54,9 +53,7 @@ public class FinalTele extends OpMode{
         tsOpen = hardwareMap.get(DigitalChannel.class, "tsOpen");
         motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        armControl = false;
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        reversed = false;
     }
 
     public void loop() {
@@ -67,103 +64,72 @@ public class FinalTele extends OpMode{
         lb = gamepad1.left_bumper;
         rj = gamepad1.right_stick_y;
         lj = gamepad1.left_stick_y;
-        //rt2 = gamepad2.right_trigger;
+        rt2 = gamepad2.right_trigger;
+        lt2 = gamepad2.left_trigger;
+        rb2 = gamepad2.right_bumper;
+        lb2 = gamepad2.left_bumper;
+        rj2 = gamepad2.right_stick_y;
+        lj2 = gamepad2.left_stick_y;
         armControlButton = gamepad1.x;
         armControlButton2 = gamepad2.x;
-        bpressed = gamepad1.b;
+        bpressed1 = gamepad1.b;
+        bpressed2 = gamepad2.b;
 
+        // Touch sensor test
         tsClosed.setMode(DigitalChannel.Mode.INPUT);
         tsOpen.setMode(DigitalChannel.Mode.INPUT);
-
 
         telemetry.addData("Closed -> " + tsClosed.getState(), "Open -> ", tsOpen.getState());
         telemetry.update();
 
-        // Enabling/disabling arm control
-        //if(armControlButton || armControlButton2){
-          //  armControl = !armControl;
-            //if(armControl){
-              //  armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            //}
-        //}
-
-        if(bpressed){
-            reversed = true;
-        }
-
-        if(bpressed){
+        if(!bpressed1 || !bpressed2){  // If the robot is not being driven in reverse
             motorLeft.setDirection(DcMotorSimple.Direction.FORWARD);
             motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        } else {
+
+            if(rj!=0 || lj!=0){
+                motorLeft.setPower(lj);
+                motorRight.setPower(rj);
+            } else if(rj2!=0 || lj2!=0){
+                motorLeft.setPower(lj2);
+                motorRight.setPower(rj2);
+            } else {
+                motorLeft.setPower(0);
+                motorRight.setPower(0);
+            }
+
+        } else { // Robot driven in reverse, so motor directions reversed and joysticks assigned to motors switch
             motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
             motorRight.setDirection(DcMotorSimple.Direction.FORWARD);
+
+            if(rj!=0 || lj!=0){
+                motorLeft.setPower(rj);
+                motorRight.setPower(lj);
+            } else if(rj2!=0 || lj2!=0){
+                motorLeft.setPower(rj2);
+                motorRight.setPower(lj2);
+            } else {
+                motorLeft.setPower(0);
+                motorRight.setPower(0);
+            }
         }
 
-        if(armControl) {
-            //Starting encoder process to get current position of glyph mechanism
-            armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            currPos = armMotor.getCurrentPosition();
-
-            // If statement that checks the position of the glyph mechanism and changes the values
-            // assignes as powers to the armMotor based off of it. Used to enable smoother control of
-            // the glyph mechanism.
-
-            if (currPos <= (ticksPerRev/4) + 5) {
-                if (rt > 0.5) {
-                    armMotor.setPower(pr1); // Power set to a large positive number due to the necessity of more power to raise it as it moves against the force of gravity
-                } else if (lt > 0.5) {
-                    armMotor.setPower(pl1); // Power set to a small positive number to gently lower the mechanism
-                } else {
-                    armMotor.setPower(0); // Power set to 0
-                }
-            } else {
-                if (rt > 0.5|| rt2 > 0.5) {
-                    // Power set to small negative number to gently push over the mechanism. Here, since gravity acts in the direction of movement, for smooth motion a power against it must be applied
-                    armMotor.setPower(pr2);
-                } else if (lt > 0.5 || lt2 > 0.5) {
-                    armMotor.setPower(pl2); // Power set to negative number with large abs value as gravity is acting against the desired motion of the mechanism and must be opposed by another strong force to move the mechanism
-                } else {
-                    armMotor.setPower(0); // Power set to 0
-                }
-            }
-        } else { // No software assistance
-            armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            if (rt > 0.5 || rt2 > 0.5) {
-                armMotor.setPower(pr1); // Set arm to a large positive power
-            } else if (lt > 0.5 || lt2 > 0.5) {
-                armMotor.setPower(-0.5); // Set arm to a small positive value
-            } else {
-                armMotor.setPower(0); // Set arm power to 0
-            }
+        // Control of glyph mechanism to move the arm up and down
+        if (rt > 0.5 || rt2 > 0.5) {
+            armMotor.setPower(pr1); // Set arm to a large positive power
+        } else if (lt > 0.5 || lt2 > 0.5) {
+            armMotor.setPower(-0.5); // Set arm to a small positive value
+        } else {
+            armMotor.setPower(0); // Set arm power to 0
         }
 
         // Control of clampServo to enable grabbing blocks
-        if((rb || rb2) /*&& tsOpen.getState()*/){
-            clampServo.setPower(1);
-        } else if((lb || lb2) /*&& tsClosed.getState()*/){
-            clampServo.setPower(-1);
+        if((rb || rb2)){
+            clampServo.setPower(1); // Open clamp
+        } else if((lb || lb2)){
+            clampServo.setPower(-1); // Close clamp
         } else {
-            clampServo.setPower(0);
+            clampServo.setPower(0); // Set clamp power to 0
         }
 
-        // Powers assigned based on joystick values to the drive motors to enable tank drive
-        if((rj!=0 || lj!=0) && !bpressed) {
-            motorRight.setPower(rj);
-            motorLeft.setPower(lj);
-        } else if((rj2!=0 || lj2!=0) && !bpressed) {
-            motorRight.setPower(rj2);
-            motorLeft.setPower(lj2);
-        } else if((rj!=0 || lj!=0) && bpressed){
-            motorLeft.setPower(lj);
-            motorRight.setPower(rj);
-        } else if ((rj2!=0 || lj2!=0) && bpressed){
-            motorLeft.setPower(lj2);
-            motorRight.setPower(rj2);
-        } else {
-            motorRight.setPower(0);
-            motorLeft.setPower(0);
-        }
     }
 }
