@@ -64,8 +64,8 @@ public class Teleop extends OpMode {
         triggerRight = gamepad1.right_trigger;
         if (triggerRight == 0) triggerRight = gamepad2.right_trigger;
 
-        bumperLeft = gamepad1.left_bumper || gamepad2.right_bumper;
-        bumperRight = gamepad1.right_bumper || gamepad2.left_bumper;
+        bumperLeft = gamepad1.left_bumper || gamepad2.left_bumper;
+        bumperRight = gamepad1.right_bumper || gamepad2.right_bumper;
 
         driveLeft = gamepad1.left_stick_y;
         if (driveLeft == 0) driveLeft = gamepad2.left_stick_y;

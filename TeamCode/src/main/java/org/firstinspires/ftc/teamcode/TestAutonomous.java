@@ -27,20 +27,27 @@ public class TestAutonomous extends LinearOpMode {
     CRServo clampServo;
     double armWaiting = 2.0;
     float getToJewel = 0;
-    CRServo jewelServo;
-    ColorSensor colorSensor;
+    //CRServo jewelServo;
+    //ColorSensor colorSensor;
     int trackableViewed;
 
     @Override
     public void runOpMode() throws InterruptedException {
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
-        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         armMotor = hardwareMap.dcMotor.get("armMotor");
         gyro = hardwareMap.gyroSensor.get("gyro");
         clampServo = hardwareMap.crservo.get("clampServo");
-        colorSensor = hardwareMap.colorSensor.get("colorSensor");
-        jewelServo = hardwareMap.crservo.get("jewelServo");
+        //colorSensor = hardwareMap.colorSensor.get("colorSensor");
+        //jewelServo = hardwareMap.crservo.get("jewelServo");
+
+        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        movingForward(5);
+        gyroTurning(90);
+        wait(1000);
+        gyroTurning(-90);
+        movingForward(-5);
     }
 
     public void movingForward(double distance) {
@@ -58,8 +65,20 @@ public class TestAutonomous extends LinearOpMode {
         leftMotor.setTargetPosition(encoderTicks);
         rightMotor.setTargetPosition(encoderTicks);
 
-        leftMotor.setPower(1);
-        rightMotor.setPower(1);
+        if (distance < 0) {
+            leftMotor.setPower(-1);
+            rightMotor.setPower(-1);
+        } else if (distance >= 0) {
+            leftMotor.setPower(1);
+            rightMotor.setPower(1);
+        }
+
+        while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition() && rightMotor.getCurrentPosition() < rightMotor.getTargetPosition()) {
+
+        }
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void armMoving() {
@@ -106,6 +125,10 @@ public class TestAutonomous extends LinearOpMode {
     }
 
     public void gyroTurning (double degrees) {
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         if (degrees-gyro.getHeading() > 180) {
             leftMotor.setPower(-0.5);
             rightMotor.setPower(0.5);
