@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.*;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -21,6 +21,7 @@ import static com.sun.tools.javac.util.Constants.format;
  * Created by Aayushiron on 11/26/17.
  */
 
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "VuforiaTestForImageNumber", group = "concept")
 public class VuforiaImageFinder extends LinearOpMode {
     VuforiaLocalizer vuforia; //an image-processing library that allows us to analyze pictures
     @Override
