@@ -40,6 +40,8 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
     CRServo jewelServo;
     ColorSensor colorSensor;
     int trackableViewed;
+    double robotLength = 0;
+    double glyphLength = 6;
     @Override
     public void runOpMode() throws InterruptedException {
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
@@ -102,9 +104,7 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
             clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
         }
 
-        gyroTurning(180.00);
-        movingForward(8.5);
-        gyroTurning(90.00);
+        gyroTurning(-45);
 
         while (opModeIsActive()) {
             for (int i = 0; i < relicTrackables.size(); i++) {
@@ -139,12 +139,26 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
                         } else {
                             trackableViewed = 2;
                         }
-                        gyroTurning(90.00);
-                        movingForward(27.50);
-                        gyroTurning(-90.00);
-                        // add depositing cube code here
-                        movingForward(-2);
-                        break;
+                        gyroTurning(-135);
+                        if (i == 0) {
+                            movingForward(3.815);
+                            gyroTurning(-90.00);
+                            movingForward(48 - (robotLength + glyphLength));
+                            // add depositing cube code here
+                            movingForward(-2);
+                        } else if (i == 1) {
+                            movingForward(3.815 * 2);
+                            gyroTurning(-90.00);
+                            movingForward(48 - (robotLength + glyphLength));
+                            // add depositing cube code here
+                            movingForward(-2);
+                        } else if (i == relicTrackables.size()) {
+                            movingForward(3.815 * 3);
+                            gyroTurning(-90.00);
+                            movingForward(48 - (robotLength + glyphLength));
+                            // add depositing cube code here
+                            movingForward(-2);
+                        }
                     }
                 } else {
                     telemetry.addData("VuMark", "not visible");
