@@ -21,7 +21,7 @@ import static com.sun.tools.javac.util.Constants.format;
  * Created by Aayushiron on 11/26/17.
  */
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "VuforiaTestForImageNumber", group = "concept")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "VuforiaTestForImageNumber ", group = "concept")
 public class VuforiaImageFinder extends LinearOpMode {
     VuforiaLocalizer vuforia; //an image-processing library that allows us to analyze pictures
     @Override
