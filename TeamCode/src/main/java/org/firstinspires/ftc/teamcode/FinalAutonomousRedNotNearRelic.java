@@ -139,17 +139,18 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
                         } else {
                             trackableViewed = 2;
                         }
+                        gyroTurning(90.00);
+                        movingForward(27.50);
+                        gyroTurning(-90.00);
+                        // add depositing cube code here
+                        movingForward(-2);
+                        break;
                     }
                 } else {
                     telemetry.addData("VuMark", "not visible");
                 }
             }
         }
-        gyroTurning(90.00);
-        movingForward(27.50);
-        gyroTurning(-90.00);
-        // add depositing cube code here
-        movingForward(-2);
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
@@ -172,25 +173,6 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
 
             leftMotor.setPower(1);
             rightMotor.setPower(1);
-        }
-
-        public void armMoving() {
-            armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-            armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armMotor.setTargetPosition(1120);
-            armMotor.setPower(1);
-            while (armMotor.getCurrentPosition() < armMotor.getTargetPosition() && opModeIsActive()) {
-
-            }
-            armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            armGrabbing();
-            armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armMotor.setTargetPosition(1120);
-            armMotor.setPower(1);
         }
 
         public void armGrabbing() {
