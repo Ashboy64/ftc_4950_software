@@ -53,8 +53,6 @@ public class FinalTele extends OpMode{
         motorRight = hardwareMap.dcMotor.get("rightMotor");
         tsClosed = hardwareMap.get(DigitalChannel.class, "tsClosed");
         tsOpen = hardwareMap.get(DigitalChannel.class, "tsOpen");
-        motorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorRight.setDirection(DcMotorSimple.Direction.FORWARD);
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
@@ -84,7 +82,7 @@ public class FinalTele extends OpMode{
         telemetry.addData("Closed -> " + tsClosed.getState(), "Open -> ", tsOpen.getState());
         telemetry.update();
 
-        if(!bpressed1 || !bpressed2){  // If the robot is not being driven in reverse
+        if(!bpressed1 && !bpressed2){  // If the robot is not being driven in reverse
             rightMotorMultiplier = -1;
             leftMotorMultiplier = 1;
 

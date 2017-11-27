@@ -91,22 +91,23 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
             movingForward(getToJewel);
             gyroTurning(180.00);
             if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.blue()) {
-                ElapsedTime opmodeRunTime = new ElapsedTime();
+                ElapsedTime opmodeRunTime1 = new ElapsedTime();
                 jewelServo.setPower(1);
-                while (opmodeRunTime.seconds() < armWaiting) {
+                while (opmodeRunTime1.seconds() < armWaiting) {
                     telemetry.addData("waiting for arm to get to position", "");
                     telemetry.update();
                     idle();
                 }
                 jewelServo.setPower(0);
-                ElapsedTime opModeRunTime = new ElapsedTime();
+                ElapsedTime opModeRunTime2 = new ElapsedTime();
                 jewelServo.setDirection(DcMotorSimple.Direction.REVERSE);
                 jewelServo.setPower(1);
-                while (opmodeRunTime.seconds() < armWaiting) {
+                while (opModeRunTime2.seconds() < armWaiting) {
                     telemetry.addData("waiting for arm to get to position", "");
                     telemetry.update();
                     idle();
                 }
+                jewelServo.setPower(0);
                 clampServo.setPower(0);
                 clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
             }
@@ -116,7 +117,6 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
             gyroTurning(-90.00);
 
             for (int i = 0; i < relicTrackables.size(); i++) {
-
                 relicTemplate = relicTrackables.get(i);
 
                 RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
@@ -152,10 +152,24 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
                     telemetry.addData("VuMark", "not visible");
                 }
             }
-            gyroTurning(-90.00);
-            movingForward(27.50);
             gyroTurning(90.00);
-            // add depositing cube code here
+            movingForward(39.50);
+            gyroTurning(90.00);
+            if(trackableViewed==0) {
+                movingForward(4.37);
+            } else if(trackableViewed==1){
+                movingForward(12);
+            } else if(trackableViewed==2){
+                movingForward(19.63);
+            }
+            gyroTurning(-90);
+            movingForward(4.0);
+            clampServo.setPower(-1);
+            ElapsedTime waitToDrop = new ElapsedTime();
+            while (waitToDrop.seconds() < 2){
+                telemetry.addData("waiting for deposit", "");
+                telemetry.update();
+            }
             movingForward(-2);
         }
     }
