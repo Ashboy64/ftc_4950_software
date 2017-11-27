@@ -79,34 +79,34 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        while (opModeIsActive()) {
-            movingForward(getToJewel);
-            gyroTurning(180.00);
-            if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.blue()) {
-                ElapsedTime opmodeRunTime = new ElapsedTime();
-                jewelServo.setPower(1);
-                while (opmodeRunTime.seconds() < armWaiting) {
-                    telemetry.addData("waiting for arm to get to position", "");
-                    telemetry.update();
-                    idle();
-                }
-                jewelServo.setPower(0);
-                ElapsedTime opModeRunTime = new ElapsedTime();
-                jewelServo.setDirection(DcMotorSimple.Direction.REVERSE);
-                jewelServo.setPower(1);
-                while (opmodeRunTime.seconds() < armWaiting) {
-                    telemetry.addData("waiting for arm to get to position", "");
-                    telemetry.update();
-                    idle();
-                }
-                clampServo.setPower(0);
-                clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
+        movingForward(getToJewel);
+        gyroTurning(180.00);
+        if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.blue()) {
+            ElapsedTime opmodeRunTime = new ElapsedTime();
+            jewelServo.setPower(1);
+            while (opmodeRunTime.seconds() < armWaiting) {
+                telemetry.addData("waiting for arm to get to position", "");
+                telemetry.update();
+                idle();
             }
+            jewelServo.setPower(0);
+            ElapsedTime opModeRunTime = new ElapsedTime();
+            jewelServo.setDirection(DcMotorSimple.Direction.REVERSE);
+            jewelServo.setPower(1);
+            while (opmodeRunTime.seconds() < armWaiting) {
+                telemetry.addData("waiting for arm to get to position", "");
+                telemetry.update();
+                idle();
+            }
+            clampServo.setPower(0);
+            clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
 
-            gyroTurning(180.00);
-            movingForward(8.5);
-            gyroTurning(90.00);
+        gyroTurning(180.00);
+        movingForward(8.5);
+        gyroTurning(90.00);
 
+        while (opModeIsActive()) {
             for (int i = 0; i < relicTrackables.size(); i++) {
 
                 relicTemplate = relicTrackables.get(i);
@@ -144,12 +144,12 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
                     telemetry.addData("VuMark", "not visible");
                 }
             }
-            gyroTurning(90.00);
-            movingForward(27.50);
-            gyroTurning(-90.00);
-            // add depositing cube code here
-            movingForward(-2);
         }
+        gyroTurning(90.00);
+        movingForward(27.50);
+        gyroTurning(-90.00);
+        // add depositing cube code here
+        movingForward(-2);
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
