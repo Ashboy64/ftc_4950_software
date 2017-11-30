@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 public class RobotInput {
     private final DoubleGamepad GAMEPAD;
 
-    private static final boolean USE_DRIVE_INTERPOLATION = true;
+    private static final boolean USE_DRIVE_INTERPOLATION = false;
     private static final double DRIVE_INTERPOLATION = 0.875;
-    private static final boolean USE_ARM_INTERPOLATION = true;
+    private static final boolean USE_ARM_INTERPOLATION = false;
     private static final double ARM_INTERPOLATION = 0.875;
 
     private final Interpolator LEFT_INTERPOLATOR = new Interpolator(DRIVE_INTERPOLATION);

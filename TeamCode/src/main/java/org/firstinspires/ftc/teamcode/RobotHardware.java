@@ -11,10 +11,10 @@ public class RobotHardware {
     private final boolean SWAP_TOUCH_SENSORS = false;
     private final boolean SWAP_DRIVE_MOTORS = false;
 
-    private final boolean ARM_HOLD_POSITION = true;
+    private final boolean ARM_HOLD_POSITION = false;
     private final double ARM_HOLD_THRESHOLD = 0.5;
 
-    private final double ARM_POWER = 1;
+    private final double ARM_POWER = -1;
     private final double DRIVE_POWER = 1;
     private final double CLAMP_POWER = 1;
 
