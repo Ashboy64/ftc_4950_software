@@ -5,14 +5,14 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 public class RobotInput {
     private final DoubleGamepad GAMEPAD;
 
-    private static final boolean USE_DRIVE_INTERPOLATION = false;
-    private static final double DRIVE_INTERPOLATION = 0.875;
-    private static final boolean USE_ARM_INTERPOLATION = false;
-    private static final double ARM_INTERPOLATION = 0.875;
+    private static final boolean USE_DRIVE_INTERPOLATION = true;
+    private static final double DRIVE_CHANGE_PER_SEC = 2; //higher values = more responsive
+    private static final boolean USE_ARM_INTERPOLATION = true;
+    private static final double ARM_CHANGE_PER_SEC = 4;
 
-    private final Interpolator LEFT_INTERPOLATOR = new Interpolator(DRIVE_INTERPOLATION);
-    private final Interpolator RIGHT_INTERPOLATOR = new Interpolator(DRIVE_INTERPOLATION);
-    private final Interpolator ARM_INTERPOLATOR = new Interpolator(ARM_INTERPOLATION);
+    private final Interpolator LEFT_INTERPOLATOR = new Interpolator(DRIVE_CHANGE_PER_SEC);
+    private final Interpolator RIGHT_INTERPOLATOR = new Interpolator(DRIVE_CHANGE_PER_SEC);
+    private final Interpolator ARM_INTERPOLATOR = new Interpolator(ARM_CHANGE_PER_SEC);
 
     public RobotInput(Gamepad gamepad1, Gamepad gamepad2) {
         GAMEPAD = new DoubleGamepad(gamepad1, gamepad2);
@@ -67,18 +67,18 @@ public class RobotInput {
     }
 
     private class Interpolator {
-        private final double PER_SECOND;
+        private final double CHANGE_PER_SECOND;
         private double value;
         private long lastTime;
         private final double MIN;
         private final double MAX;
 
         public Interpolator(double perSecond) {
-            this(perSecond, 0, -1, 1);
+            this(perSecond, System.currentTimeMillis(), -1, 1);
         }
 
         public Interpolator(double perSecond, double init, double min, double max) {
-            PER_SECOND = perSecond;
+            CHANGE_PER_SECOND = perSecond;
             value = init;
             MIN = min;
             MAX = max;
@@ -86,10 +86,10 @@ public class RobotInput {
 
         public double value(double in) {
             long time = System.currentTimeMillis();
-            double deltaTime = (time - lastTime) / 1000; //seconds elapsed since last update
+            double deltaTime = (time - lastTime) / 1000.0; //seconds elapsed since last update
             lastTime = time;
 
-            value = value + (in - value) * PER_SECOND * deltaTime; //interpolates towards new value
+            value = value + (in * CHANGE_PER_SECOND * deltaTime); //interpolates towards new value
             value = Math.max(MIN, Math.min(MAX, value)); //clamps within range
 
             return value;

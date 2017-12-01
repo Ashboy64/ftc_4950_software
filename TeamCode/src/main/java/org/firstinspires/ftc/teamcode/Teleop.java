@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Teleop", group = "Concept")
 public class Teleop extends OpMode {
-    public boolean TOUCH_LIMIT_ARM = false;
+    public boolean TOUCH_LIMIT_ARM = true;
     public double CLAMP_LIMIT_POWER = 0;
 
     private RobotInput INPUT;
@@ -26,12 +26,12 @@ public class Teleop extends OpMode {
         double clampPower = INPUT.getClampPower();
         if (TOUCH_LIMIT_ARM)
         {
-            if (HARDWARE.getTouchClosed())
+            if (HARDWARE.getTouchOpen())
             {
                 clampPower = Math.max(clampPower, -CLAMP_LIMIT_POWER);
             }
 
-            else if (HARDWARE.getTouchOpen())
+            else if (HARDWARE.getTouchClosed())
             {
                 clampPower = Math.min(clampPower, CLAMP_LIMIT_POWER);
             }

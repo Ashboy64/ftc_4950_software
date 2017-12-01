@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class RobotHardware {
     private final boolean SWAP_TOUCH_SENSORS = false;
+    private final boolean TOUCH_INVERT = false;
     private final boolean SWAP_DRIVE_MOTORS = true;
 
     private final boolean ARM_HOLD_POSITION = false;
@@ -106,11 +107,11 @@ public class RobotHardware {
     }
 
     public boolean getTouchOpen() {
-        return TOUCH_ARM_OPEN.getState();
+        return TOUCH_ARM_OPEN.getState() ^ TOUCH_INVERT;
     }
 
     public boolean getTouchClosed() {
-        return TOUCH_ARM_CLOSED.getState();
+        return TOUCH_ARM_CLOSED.getState() ^ TOUCH_INVERT;
     }
 
     public int gyroHeading() {
