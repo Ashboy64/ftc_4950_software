@@ -15,7 +15,7 @@ public class RobotHardware {
     private final double ARM_HOLD_THRESHOLD = 0.5;
 
     private final double ARM_POWER = 1;
-    private final double DRIVE_POWER = -1;
+    private final double DRIVE_POWER = 1;
     private final double CLAMP_POWER = 1;
 
     public final int TICKS_PER_MOTOR_REVOLUTION = 2240;

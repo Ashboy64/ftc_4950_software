@@ -21,10 +21,10 @@ public class RobotInput {
     public double getLeftPower() {
         double in;
 
-        if (!GAMEPAD.x())
+        //if (!GAMEPAD.x())
             in = GAMEPAD.leftStickY();
-        else
-            in = -GAMEPAD.rightStickY();
+        //else
+            //in = -GAMEPAD.rightStickY();
 
         if (USE_DRIVE_INTERPOLATION)
             return LEFT_INTERPOLATOR.value(in);
@@ -35,10 +35,10 @@ public class RobotInput {
     public double getRightPower() {
         double in;
 
-        if (!GAMEPAD.x())
+        //if (!GAMEPAD.x())
             in = GAMEPAD.rightStickY();
-        else
-            in = -GAMEPAD.leftStickY();
+        //else
+          //  in = -GAMEPAD.leftStickY();
 
         if (USE_DRIVE_INTERPOLATION)
             return RIGHT_INTERPOLATOR.value(in);

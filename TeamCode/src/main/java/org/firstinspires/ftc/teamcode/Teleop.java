@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Teleop", group = "Concept")
 public class Teleop extends OpMode {
-    public boolean TOUCH_LIMIT_ARM = true;
+    public boolean TOUCH_LIMIT_ARM = false;
     public double CLAMP_LIMIT_POWER = 0;
 
     private RobotInput INPUT;
