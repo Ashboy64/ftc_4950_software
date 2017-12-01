@@ -44,6 +44,8 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
     CRServo jewelServo;
     ColorSensor colorSensor;
     int trackableViewed;
+    double deg = 72.38991115;
+    double distanceToMove = 25.18366366;
     /*
        *******HELPER METHOD DESCRIPTIONS*********
        *armMoving - moves the arm from the resting position to the dropping position and then back again
@@ -155,11 +157,15 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
                     telemetry.addData("VuMark", "not visible");
                 }
             }
-            gyroTurning(-90.00);
-            movingForward(27.50);
-            gyroTurning(-90.00);
+         //   gyroTurning(-90.00);
+        //    movingForward(27.50);
+         //   gyroTurning(-90.00);
             // add depositing cube code here
-            movingForward(-2);
+         //   movingForward(-2);
+            movingForward(24 - 3.815 +  7.63*trackableViewed);
+            gyroTurning(deg);
+            movingForward(distanceToMove);
+            armRelease();
         }
     }
     String format(OpenGLMatrix transformationMatrix) {

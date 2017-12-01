@@ -42,6 +42,10 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
     int trackableViewed;
     double robotLength = 0;
     double glyphLength = 6;
+    double deg = 80.96792587;
+    double thirdDistance = 33.13103681;
+    double secondDistance =  27.92762253;
+    double firstDistance =  24.20052892;
     @Override
     public void runOpMode() throws InterruptedException {
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
@@ -165,6 +169,16 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
                 }
             }
         }
+        movingForward(24 - (24/3)*trackableViewed);
+        gyroTurning(deg);
+        if(trackableViewed == 3) {
+            movingForward(thirdDistance);
+        }else if(trackableViewed == 2){
+            movingForward(secondDistance);
+        }else {
+            movingForward(firstDistance);
+        }
+        armRelease();
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";

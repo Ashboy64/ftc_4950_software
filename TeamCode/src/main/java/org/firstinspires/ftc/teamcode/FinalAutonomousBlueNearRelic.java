@@ -39,9 +39,10 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
     float getToJewel = 0;
     CRServo jewelServo;
     ColorSensor colorSensor;
-    int trackableViewed;
+    public int trackableViewed;
     double cryptoBoxWidth = 7.63;
     int matLength = 24;
+    public boolean seenPicture= false;
 
     /*
        *******HELPER METHOD DESCRIPTIONS*********
@@ -113,7 +114,7 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
 //            clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
 //        }
 
-        movingForward(24);
+        gyroTurning(225);
 
         while (opModeIsActive()) {
 
@@ -149,23 +150,24 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
                         } else {
                             trackableViewed = 2;
                         }
-
-                        movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth));
-                        gyroTurning(-107.6100888);
-                        movingForward(Math.sqrt(
-                                (cryptoBoxWidth * cryptoBoxWidth) + (matLength * matLength)
-                        ));
+                        seenPicture = true;
+                        break;
                     }
                 } else {
                     telemetry.addData("VuMark", "not visible");
                 }
             }
-            gyroTurning(-90.00);
-            movingForward(27.50);
-            gyroTurning(90.00);
-            // add depositing cube code here
-            movingForward(-2);
+            if (seenPicture) {
+                break;
+            }
         }
+        gyroTurning(-225);
+        movingForward(24);
+        movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth));
+        gyroTurning(-107.6100888);
+        movingForward(Math.sqrt(
+                (cryptoBoxWidth * cryptoBoxWidth) + (matLength * matLength)
+        ));
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
