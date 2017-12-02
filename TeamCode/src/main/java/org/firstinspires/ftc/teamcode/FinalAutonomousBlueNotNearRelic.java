@@ -26,19 +26,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  */
 
 public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
-    double wheel_diameter = 3.5; //the diameter of the wheels of our robot.
-    double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter
-    DcMotor leftMotor; //allows for control of the robot’s left motor’s actions
-    DcMotor rightMotor; //allows for control of the robot’s right motor’s actions
-    int ticksPerRevolution = 2240; //the amount of ticks the encoder takes to revolve one wheel
-    DcMotor armMotor; //allows for control of our robot’s arm
-    GyroSensor gyro; //receives information about the direction of our robot
     VuforiaLocalizer vuforia; //an image-processing library that allows us to analyze pictures
-    CRServo clampServo;
-    double armWaiting = 2.0;
     float getToJewel = 0;
-    CRServo jewelServo;
-    ColorSensor colorSensor;
     public int trackableViewed;
     double cryptoBoxWidth = 7.63;
     int matLength = 24;
@@ -54,14 +43,6 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
     @Override
 
     public void runOpMode() throws InterruptedException {
-        leftMotor = hardwareMap.dcMotor.get("leftMotor");
-        rightMotor = hardwareMap.dcMotor.get("rightMotor");
-        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        armMotor = hardwareMap.dcMotor.get("armMotor");
-        gyro = hardwareMap.gyroSensor.get("gyro");
-        clampServo = hardwareMap.crservo.get("clampServo");
-        colorSensor = hardwareMap.colorSensor.get("colorSensor");
-        jewelServo = hardwareMap.crservo.get("jewelServo");
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
@@ -75,12 +56,7 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
 
-
-        gyro.calibrate();
-        while (gyro.isCalibrating() && opModeIsActive()) {
-            telemetry.addData(">", "Calibrating Gyro.");
-            telemetry.update();
-        }
+        robot.init(hardwareMap, opModeIsActive());
 
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
@@ -88,10 +64,7 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
 
         relicTrackables.activate();
 
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        gyroTurning(135);
+        robot.gyroTurning(135, opModeIsActive());
 
         while (opModeIsActive()) {
 //            movingForward(getToJewel);
@@ -160,93 +133,13 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
                 break;
             }
         }
-        gyroTurning(-135);
-        movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth));
-        gyroTurning(-107.6100888);
-        movingForward(Math.sqrt(
-                (cryptoBoxWidth * cryptoBoxWidth) + (matLength * matLength)
-        ));
-        armRelease();
+        robot.gyroTurning(-135, opModeIsActive());
+        robot.movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth), opModeIsActive());
+        robot.gyroTurning(-107.6100888, opModeIsActive());
+        robot.movingForward(Math.sqrt((cryptoBoxWidth * cryptoBoxWidth) + (matLength * matLength)), opModeIsActive());
+        robot.armRelease(opModeIsActive());
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
-    }
-
-    public void movingForward(double distance) {
-        int encoderTicks = (int) Math.ceil((distance/wheel_circumference) * ticksPerRevolution);
-
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        leftMotor.setTargetPosition(encoderTicks);
-        rightMotor.setTargetPosition(encoderTicks);
-
-        leftMotor.setPower(1);
-        rightMotor.setPower(1);
-    }
-
-    public void armMoving() {
-        armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setTargetPosition(1120);
-        armMotor.setPower(1);
-        while (armMotor.getCurrentPosition() < armMotor.getTargetPosition() && opModeIsActive()) {
-
-        }
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armGrabbing();
-        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setTargetPosition(1120);
-        armMotor.setPower(1);
-    }
-
-    public void armGrabbing() {
-        ElapsedTime opmodeRunTime = new ElapsedTime();
-        clampServo.setPower(1);
-        while (opmodeRunTime.seconds() < armWaiting) {
-            telemetry.addData("waiting for arm to get to position", "");
-            telemetry.update();
-            idle();
-        }
-        clampServo.setPower(0);
-    }
-
-    public void armRelease() {
-        ElapsedTime opmodeRunTime = new ElapsedTime();
-        clampServo.setDirection(DcMotorSimple.Direction.REVERSE);
-        clampServo.setPower(1);
-        while (opmodeRunTime.seconds() < armWaiting) {
-            telemetry.addData("waiting for arm to get to position", "");
-            telemetry.update();
-            idle();
-        }
-        clampServo.setPower(0);
-        clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
-    }
-
-    public void gyroTurning (double degrees) {
-        if (degrees-gyro.getHeading() > 180) {
-            leftMotor.setPower(-0.5);
-            rightMotor.setPower(0.5);
-        } else {
-            leftMotor.setPower(0.5);
-            rightMotor.setPower(-0.5);
-        }
-
-        while(gyro.getHeading() != degrees) {
-
-        }
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
     }
 }
