@@ -9,17 +9,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class RobotHardware {
     private final boolean SWAP_TOUCH_SENSORS = false;
-    private final boolean TOUCH_INVERT = false;
     private final boolean SWAP_DRIVE_MOTORS = true;
 
     private final boolean ARM_HOLD_POSITION = false;
     private final double ARM_HOLD_THRESHOLD = 0.5;
 
     private final double ARM_POWER = 1;
-    private final double DRIVE_POWER = .75;
+    private final double DRIVE_POWER = 1;
     private final double CLAMP_POWER = 1;
 
-    public final int TICKS_PER_MOTOR_REVOLUTION = 2240;
+    public final double TICKS_PER_MOTOR_REVOLUTION = 1120; //2240
+    public final double ARM_SPROCKET_RATIO = 15.0 / 54;
 
     private final double WHEEL_DIAMETER_MM = 90;
     private final double WHEEL_CIRCUMFERENCE_MM = WHEEL_DIAMETER_MM * Math.PI;
@@ -48,30 +48,24 @@ public class RobotHardware {
         GYRO = hardwareMap.gyroSensor.get("gyro");
 
         LEFT_MOTOR = hardwareMap.dcMotor.get(SWAP_DRIVE_MOTORS ? "rightMotor" : "leftMotor");
+        LEFT_MOTOR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         LEFT_MOTOR.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFT_MOTOR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        LEFT_MOTOR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         RIGHT_MOTOR = hardwareMap.dcMotor.get(SWAP_DRIVE_MOTORS ? "leftMotor" : "rightMotor");
+        RIGHT_MOTOR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         RIGHT_MOTOR.setDirection(DcMotorSimple.Direction.FORWARD);
-        RIGHT_MOTOR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RIGHT_MOTOR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         ARM_MOTOR = hardwareMap.dcMotor.get("armMotor");
+        ARM_MOTOR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ARM_MOTOR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         ARM_MOTOR.setDirection(DcMotorSimple.Direction.FORWARD);
         ARM_MOTOR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void armDrive(double power) {
-        if (ARM_HOLD_POSITION && Math.abs(power) < ARM_HOLD_THRESHOLD) {
-            ARM_MOTOR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            ARM_MOTOR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            ARM_MOTOR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            ARM_MOTOR.setTargetPosition(0);
-            ARM_MOTOR.setPower(ARM_POWER);
-        } else {
-            ARM_MOTOR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            ARM_MOTOR.setPower(power * ARM_POWER);
-        }
+        ARM_MOTOR.setPower(power * ARM_POWER);
     }
 
     public void leftFreeDrive(double power) {
@@ -107,11 +101,15 @@ public class RobotHardware {
     }
 
     public boolean getTouchOpen() {
-        return TOUCH_ARM_OPEN.getState() ^ TOUCH_INVERT;
+        return !TOUCH_ARM_OPEN.getState();
     }
 
     public boolean getTouchClosed() {
-        return TOUCH_ARM_CLOSED.getState() ^ TOUCH_INVERT;
+        return !TOUCH_ARM_CLOSED.getState();
+    }
+
+    public double armPosition() { //should return 0 when arm is down, 180 when arm is up
+        return ARM_MOTOR.getCurrentPosition() / TICKS_PER_MOTOR_REVOLUTION * ARM_SPROCKET_RATIO * 360;
     }
 
     public int gyroHeading() {
