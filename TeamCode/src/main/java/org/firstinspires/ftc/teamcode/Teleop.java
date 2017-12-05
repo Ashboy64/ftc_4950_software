@@ -14,18 +14,20 @@ public class Teleop extends OpMode {
     private static final double DRIVE_TURN_UP_ACCEL = 2;
 
     private static final double DRIVE_FORWARD_DOWN_POWER = 1;
-    private static final double DRIVE_BACKWARD_DOWN_POWER = 1;
+    private static final double DRIVE_BACKWARD_DOWN_POWER = 0.75;
     private static final double DRIVE_FORWARD_DOWN_ACCEL = 4;
-    private static final double DRIVE_BACKWARD_DOWN_ACCEL = 2;
+    private static final double DRIVE_BACKWARD_DOWN_ACCEL = 1.5;
 
-    private static final double DRIVE_FORWARD_UP_POWER = 1;
-    private static final double DRIVE_BACKWARD_UP_POWER = 1;
-    private static final double DRIVE_FORWARD_UP_ACCEL = 2;
-    private static final double DRIVE_BACKWARD_UP_ACCEL = 3;
+    private static final double DRIVE_FORWARD_UP_POWER = 0.5;
+    private static final double DRIVE_BACKWARD_UP_POWER = 0.75;
+    private static final double DRIVE_FORWARD_UP_ACCEL = 1;
+    private static final double DRIVE_BACKWARD_UP_ACCEL = 1.5;
 
-    private static final double ARM_MIN_POWER = 1.0 / 8;
+    private static final double ARM_MIN_POWER = 0.25;
 
-    private static final double ARM_BALANCE_ANGLE_OFFSET = 60;
+    private static final double ARM_BALANCE_ANGLE_OFFSET = 45;
+
+    private long lastUpdate = System.currentTimeMillis();
 
     private RobotInput INPUT;
     private RobotHardware HARDWARE;
@@ -41,6 +43,10 @@ public class Teleop extends OpMode {
 
     @Override
     public void loop() {
+        long time = System.currentTimeMillis();
+        telemetry.addLine("delta ms " + (time - lastUpdate));
+        lastUpdate = time;
+
         double clampPower = INPUT.getClampPower();
         if (TOUCH_LIMIT_ARM) {
             if (HARDWARE.getTouchOpen()) {
@@ -55,22 +61,21 @@ public class Teleop extends OpMode {
         //telemetry.addLine("closed " + HARDWARE.getTouchClosed());
 
         double armAngle = (HARDWARE.armPosition() - ARM_BALANCE_ANGLE_OFFSET + 360) % 360;
-
-        telemetry.addLine("arm angle " + armAngle + ", arm sin cos " + sin(armAngle) + " " + cos(armAngle));
-
         double armPower = armPower(INPUT.getArmPower(), armAngle);
-        telemetry.addLine("arm power " + armPower);
         HARDWARE.armDrive(armPower);
+
+        telemetry.addLine(String.format("arm angle: %.4f, sin: %.4f, cos: %.4f, power: %.4f",
+                armAngle, sin(armAngle), cos(armAngle), armPower));
 
         double leftIn = INPUT.getLeftPower();
         double rightIn = INPUT.getRightPower();
         double power = drivePower(leftIn, rightIn, armAngle);
         double accel = driveAccel(leftIn, rightIn, armAngle);
-        telemetry.addLine("drive power accel " + power + " " + accel);
         LEFT_INTERPOLATOR.setMaxDelta(accel);
         RIGHT_INTERPOLATOR.setMaxDelta(accel);
         HARDWARE.leftFreeDrive(LEFT_INTERPOLATOR.value(leftIn * power));
         HARDWARE.rightFreeDrive(RIGHT_INTERPOLATOR.value(rightIn * power));
+        telemetry.addLine(String.format("drive power: %.4f, accel: %.4f", power, accel));
     }
 
     private double armPower(double armPower, double armAngle) {
@@ -80,29 +85,33 @@ public class Teleop extends OpMode {
 
         double x = cos(armAngle);
 
-        boolean lifting = x > 0 == armPower > 0; //gravity working against power
+        boolean lifting = x > 0 == armPower > 0;
+        telemetry.addLine("arm lifting: " + lifting);
 
         if (lifting) {
-            return clamp(armPower * (Math.min(Math.abs(x), ARM_MIN_POWER)));
+            return clamp(armPower * (Math.max(Math.abs(x), ARM_MIN_POWER)));
         } else {
             return armPower * ARM_MIN_POWER;
         }
     }
 
     private double drivePower(double left, double right, double armAngle) {
-        if (left > 0 && right > 0) {
+        if (left < 0 && right < 0) {
+            telemetry.addLine("forward");
             return forwardPower(armAngle);
-        } else if (left < 0 && right < 0) {
+        } else if (left > 0 && right > 0) {
+            telemetry.addLine("backward");
             return backwardPower(armAngle);
         } else {
+            telemetry.addLine("turning/stationary");
             return turnPower(armAngle);
         }
     }
 
     private double driveAccel(double left, double right, double armAngle) {
-        if (left > 0 && right > 0) {
+        if (left < 0 && right < 0) {
             return forwardAccel(armAngle);
-        } else if (left < 0 && right < 0) {
+        } else if (left > 0 && right > 0) {
             return backwardAccel(armAngle);
         } else {
             return turnAccel(armAngle);
