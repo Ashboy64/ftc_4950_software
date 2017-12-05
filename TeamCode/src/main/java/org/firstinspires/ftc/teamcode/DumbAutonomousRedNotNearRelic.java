@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  * Created by Aayushiron on 12/5/17.
  */
 
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Dumb red not near relic")
 public class DumbAutonomousRedNotNearRelic extends LinearOpMode {
     RobotClassFinalUse robot = new RobotClassFinalUse();
     @Override
