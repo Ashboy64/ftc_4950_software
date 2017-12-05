@@ -67,30 +67,6 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
         robot.gyroTurning(135, opModeIsActive());
 
         while (opModeIsActive()) {
-//            movingForward(getToJewel);
-//            gyroTurning(180.00);
-//            if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.blue()) {
-//                ElapsedTime opmodeRunTime1 = new ElapsedTime();
-//                jewelServo.setPower(1);
-//                while (opmodeRunTime1.seconds() < armWaiting) {
-//                    telemetry.addData("waiting for arm to get to position", "");
-//                    telemetry.update();
-//                    idle();
-//                }
-//                jewelServo.setPower(0);
-//                ElapsedTime opModeRunTime2 = new ElapsedTime();
-//                jewelServo.setDirection(DcMotorSimple.Direction.REVERSE);
-//                jewelServo.setPower(1);
-//                while (opModeRunTime2.seconds() < armWaiting) {
-//                    telemetry.addData("waiting for arm to get to position", "");
-//                    telemetry.update();
-//                    idle();
-//                }
-//                jewelServo.setPower(0);
-//                clampServo.setPower(0);
-//                clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
-//            }
-
             for (int i = 0; i < relicTrackables.size(); i++) {
                 relicTemplate = relicTrackables.get(i);
 
