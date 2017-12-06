@@ -60,7 +60,7 @@ public class RobotClassFinalUse {
     }
 
     public void movingForward(double distance, boolean opModeActive) {
-        int encoderTicks = (int) (distance/wheel_circumference) * ticksPerRevolution;
+        int encoderTicks = (int) ((distance/wheel_circumference) * ticksPerRevolution);
 
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -80,6 +80,12 @@ public class RobotClassFinalUse {
         while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition() && rightMotor.getCurrentPosition() < rightMotor.getTargetPosition() && opModeActive) {
 
         }
+
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void armMoving(boolean opModeActive) {
