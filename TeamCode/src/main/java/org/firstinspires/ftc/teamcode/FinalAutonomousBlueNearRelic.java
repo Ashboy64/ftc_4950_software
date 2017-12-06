@@ -65,7 +65,7 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
 
         relicTrackables.activate();
 
-//        movingForward(getToJewel);
+//        movingForward(getToJewel );
 //        gyroTurning(180.00);
 //        if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.blue()) {
 //            ElapsedTime opmodeRunTime = new ElapsedTime();
