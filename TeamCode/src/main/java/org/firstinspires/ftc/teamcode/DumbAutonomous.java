@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.*;
  * Created by Aayushiron on 12/5/17.
  */
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Dumb")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Dumb ")
 public class DumbAutonomous extends LinearOpMode{
     RobotClassFinalUse robot = new RobotClassFinalUse();
     @Override
