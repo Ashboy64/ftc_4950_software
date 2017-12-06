@@ -29,6 +29,7 @@ public class RobotClassFinalUse {
     VuforiaLocalizer vuforia;
     CRServo clampServo;
     CRServo jewelServo;
+    int version;
 
 
     HardwareMap hwMap  = null;
@@ -46,7 +47,7 @@ public class RobotClassFinalUse {
         armMotor = ahwMap.dcMotor.get("armMotor");
         gyro = ahwMap.gyroSensor.get("gyro");
         clampServo = ahwMap.crservo.get("clampServo");
-        colorSensor = ahwMap.colorSensor.get("colorSensor");
+        //colorSensor = ahwMap.colorSensor.get("colorSensor");
         jewelServo = ahwMap.crservo.get("jewelServo");
 
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
