@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 public class RobotClassFinalUse {
     double wheel_diameter = 3.5; //the diameter of the wheels of our robot.
     double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter
-    int ticksPerRevolution = 2240; //the amount of ticks the encoder takes to revolve one wheel
+    int ticksPerRevolution = 1120; //the amount of ticks the encoder takes to revolve one wheel
     double armWaiting = 2.0;
     public DcMotor leftMotor = null;
     public DcMotor rightMotor = null;
