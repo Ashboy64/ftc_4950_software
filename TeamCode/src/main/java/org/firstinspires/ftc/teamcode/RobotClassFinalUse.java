@@ -60,7 +60,7 @@ public class RobotClassFinalUse {
     }
 
     public void movingForward(double distance, boolean opModeActive) {
-        int encoderTicks = (int) Math.ceil((distance/wheel_circumference) * ticksPerRevolution);
+        int encoderTicks = (int) (distance/wheel_circumference) * ticksPerRevolution;
 
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
