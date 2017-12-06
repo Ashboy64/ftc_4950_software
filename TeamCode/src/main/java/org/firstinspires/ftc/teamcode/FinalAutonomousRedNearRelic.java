@@ -41,8 +41,8 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
     CRServo clampServo;
     double armWaiting = 2.0;
     float getToJewel = 0;
-    CRServo jewelServo;
-    ColorSensor colorSensor;
+    //CRServo jewelServo;
+   // ColorSensor colorSensor;
     int trackableViewed;
     double deg = 72.38991115;
     double distanceToMove = 25.18366366;
@@ -62,8 +62,8 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
         armMotor = hardwareMap.dcMotor.get("armMotor");
         gyro = hardwareMap.gyroSensor.get("gyro");
         clampServo = hardwareMap.crservo.get("clampServo");
-        colorSensor = hardwareMap.colorSensor.get("colorSensor");
-        jewelServo = hardwareMap.crservo.get("jewelServo");
+      //  colorSensor = hardwareMap.colorSensor.get("colorSensor");
+       // jewelServo = hardwareMap.crservo.get("jewelServo");
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
@@ -96,18 +96,18 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
         while (opModeIsActive()) {
             movingForward(getToJewel);
 
-            if (colorSensor.blue() > colorSensor.green() && colorSensor.blue() > colorSensor.red()) {
+          //  if (colorSensor.blue() > colorSensor.green() && colorSensor.blue() > colorSensor.red()) {
                 ElapsedTime opmodeRunTime = new ElapsedTime();
-                jewelServo.setPower(1);
+  //              jewelServo.setPower(1);
                 while (opmodeRunTime.seconds() < armWaiting) {
                     telemetry.addData("waiting for arm to get to position", "");
                     telemetry.update();
                     idle();
                 }
-                jewelServo.setPower(0);
+    //            jewelServo.setPower(0);
                 ElapsedTime opModeRunTime = new ElapsedTime();
-                jewelServo.setDirection(DcMotorSimple.Direction.REVERSE);
-                jewelServo.setPower(1);
+      //          jewelServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        //        jewelServo.setPower(1);
                 while (opmodeRunTime.seconds() < armWaiting) {
                     telemetry.addData("waiting for arm to get to position", "");
                     telemetry.update();
@@ -115,7 +115,7 @@ public class FinalAutonomousRedNearRelic extends LinearOpMode{
                 }
                 clampServo.setPower(0);
                 clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
-            }
+         //   }
 
             movingForward(8.5);
             gyroTurning(90.00);

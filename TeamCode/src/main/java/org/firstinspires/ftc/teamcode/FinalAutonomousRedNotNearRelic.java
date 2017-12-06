@@ -37,7 +37,7 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
     CRServo clampServo;
     double armWaiting = 2.0;
     float getToJewel = 0;
-    CRServo jewelServo;
+   // CRServo jewelServo;
     ColorSensor colorSensor;
     int trackableViewed;
     double robotLength = 0;
@@ -55,7 +55,7 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
         gyro = hardwareMap.gyroSensor.get("gyro");
         clampServo = hardwareMap.crservo.get("clampServo");
         colorSensor = hardwareMap.colorSensor.get("colorSensor");
-        jewelServo = hardwareMap.crservo.get("jewelServo");
+    //    jewelServo = hardwareMap.crservo.get("jewelServo");
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
@@ -89,16 +89,16 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
         gyroTurning(180.00);
         if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.blue()) {
             ElapsedTime opmodeRunTime = new ElapsedTime();
-            jewelServo.setPower(1);
+      //      jewelServo.setPower(1);
             while (opmodeRunTime.seconds() < armWaiting) {
                 telemetry.addData("waiting for arm to get to position", "");
                 telemetry.update();
                 idle();
             }
-            jewelServo.setPower(0);
+        //    jewelServo.setPower(0);
             ElapsedTime opModeRunTime = new ElapsedTime();
-            jewelServo.setDirection(DcMotorSimple.Direction.REVERSE);
-            jewelServo.setPower(1);
+          //  jewelServo.setDirection(DcMotorSimple.Direction.REVERSE);
+            //jewelServo.setPower(1);
             while (opmodeRunTime.seconds() < armWaiting) {
                 telemetry.addData("waiting for arm to get to position", "");
                 telemetry.update();
