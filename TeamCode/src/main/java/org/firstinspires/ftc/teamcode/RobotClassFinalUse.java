@@ -57,9 +57,6 @@ public class RobotClassFinalUse {
         while(gyro.isCalibrating() && opModeActive){
 
         }
-
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void movingForward(double distance, boolean opModeActive) {
