@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 public class RobotClassFinalUse {
     double wheel_diameter = 3.5; //the diameter of the wheels of our robot.
     double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter
-    int ticksPerRevolution = 2240; //the amount of ticks the encoder takes to revolve one wheel
+    int ticksPerRevolution = 1120; //the amount of ticks the encoder takes to revolve one wheel
     double armWaiting = 2.0;
     public DcMotor leftMotor = null;
     public DcMotor rightMotor = null;
@@ -28,7 +28,7 @@ public class RobotClassFinalUse {
     GyroSensor gyro;
     VuforiaLocalizer vuforia;
     CRServo clampServo;
-    CRServo jewelServo;
+    //CRServo jewelServo;
     int version;
 
 
@@ -48,7 +48,7 @@ public class RobotClassFinalUse {
         gyro = ahwMap.gyroSensor.get("gyro");
         clampServo = ahwMap.crservo.get("clampServo");
         //colorSensor = ahwMap.colorSensor.get("colorSensor");
-        jewelServo = ahwMap.crservo.get("jewelServo");
+        //jewelServo = ahwMap.crservo.get("jewelServo");
 
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -57,13 +57,10 @@ public class RobotClassFinalUse {
         while(gyro.isCalibrating() && opModeActive){
 
         }
-
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void movingForward(double distance, boolean opModeActive) {
-        int encoderTicks = (int) Math.ceil((distance/wheel_circumference) * ticksPerRevolution);
+        int encoderTicks = (int) ((distance/wheel_circumference) * ticksPerRevolution);
 
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -83,6 +80,12 @@ public class RobotClassFinalUse {
         while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition() && rightMotor.getCurrentPosition() < rightMotor.getTargetPosition() && opModeActive) {
 
         }
+
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void armMoving(boolean opModeActive) {
