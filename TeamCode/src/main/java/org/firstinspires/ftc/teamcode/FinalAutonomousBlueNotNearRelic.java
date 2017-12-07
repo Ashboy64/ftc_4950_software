@@ -64,9 +64,10 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
 
         relicTrackables.activate();
 
-        robot.gyroTurning(135, opModeIsActive());
 
         while (opModeIsActive()) {
+            robot.gyroTurning(135, opModeIsActive());
+
             for (int i = 0; i < relicTrackables.size(); i++) {
                 relicTemplate = relicTrackables.get(i);
 
