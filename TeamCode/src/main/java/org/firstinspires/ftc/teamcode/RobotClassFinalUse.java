@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
  * Created by rao_a on 11/30/2017.
  */
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -39,7 +40,7 @@ public class RobotClassFinalUse {
     }
 
     /* Initialize standard Hardware interfaces */
-    public void init(HardwareMap ahwMap, boolean opModeActive) {
+    public void init(HardwareMap ahwMap) {
         // save reference to HW Map
         hwMap = ahwMap;
         leftMotor = ahwMap.dcMotor.get("leftMotor");
@@ -54,12 +55,12 @@ public class RobotClassFinalUse {
 
         gyro.calibrate();
 
-        while(gyro.isCalibrating() && opModeActive){
+        while(gyro.isCalibrating()){
 
         }
     }
 
-    public void movingForward(double distance, boolean opModeActive) {
+    public void movingForward(double distance, LinearOpMode linearOpMode) {
         int encoderTicks = (int) ((distance/wheel_circumference) * ticksPerRevolution);
 
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -77,7 +78,7 @@ public class RobotClassFinalUse {
         leftMotor.setPower(1);
         rightMotor.setPower(1);
 
-        while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition() && rightMotor.getCurrentPosition() < rightMotor.getTargetPosition() && opModeActive) {
+        while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition() && rightMotor.getCurrentPosition() < rightMotor.getTargetPosition() && linearOpMode.opModeIsActive()) {
 
         }
 
@@ -88,18 +89,18 @@ public class RobotClassFinalUse {
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    public void armMoving(boolean opModeActive) {
+    public void armMoving(LinearOpMode linearOpMode) {
         armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setTargetPosition(1120);
         armMotor.setPower(1);
-        while (armMotor.getCurrentPosition() < armMotor.getTargetPosition() && opModeActive) {
+        while (armMotor.getCurrentPosition() < armMotor.getTargetPosition() && linearOpMode.opModeIsActive()) {
 
         }
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armGrabbing(opModeActive);
+        armGrabbing(linearOpMode);
         armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -107,27 +108,27 @@ public class RobotClassFinalUse {
         armMotor.setPower(1);
     }
 
-    public void armGrabbing(boolean opModeActive) {
+    public void armGrabbing(LinearOpMode linearOpMode) {
         ElapsedTime opmodeRunTime = new ElapsedTime();
         clampServo.setPower(1);
-        while (opmodeRunTime.seconds() < armWaiting && opModeActive) {
+        while (opmodeRunTime.seconds() < armWaiting && linearOpMode.opModeIsActive()) {
 
         }
         clampServo.setPower(0);
     }
 
-    public void armRelease(boolean opModeActive) {
+    public void armRelease(LinearOpMode linearOpMode) {
         ElapsedTime opmodeRunTime = new ElapsedTime();
         clampServo.setDirection(DcMotorSimple.Direction.REVERSE);
         clampServo.setPower(1);
-        while (opmodeRunTime.seconds() < armWaiting && opModeActive) {
+        while (opmodeRunTime.seconds() < armWaiting && linearOpMode.opModeIsActive()) {
 
         }
         clampServo.setPower(0);
         clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
-    public void gyroTurning (double degrees, boolean opModeActive) {
+    public void gyroTurning (double degrees, LinearOpMode linearOpMode) {
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -139,7 +140,7 @@ public class RobotClassFinalUse {
             rightMotor.setPower(-0.5);
         }
 
-        while(((gyro.getHeading() < degrees - 5) || (gyro.getHeading() > degrees + 5)) && opModeActive) {
+        while(((gyro.getHeading() < degrees - 5) || (gyro.getHeading() > degrees + 5)) && linearOpMode.opModeIsActive()) {
 
         }
         leftMotor.setPower(0);

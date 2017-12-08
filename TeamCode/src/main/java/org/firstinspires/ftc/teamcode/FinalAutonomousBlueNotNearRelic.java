@@ -56,7 +56,7 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
 
-        robot.init(hardwareMap, opModeIsActive());
+        robot.init(hardwareMap);
 
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
@@ -66,7 +66,7 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            robot.gyroTurning(135, opModeIsActive());
+            robot.gyroTurning(135, this);
 
             for (int i = 0; i < relicTrackables.size(); i++) {
                 relicTemplate = relicTrackables.get(i);
@@ -110,11 +110,11 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
                 break;
             }
         }
-        robot.gyroTurning(-135, opModeIsActive());
-        robot.movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth), opModeIsActive());
-        robot.gyroTurning(-107.6100888, opModeIsActive());
-        robot.movingForward(Math.sqrt((cryptoBoxWidth * cryptoBoxWidth) + (matLength * matLength)), opModeIsActive());
-        robot.armRelease(opModeIsActive());
+        robot.gyroTurning(-135, this);
+        robot.movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth), this);
+        robot.gyroTurning(-107.6100888, this);
+        robot.movingForward(Math.sqrt((cryptoBoxWidth * cryptoBoxWidth) + (matLength * matLength)), this);
+        robot.armRelease(this);
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";

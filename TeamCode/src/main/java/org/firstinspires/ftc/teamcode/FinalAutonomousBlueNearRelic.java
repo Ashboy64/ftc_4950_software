@@ -58,7 +58,7 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
 
-        robot.init(hardwareMap, opModeIsActive());
+        robot.init(hardwareMap);
 
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
@@ -114,11 +114,11 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
 //            }
 //        }
         //robot.gyroTurning(-225, opModeIsActive());
-        robot.movingForward(24, opModeIsActive());
-        robot.movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth), opModeIsActive());
+        robot.movingForward(24, this);
+        robot.movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth), this);
         gyroTurning(-107.6100888);
-        robot.movingForward(Math.sqrt((cryptoBoxWidth * cryptoBoxWidth) + (matLength * matLength)), opModeIsActive());
-        robot.armRelease(opModeIsActive());
+        robot.movingForward(Math.sqrt((cryptoBoxWidth * cryptoBoxWidth) + (matLength * matLength)), this);
+        robot.armRelease(this);
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";

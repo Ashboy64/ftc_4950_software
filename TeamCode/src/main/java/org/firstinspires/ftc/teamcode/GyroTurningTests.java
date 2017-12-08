@@ -10,7 +10,7 @@ public class GyroTurningTests extends OpMode {
     RobotClassFinalUse robot = new RobotClassFinalUse();
     @Override
     public void init() {
-        robot.init(hardwareMap, true);
+        robot.init(hardwareMap);
     }
 
     @Override
