@@ -129,19 +129,17 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         double target = (robot.gyro.getHeading() + degrees)%360;
-
-        robot.leftMotor.setPower(0.5);
-        robot.rightMotor.setPower(-0.5);
-
-        if (robot.gyro.getHeading() > target) {
-            while (robot.gyro.getHeading() > target) {
-
-            }
-        } else if (robot.gyro.getHeading() < target) {
-            while (robot.gyro.getHeading() < target) {
-
+        double range = 10;
+        while(robot.gyro.getHeading() > target|| robot.gyro.getHeading() < target){
+            if (robot.gyro.getHeading() > target) {
+                robot.leftMotor.setPower(-0.25);
+                robot.rightMotor.setPower(0.25);
+            }else if (robot.gyro.getHeading() < target) {
+                robot.leftMotor.setPower(0.25);
+                robot.rightMotor.setPower(-0.25);
             }
         }
+
 
         robot.leftMotor.setPower(0);
         robot.rightMotor.setPower(0);
