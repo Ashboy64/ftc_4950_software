@@ -51,7 +51,10 @@ public class VuforiaImageFinder extends LinearOpMode {
                 relicTemplate = relicTrackables.get(i);
 
                 RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+
                 if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+
+
 
                     telemetry.addData("VuMark", "%s visible", vuMark);
 

@@ -17,9 +17,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 
 public class RobotClassFinalUse {
-    double wheel_diameter = 3.5; //the diameter of the wheels of our robot.
+    double wheel_diameter = 3.54331; //the diameter of the wheels of our robot.
     double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter
-    int ticksPerRevolution = 1120; //the amount of ticks the encoder takes to revolve one wheel
+    int ticksPerRevolution = (1120 * 60)/96; //the amount of ticks the encoder takes to revolve one wheel
     double armWaiting = 2.0;
     public DcMotor leftMotor = null;
     public DcMotor rightMotor = null;
@@ -128,6 +128,9 @@ public class RobotClassFinalUse {
     }
 
     public void gyroTurning (double degrees, boolean opModeActive) {
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         if (degrees-gyro.getHeading() > 180) {
             leftMotor.setPower(-0.5);
             rightMotor.setPower(0.5);
@@ -136,10 +139,13 @@ public class RobotClassFinalUse {
             rightMotor.setPower(-0.5);
         }
 
-        while(gyro.getHeading() != degrees && opModeActive) {
+        while(((gyro.getHeading() < degrees - 5) || (gyro.getHeading() > degrees + 5)) && opModeActive) {
 
         }
         leftMotor.setPower(0);
         rightMotor.setPower(0);
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }

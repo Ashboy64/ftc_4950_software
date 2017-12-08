@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -25,10 +25,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Created by mnawani on 11/16/2017.
  */
 
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "BlueNearRelic")
 public class FinalAutonomousBlueNearRelic extends LinearOpMode{
     VuforiaLocalizer vuforia; //an image-processing library that allows us to analyze pictures
     float getToJewel = 0;
-    public int trackableViewed;
+    public int trackableViewed = 1;
     double cryptoBoxWidth = 7.63;
     int matLength = 24;
     public boolean seenPicture= false;
@@ -65,84 +66,87 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
 
         relicTrackables.activate();
 
-//        movingForward(getToJewel );
-//        gyroTurning(180.00);
-//        if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.blue()) {
-//            ElapsedTime opmodeRunTime = new ElapsedTime();
-//            jewelServo.setPower(1);
-//            while (opmodeRunTime.seconds() < armWaiting) {
-//                telemetry.addData("waiting for arm to get to position", "");
-//                telemetry.update();
-//                idle();
+        //robot.gyroTurning(225, opModeIsActive());
+
+//        while (opModeIsActive()) {
+//
+//            for (int i = 0; i < relicTrackables.size(); i++) {
+//
+//                relicTemplate = relicTrackables.get(i);
+//
+//                RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+//                if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+//
+//                    telemetry.addData("VuMark", "%s visible", vuMark);
+//
+//                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) relicTemplate.getListener()).getPose();
+//                    telemetry.addData("Pose", format(pose));
+//
+//                    if (pose != null) {
+//
+//                        VectorF trans = pose.getTranslation();
+//                        Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+//
+//                        double tX = trans.get(0);
+//                        double tY = trans.get(1);
+//                        double tZ = trans.get(2);
+//
+//                        double rX = rot.firstAngle;
+//                        double rY = rot.secondAngle;
+//                        double rZ = rot.thirdAngle;
+//
+//                        if (i == 0) {
+//                            trackableViewed = 0;
+//                        } else if (i == 1) {
+//                            trackableViewed = 1;
+//                        } else {
+//                            trackableViewed = 2;
+//                        }
+//                        seenPicture = true;
+//                        break;
+//                    }
+//                } else {
+//                    telemetry.addData("VuMark", "not visible");
+//                }
 //            }
-//            jewelServo.setPower(0);
-//            ElapsedTime opModeRunTime = new ElapsedTime();
-//            jewelServo.setDirection(DcMotorSimple.Direction.REVERSE);
-//            jewelServo.setPower(1);
-//            while (opmodeRunTime.seconds() < armWaiting) {
-//                telemetry.addData("waiting for arm to get to position", "");
-//                telemetry.update();
-//                idle();
+//            if (seenPicture) {
+//                break;
 //            }
-//            clampServo.setPower(0);
-//            clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
 //        }
-
-        robot.gyroTurning(225, opModeIsActive());
-
-        while (opModeIsActive()) {
-
-            for (int i = 0; i < relicTrackables.size(); i++) {
-
-                relicTemplate = relicTrackables.get(i);
-
-                RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-                if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-
-                    telemetry.addData("VuMark", "%s visible", vuMark);
-
-                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) relicTemplate.getListener()).getPose();
-                    telemetry.addData("Pose", format(pose));
-
-                    if (pose != null) {
-
-                        VectorF trans = pose.getTranslation();
-                        Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-
-                        double tX = trans.get(0);
-                        double tY = trans.get(1);
-                        double tZ = trans.get(2);
-
-                        double rX = rot.firstAngle;
-                        double rY = rot.secondAngle;
-                        double rZ = rot.thirdAngle;
-
-                        if (i == 0) {
-                            trackableViewed = 0;
-                        } else if (i == 1) {
-                            trackableViewed = 1;
-                        } else {
-                            trackableViewed = 2;
-                        }
-                        seenPicture = true;
-                        break;
-                    }
-                } else {
-                    telemetry.addData("VuMark", "not visible");
-                }
-            }
-            if (seenPicture) {
-                break;
-            }
-        }
-        robot.gyroTurning(-225, opModeIsActive());
+        //robot.gyroTurning(-225, opModeIsActive());
         robot.movingForward(24, opModeIsActive());
         robot.movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth), opModeIsActive());
-        robot.gyroTurning(-107.6100888, opModeIsActive());
+        gyroTurning(-107.6100888);
         robot.movingForward(Math.sqrt((cryptoBoxWidth * cryptoBoxWidth) + (matLength * matLength)), opModeIsActive());
         robot.armRelease(opModeIsActive());
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
+    }
+
+    public void gyroTurning (double degrees) {
+        robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        double target = (robot.gyro.getHeading() + degrees)%360;
+
+        robot.leftMotor.setPower(0.5);
+        robot.rightMotor.setPower(-0.5);
+
+        if (robot.gyro.getHeading() > target) {
+            while (robot.gyro.getHeading() > target) {
+
+            }
+        } else if (robot.gyro.getHeading() < target) {
+            while (robot.gyro.getHeading() < target) {
+
+            }
+        }
+
+        robot.leftMotor.setPower(0);
+        robot.rightMotor.setPower(0);
+
+        robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }
