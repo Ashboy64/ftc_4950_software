@@ -116,7 +116,7 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
         //robot.gyroTurning(-225, opModeIsActive());
         robot.movingForward(24, this);
         robot.movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth), this);
-        gyroTurning(-107.6100888);
+        gyroTurningy(-107.6100888);
         robot.movingForward(Math.sqrt((cryptoBoxWidth * cryptoBoxWidth) + (matLength * matLength)), this);
         robot.armRelease(this);
     }
@@ -139,6 +139,62 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
                 robot.rightMotor.setPower(-0.25);
             }
         }
+
+
+        robot.leftMotor.setPower(0);
+        robot.rightMotor.setPower(0);
+
+        robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public void gyroTurninga (double degrees) {
+        robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        double target = (robot.gyro.getHeading() + degrees)%360;
+        double range = 10;
+        while(robot.gyro.getHeading() > target|| robot.gyro.getHeading() < target){
+            if (robot.gyro.getHeading() > target) {
+                robot.leftMotor.setPower(-0.5 * Math.sin(Math.abs(target - robot.gyro.getHeading())) - 0.1);
+                robot.rightMotor.setPower(0.5 * (Math.sin(Math.abs(target - robot.gyro.getHeading()))) + 0.1);
+            }else if (robot.gyro.getHeading() < target) {
+                robot.leftMotor.setPower(0.5 * Math.sin(Math.abs(degrees - target)) + 0.1);
+                robot.rightMotor.setPower(-0.5 * Math.sin(Math.abs(degrees - target)) - 0.1);
+            }
+
+            if(gamepad1.b){
+                break;
+            }
+        }
+
+
+        robot.leftMotor.setPower(0);
+        robot.rightMotor.setPower(0);
+
+        robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public void gyroTurningy (double degrees) {
+        robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        double target = (robot.gyro.getHeading() + degrees)%360;
+        double range = 5.00001;
+        while(robot.gyro.getHeading() > target + range|| robot.gyro.getHeading() < target - range && opModeIsActive()){
+            if (robot.gyro.getHeading() > target) {
+                robot.leftMotor.setPower(-0.5);
+                robot.rightMotor.setPower(0.5);
+            }else if (robot.gyro.getHeading() < target) {
+                robot.leftMotor.setPower(0.5);
+                robot.rightMotor.setPower(-0.5);
+            }
+
+            if(gamepad1.b){
+                break;
+            }
+
+        }
+
 
 
         robot.leftMotor.setPower(0);

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
  */
 
 @TeleOp(name="FinalTeleOp", group ="Concept")
+@Disabled
 public class FinalTele extends OpMode{
     CRServo clampServo; // Servo that controls the clamping motion of the glyph mechanism
     DcMotor armMotor; // Motor used to raise/lower glyph mechanism

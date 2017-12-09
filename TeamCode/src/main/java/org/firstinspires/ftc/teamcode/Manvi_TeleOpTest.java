@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  */
 
 @TeleOp(name="Manvi_TeleOpTest", group ="Concept")
+@Disabled
 //@Disabled
 public class Manvi_TeleOpTest extends OpMode {
     DcMotor motorRight;

@@ -14,13 +14,13 @@ public class DumbAutonomous extends LinearOpMode{
     double distance = Math.sqrt((12 * 12) + (36 * 36));
     @Override
     public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, true);
+        robot.init(hardwareMap);
 
         telemetry.addData(">", "Press play");
         telemetry.update();
 
         waitForStart();
 
-        robot.movingForward(distance, opModeIsActive());
+        robot.movingForward(distance, this);
     }
 }
