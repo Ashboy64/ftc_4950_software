@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -25,6 +26,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Created by mnawani on 10/19/2017.
  */
 @Autonomous(name = "MiniChallenge2_Manvi", group = "concept")
+@Disabled
 public class MiniChallenge2_Manvi extends LinearOpMode {
     GyroSensor gyro;
     ColorSensor color_sensor;

@@ -33,6 +33,7 @@ import static com.sun.tools.javac.util.Constants.format;
  * Created by yinghuang on 10/12/17.
  */
 @Autonomous(name = "MiniChallenukfyyge2", group = "concept")
+@Disabled
 public class MiniChallenge2_Carter extends LinearOpMode {
     GyroSensor gyro;
     ColorSensor color_sensor;

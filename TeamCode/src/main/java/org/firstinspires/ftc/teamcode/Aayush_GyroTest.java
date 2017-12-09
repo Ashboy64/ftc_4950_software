@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name="GyroTest", group="group")
-//@Disabled
+@Disabled
 public class Aayush_GyroTest extends LinearOpMode{
     //DcMotor LeftMotor;
     //DcMotor RightMotor;

@@ -68,7 +68,7 @@ import java.lang.Math;
  */
 
 @Autonomous(name="Concept: VuMark Id2", group ="Concept")
-//@Disabled
+@Disabled
 public class Carter_ConceptVuMarkIdentification extends LinearOpMode {
 
     public static final String TAG = "Vuforia VuMark Sample";
