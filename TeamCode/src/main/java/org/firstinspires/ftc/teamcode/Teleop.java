@@ -8,10 +8,10 @@ public class Teleop extends OpMode {
     private static final boolean TOUCH_LIMIT_ARM = true;
     private static final double CLAMP_LIMIT_POWER = 0;
 
-    private static final double DRIVE_TURN_DOWN_POWER = 1; //0.75;
-    private static final double DRIVE_TURN_UP_POWER = 1; //0.5;
-    private static final double DRIVE_TURN_DOWN_ACCEL = 4;
-    private static final double DRIVE_TURN_UP_ACCEL = 2;
+    private static final double DRIVE_TURN_DOWN_POWER = .75; //0.75;
+    private static final double DRIVE_TURN_UP_POWER = .75; //0.5;
+    private static final double DRIVE_TURN_DOWN_ACCEL = 12;
+    private static final double DRIVE_TURN_UP_ACCEL = 6;
 
     private static final double DRIVE_FORWARD_DOWN_POWER = 1;
     private static final double DRIVE_BACKWARD_DOWN_POWER = 0.75;
@@ -24,7 +24,6 @@ public class Teleop extends OpMode {
     private static final double DRIVE_BACKWARD_UP_ACCEL = 1.5;
 
     private static final double ARM_MIN_POWER = 0.25;
-
     private static final double ARM_BALANCE_ANGLE_OFFSET = 45;
 
     private long lastUpdate = System.currentTimeMillis();
@@ -34,6 +33,8 @@ public class Teleop extends OpMode {
 
     private final Interpolator LEFT_INTERPOLATOR = new Interpolator(DRIVE_TURN_DOWN_ACCEL);
     private final Interpolator RIGHT_INTERPOLATOR = new Interpolator(DRIVE_TURN_DOWN_ACCEL);
+
+    private boolean armResetLast = false;
 
     @Override
     public void init() {
@@ -61,7 +62,18 @@ public class Teleop extends OpMode {
         //telemetry.addLine("closed " + HARDWARE.getTouchClosed());
 
         double armAngle = (HARDWARE.armPosition() - ARM_BALANCE_ANGLE_OFFSET + 360) % 360;
-        double armPower = armPower(INPUT.getArmPower(), armAngle);
+        double armIn = INPUT.getArmPower();
+        double armPower = 0;
+
+        boolean armReset = INPUT.armReset();
+        if (armReset) {
+            armPower = INPUT.getArmPower();
+        } else if (armResetLast) {
+            HARDWARE.resetArm();
+        } else {
+            armPower = armPower(armIn, armAngle);
+        }
+        armResetLast = armReset;
         HARDWARE.armDrive(armPower);
 
         telemetry.addLine(String.format("arm angle: %.4f, sin: %.4f, cos: %.4f, power: %.4f",

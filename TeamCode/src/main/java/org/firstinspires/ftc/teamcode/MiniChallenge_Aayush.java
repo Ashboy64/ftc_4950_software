@@ -28,7 +28,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  */
 
 @Autonomous(name="MiniChallengeAayush", group ="Concept")
-//@Disabled
+@Disabled
 public class MiniChallenge_Aayush extends LinearOpMode{
 
     public static final String TAG = "Vuforia VuMark Sample";

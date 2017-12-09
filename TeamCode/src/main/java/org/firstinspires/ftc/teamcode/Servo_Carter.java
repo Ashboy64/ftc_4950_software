@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Created by yinghuang on 10/12/17.
  */
 @Autonomous(name = "ServoCarter", group = "concept")
+@Disabled
 public class Servo_Carter extends LinearOpMode{
     Servo servo1;
     @Override
