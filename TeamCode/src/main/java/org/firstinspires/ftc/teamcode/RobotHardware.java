@@ -58,10 +58,14 @@ public class RobotHardware {
         RIGHT_MOTOR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         ARM_MOTOR = hardwareMap.dcMotor.get("armMotor");
+        resetArm();
+        ARM_MOTOR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void resetArm() {
         ARM_MOTOR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         ARM_MOTOR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         ARM_MOTOR.setDirection(DcMotorSimple.Direction.FORWARD);
-        ARM_MOTOR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void armDrive(double power) {

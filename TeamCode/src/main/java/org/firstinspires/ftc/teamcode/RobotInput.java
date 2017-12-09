@@ -32,6 +32,10 @@ public class RobotInput {
         return power;
     }
 
+    public boolean armReset() {
+        return GAMEPAD.x();
+    }
+
     private class DoubleGamepad {
         private final Gamepad GAMEPAD1;
         private final Gamepad GAMEPAD2;
