@@ -65,7 +65,7 @@ public class Teleop extends OpMode {
         double armIn = INPUT.getArmPower();
         double armPower = 0;
 
-        boolean armReset = INPUT.armReset();
+        boolean armReset = false; //INPUT.armReset();
         if (armReset) {
             armPower = INPUT.getArmPower();
         } else if (armResetLast) {
