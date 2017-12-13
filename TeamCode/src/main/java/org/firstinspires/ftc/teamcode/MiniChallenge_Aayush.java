@@ -101,7 +101,7 @@ public class MiniChallenge_Aayush extends LinearOpMode{
             telemetry.addData(">", "red");
             telemetry.update();
         } else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green()) {
-            telemetry.addData(">", "blue");
+            telemetry.addData(">", "teamColour");
             telemetry.update();
         }
 

@@ -83,7 +83,7 @@
 //        robot.movingForward(getToJewel, opModeIsActive());
 //        robot.gyroTurning(180.00, opModeIsActive());
 ////
-////        if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.blue()) {
+////        if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.teamColour()) {
 ////            ElapsedTime opmodeRunTime = new ElapsedTime();
 ////            while (opmodeRunTime.seconds() < armWaiting) {
 ////                telemetry.addData("waiting for arm to get to position", "");

@@ -176,7 +176,7 @@ public class Vuforia_Aayush extends LinearOpMode{
     }
 
 //    public void knockOffJewel() {
-//        if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green()) {
+//        if (colorSensor.red() > colorSensor.teamColour() && colorSensor.red() > colorSensor.green()) {
 //            knockOff();
 //        }
 //    }

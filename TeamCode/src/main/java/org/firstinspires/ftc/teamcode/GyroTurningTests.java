@@ -48,7 +48,8 @@ public class GyroTurningTests extends OpMode {
             robot.rightMotor.setPower(-0.5);
         }
 
-        while(((robot.gyro.getHeading() < degrees - 5) || (robot.gyro.getHeading() > degrees + 5))) {
+        while(((robot.gyro.getHeading() < degrees - 5) ||
+                (robot.gyro.getHeading() > degrees + 5))) {
             if(gamepad1.b){
                 break;
             }

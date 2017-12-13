@@ -84,7 +84,7 @@ public class Mini_Challenge_Carter extends LinearOpMode{
             telemetry.addData(">", "red");
             telemetry.update();
         }else if(colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green()){
-            telemetry.addData(">", "blue");
+            telemetry.addData(">", "teamColour");
             telemetry.update();
         }
         LeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

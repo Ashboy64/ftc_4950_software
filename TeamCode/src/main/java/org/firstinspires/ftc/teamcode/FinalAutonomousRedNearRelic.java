@@ -96,7 +96,7 @@
 //        while (opModeIsActive()) {
 //            movingForward(getToJewel);
 //
-//          //  if (colorSensor.blue() > colorSensor.green() && colorSensor.blue() > colorSensor.red()) {
+//          //  if (colorSensor.teamColour() > colorSensor.green() && colorSensor.teamColour() > colorSensor.red()) {
 //                ElapsedTime opmodeRunTime = new ElapsedTime();
 //  //              jewelServo.setPower(1);
 //                while (opmodeRunTime.seconds() < armWaiting) {

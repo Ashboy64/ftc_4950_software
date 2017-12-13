@@ -78,7 +78,9 @@ public class RobotClassFinalUse {
         leftMotor.setPower(1);
         rightMotor.setPower(1);
 
-        while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition() && rightMotor.getCurrentPosition() < rightMotor.getTargetPosition() && linearOpMode.opModeIsActive()) {
+        while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition()
+                && rightMotor.getCurrentPosition() < rightMotor.getTargetPosition()
+                && linearOpMode.opModeIsActive()) {
 
         }
 
