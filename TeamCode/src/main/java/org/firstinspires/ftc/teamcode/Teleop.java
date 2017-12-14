@@ -3,57 +3,88 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import java.util.Locale;
+
+import static org.firstinspires.ftc.teamcode.ControlUtils.*;
+
 @TeleOp(name = "Teleop", group = "Concept")
 public class Teleop extends OpMode {
+    private enum DriveMode {
+        FORWARD(1, 0.5, 5, 1),
+        BACKWARD(0.75, 0.75, 1.5, 1.5),
+        TURN(0.75, 0.75, 10, 4);
+
+        private final double POWER_DOWN;
+        private final double POWER_UP;
+        private final double ACCEL_DOWN;
+        public final double ACCEL_UP;
+
+        DriveMode(double powerDown, double powerUp, double accelDown, double accelUp) {
+            POWER_DOWN = powerDown;
+            POWER_UP = powerUp;
+            ACCEL_DOWN = accelDown;
+            ACCEL_UP = accelUp;
+        }
+
+        public double power(double armHeight) {
+            return lerp(POWER_DOWN, POWER_UP, armHeight);
+        }
+
+        public double accel(double armHeight) {
+            return lerp(ACCEL_DOWN, ACCEL_UP, armHeight);
+        }
+
+        public static DriveMode mode(double left, double right) {
+            if (left > 0 && right > 0) {
+                return FORWARD;
+            } else if (left < 0 && right < 0) {
+                return BACKWARD;
+            } else {
+                return TURN;
+            }
+        }
+    }
+
     private static final boolean TOUCH_LIMIT_ARM = true;
 
-    private static final double DRIVE_TURN_DOWN_POWER = .75; //0.75;
-    private static final double DRIVE_TURN_UP_POWER = .75; //0.5;
-    private static final double DRIVE_TURN_DOWN_ACCEL = 8;
-    private static final double DRIVE_TURN_UP_ACCEL = 4;
-
-    private static final double DRIVE_FORWARD_DOWN_POWER = 1;
-    private static final double DRIVE_BACKWARD_DOWN_POWER = 0.75;
-    private static final double DRIVE_FORWARD_DOWN_ACCEL = 4;
-    private static final double DRIVE_BACKWARD_DOWN_ACCEL = 1.5;
-
-    private static final double DRIVE_FORWARD_UP_POWER = 0.5;
-    private static final double DRIVE_BACKWARD_UP_POWER = 0.75;
-    private static final double DRIVE_FORWARD_UP_ACCEL = 1;
-    private static final double DRIVE_BACKWARD_UP_ACCEL = 1.5;
-
-    private static final double ARM_MIN_POWER = 0.375;
+    private static final double ARM_MIN_POWER_FALLING = 0.25;
+    private static final double ARM_MIN_POWER_LIFTING = 0.5;
     private static final double ARM_BALANCE_ANGLE_OFFSET = 45;
 
     private RobotInput INPUT;
     private RobotHardware HARDWARE;
 
-    private final Interpolator LEFT_INTERPOLATOR = new Interpolator(DRIVE_TURN_DOWN_ACCEL);
-    private final Interpolator RIGHT_INTERPOLATOR = new Interpolator(DRIVE_TURN_DOWN_ACCEL);
+    private final Interpolator LEFT_INTERPOLATOR = new Interpolator(DriveMode.FORWARD.power(0));
+    private final Interpolator RIGHT_INTERPOLATOR = new Interpolator(DriveMode.FORWARD.power(0));
 
     @Override
     public void init() {
         INPUT = new RobotInput(gamepad1, gamepad2);
         HARDWARE = new RobotHardware(hardwareMap);
+        HARDWARE.motorZeroPowerBrake(false);
     }
 
     @Override
     public void loop() {
         updateClamp();
+        updateJewel();
 
         double armAngle = (HARDWARE.armPosition() - ARM_BALANCE_ANGLE_OFFSET + 360) % 360;
+
         double armIn = INPUT.getArmPower();
         double armPower = armPower(armIn, armAngle);
         HARDWARE.armDrive(armPower);
 
-        telemetry.addLine(String.format("arm angle: %.4f, sin: %.4f, cos: %.4f, power: %.4f",
+        telemetry.addLine(String.format(Locale.ENGLISH, "arm angle: %.4f, sin: %.4f, cos: %.4f, power: %.4f",
                 armAngle, sin(armAngle), cos(armAngle), armPower));
 
         double leftIn = INPUT.getLeftPower();
         double rightIn = INPUT.getRightPower();
+        double armHeight = armHeight(armAngle);
 
-        double power = drivePower(leftIn, rightIn, armAngle);
-        double accel = driveAccel(leftIn, rightIn, armAngle);
+        DriveMode mode = DriveMode.mode(leftIn, rightIn);
+        double power = mode.power(armHeight);
+        double accel = mode.accel(armHeight);
 
         LEFT_INTERPOLATOR.setMaxDelta(accel);
         RIGHT_INTERPOLATOR.setMaxDelta(accel);
@@ -62,7 +93,8 @@ public class Teleop extends OpMode {
         double right = RIGHT_INTERPOLATOR.value(rightIn * power);
 
         HARDWARE.freeDrive(left, right);
-        telemetry.addLine(String.format("drive power: %.4f, accel: %.4f", power, accel));
+        telemetry.addLine(String.format(Locale.ENGLISH, "drive direction: %s, power: %.4f, accel: %.4f",
+                mode.toString(), power, accel));
     }
 
     private void updateClamp() {
@@ -77,6 +109,14 @@ public class Teleop extends OpMode {
         HARDWARE.setClampPower(clampPower);
     }
 
+    private void updateJewel() {
+        if (INPUT.GAMEPAD.a()) {
+            HARDWARE.setJewelArmPosition(0);
+        } else if (INPUT.GAMEPAD.x()) {
+            HARDWARE.setJewelArmPosition(1);
+        }
+    }
+
     private double armPower(double armPower, double armAngle) {
         if (armPower == 0) {
             return 0;
@@ -88,125 +128,13 @@ public class Teleop extends OpMode {
         telemetry.addLine("arm lifting: " + lifting);
 
         if (lifting) {
-            return clamp(armPower * (Math.max(Math.abs(x), ARM_MIN_POWER)));
+            return lerp(ARM_MIN_POWER_LIFTING, 1, Math.abs(x));
         } else {
-            return armPower * ARM_MIN_POWER;
+            return armPower * ARM_MIN_POWER_FALLING;
         }
-    }
-
-    private double drivePower(double left, double right, double armAngle) {
-        if (left > 0 && right > 0) {
-            telemetry.addLine("forward");
-            return forwardPower(armAngle);
-        } else if (left < 0 && right < 0) {
-            telemetry.addLine("backward");
-            return backwardPower(armAngle);
-        } else {
-            telemetry.addLine("turning/stationary");
-            return turnPower(armAngle);
-        }
-    }
-
-    private double driveAccel(double left, double right, double armAngle) {
-        if (left < 0 && right < 0) {
-            return forwardAccel(armAngle);
-        } else if (left > 0 && right > 0) {
-            return backwardAccel(armAngle);
-        } else {
-            return turnAccel(armAngle);
-        }
-    }
-
-    private double turnPower(double armAngle) {
-        return lerp(DRIVE_TURN_DOWN_POWER, DRIVE_TURN_UP_POWER, armHeight(armAngle));
-    }
-
-    private double turnAccel(double armAngle) {
-        return lerp(DRIVE_TURN_DOWN_ACCEL, DRIVE_TURN_UP_ACCEL, armHeight(armAngle));
-    }
-
-    private double forwardPower(double armAngle) {
-        return lerp(DRIVE_FORWARD_DOWN_POWER, DRIVE_FORWARD_UP_POWER, armHeight(armAngle));
-    }
-
-    private double forwardAccel(double armAngle) {
-        return lerp(DRIVE_FORWARD_DOWN_ACCEL, DRIVE_FORWARD_UP_ACCEL, armHeight(armAngle));
-    }
-
-    private double backwardPower(double armAngle) {
-        return lerp(DRIVE_BACKWARD_DOWN_POWER, DRIVE_BACKWARD_UP_POWER, armHeight(armAngle));
-    }
-
-    private double backwardAccel(double armAngle) {
-        return lerp(DRIVE_BACKWARD_DOWN_ACCEL, DRIVE_BACKWARD_UP_ACCEL, armHeight(armAngle));
     }
 
     private double armHeight(double armAngle) {
-        //we want arm angles within a 30-degree range of minimum and maximum to count as min/max
-        double clampRange = sin(60);
-        return clamp(-clampRange, clampRange, (sin(armAngle) + 1) / 2) / clampRange;
-    }
-
-    private double sin(double degrees) {
-        return Math.sin(Math.toRadians(degrees));
-    }
-
-    private double cos(double degrees) {
-        return Math.cos(Math.toRadians(degrees));
-    }
-
-    private double clamp(double d, double min, double max) {
-        return Math.min(max, Math.max(min, d));
-    }
-
-    private double clamp(double d) {
-        return clamp(d, -1, 1);
-    }
-
-    private double lerp(double a, double b, double t) {
-        return (b - a) * t + a;
-    }
-
-    private class Interpolator {
-        private double maxDelta;
-        private double value;
-        private long lastTime;
-        private final double MIN;
-        private final double MAX;
-
-        public Interpolator(double perSecond) {
-            this(perSecond, 0, -1, 1);
-        }
-
-        public Interpolator(double perSecond, double init, double min, double max) {
-            maxDelta = perSecond;
-            value = init;
-            MIN = min;
-            MAX = max;
-            lastTime = System.currentTimeMillis();
-        }
-
-        public void setMaxDelta(double delta) {
-            this.maxDelta = delta;
-        }
-
-        public double value(double in) {
-            long time = System.currentTimeMillis();
-
-            //seconds elapsed since last update
-            double deltaTime = (time - lastTime) / 1000.0;
-            lastTime = time;
-
-            double change = in - value;
-            change = Math.max(-maxDelta * deltaTime, Math.min(maxDelta * deltaTime, change));
-
-            //interpolates towards new value
-            value += change;
-
-            //clamps within range
-            value = Math.max(MIN, Math.min(MAX, value));
-
-            return value;
-        }
+        return scale(sin(armAngle), -1, 1, 0, 1);
     }
 }

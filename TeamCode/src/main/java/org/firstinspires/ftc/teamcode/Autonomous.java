@@ -15,6 +15,7 @@ public abstract class Autonomous extends LinearOpMode {
         INPUT = new RobotInput(gamepad1, gamepad2);
 
         HARDWARE.motorZeroPowerBrake(true);
+        HARDWARE.gyroCalibrate();
 
         if (TESTING) {
             testing();
@@ -63,12 +64,12 @@ public abstract class Autonomous extends LinearOpMode {
             } else if (INPUT.GAMEPAD.a()) {
                 HARDWARE.openClamp();
             } else if (INPUT.GAMEPAD.rightTrigger() > 0) {
-                //HARDWARE.setJewelArmPosition(0);
+                HARDWARE.setJewelArmPosition(0);
             } else if (INPUT.GAMEPAD.leftTrigger() > 0) {
-                //HARDWARE.setJewelArmPosition(1);
+                HARDWARE.setJewelArmPosition(1);
             }
 
-            //telemetry.addLine("jewel colour: " + HARDWARE.jewelColour().toString());
+            telemetry.addLine("jewel colour: " + HARDWARE.jewelColour().toString());
             telemetry.addLine("vision pattern: " + HARDWARE.targetColumn().toString());
         }
     }
@@ -78,7 +79,7 @@ public abstract class Autonomous extends LinearOpMode {
         double glyphInsert = 24 - RobotHardware.GLYPH_OFFSET_FORWARD;
         double backAway = -4;
 
-        //jewel();
+        jewel();
 
         RobotHardware.TargetColumn targetColumn = getColumn();
 
@@ -147,12 +148,10 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     private void jewel() {
-        int armDown = 1;
-        int armUp = 0;
         double forwardAdjustment = -0.5;
         int turnDegrees = 15;
 
-        HARDWARE.setJewelArmPosition(armDown);
+        HARDWARE.setJewelArmPosition(1);
         HARDWARE.encoderDrive(forwardAdjustment, DRIVE_POWER);
 
         RobotHardware.TeamColour jewelColour = HARDWARE.jewelColour();
@@ -167,7 +166,7 @@ public abstract class Autonomous extends LinearOpMode {
         }
 
         HARDWARE.encoderDrive(-forwardAdjustment, DRIVE_POWER);
-        HARDWARE.setJewelArmPosition(armUp);
+        HARDWARE.setJewelArmPosition(0);
     }
 
     private RobotHardware.TargetColumn getColumn() {

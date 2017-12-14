@@ -16,14 +16,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import static com.sun.tools.javac.util.Constants.format;
-
 public class RobotHardware {
     public enum TargetColumn {UNDEFINED, LEFT, CENTRE, RIGHT}
 
     public enum TeamColour {UNDEFINED, BLUE, RED}
 
     private static final int JEWEL_COLOUR_THRESHOLD = 64;
+
+    private static final boolean USE_JEWEL = false;
 
     public static final double TICKS_PER_MOTOR_REVOLUTION = 1120; //2240
 
@@ -43,11 +43,11 @@ public class RobotHardware {
 
     private final GyroSensor GYRO;
 
-    private final DigitalChannel TOUCH_ARM_OPEN;
-    private final DigitalChannel TOUCH_ARM_CLOSED;
+    private final DigitalChannel ARM_TOUCH_OPEN;
+    private final DigitalChannel ARM_TOUCH_CLOSED;
 
     private final Servo JEWEL_SERVO;
-    private final ColorSensor COLOUR_JEWEL;
+    private final ColorSensor JEWEL_COLOUR;
 
     private final HardwareMap HARDWARE_MAP;
     private VuforiaTrackables vuforiaRelicTrackables;
@@ -60,10 +60,10 @@ public class RobotHardware {
 
         CLAMP_SERVO = hardwareMap.crservo.get("clampServo");
 
-        TOUCH_ARM_OPEN = hardwareMap.get(DigitalChannel.class, "tsOpen");
-        TOUCH_ARM_CLOSED = hardwareMap.get(DigitalChannel.class, "tsClosed");
-        TOUCH_ARM_OPEN.setMode(DigitalChannel.Mode.INPUT);
-        TOUCH_ARM_CLOSED.setMode(DigitalChannel.Mode.INPUT);
+        ARM_TOUCH_OPEN = hardwareMap.get(DigitalChannel.class, "tsOpen");
+        ARM_TOUCH_CLOSED = hardwareMap.get(DigitalChannel.class, "tsClosed");
+        ARM_TOUCH_OPEN.setMode(DigitalChannel.Mode.INPUT);
+        ARM_TOUCH_CLOSED.setMode(DigitalChannel.Mode.INPUT);
 
         GYRO = hardwareMap.gyroSensor.get("gyro");
 
@@ -71,14 +71,18 @@ public class RobotHardware {
         RIGHT_MOTOR = hardwareMap.dcMotor.get("rightMotor");
         LEFT_MOTOR.setDirection(DcMotorSimple.Direction.FORWARD);
         RIGHT_MOTOR.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorZeroPowerBrake(false);
 
         ARM_MOTOR = hardwareMap.dcMotor.get("armMotor");
         ARM_MOTOR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         resetArm();
 
-        JEWEL_SERVO = hardwareMap.servo.get("jewelServo");
-        COLOUR_JEWEL = hardwareMap.colorSensor.get("teamColour");
+        if (USE_JEWEL) {
+            JEWEL_SERVO = hardwareMap.servo.get("jewelServo");
+            JEWEL_COLOUR = hardwareMap.colorSensor.get("jewelColour");
+        } else {
+            JEWEL_SERVO = null;
+            JEWEL_COLOUR = null;
+        }
     }
 
     public RobotHardware(HardwareMap hardwareMap) {
@@ -177,14 +181,14 @@ public class RobotHardware {
     }
 
     public boolean getTouchOpen() {
-        return !TOUCH_ARM_OPEN.getState();
+        return !ARM_TOUCH_OPEN.getState();
     }
 
     public boolean getTouchClosed() {
-        return !TOUCH_ARM_CLOSED.getState();
+        return !ARM_TOUCH_CLOSED.getState();
     }
 
-    public double armPosition() { //should return 0 when arm is down, 180 when arm is up
+    public double armPosition() {
         return ARM_MOTOR.getCurrentPosition()
                 / TICKS_PER_MOTOR_REVOLUTION
                 * ARM_SPROCKET_RATIO
@@ -203,6 +207,7 @@ public class RobotHardware {
     }
 
     public int gyroHeading() {
+        int heading = GYRO.getHeading();
         return GYRO.getHeading();
     }
 
@@ -222,6 +227,8 @@ public class RobotHardware {
             VuforiaTrackable vuforiaRelicTemplate = vuforiaRelicTrackables.get(i);
 
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(vuforiaRelicTemplate);
+
+            LINEAR_OP_MODE.telemetry.addData("Vuforia", vuMark.toString());
 
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
                 return fromVuMark(vuMark);
@@ -257,20 +264,28 @@ public class RobotHardware {
     }
 
     public TeamColour jewelColour() {
-        int red = COLOUR_JEWEL.red();
-        int blue = COLOUR_JEWEL.blue();
+        if (!USE_JEWEL) {
+            return TeamColour.UNDEFINED;
+        }
+
+        int red = JEWEL_COLOUR.red();
+        int blue = JEWEL_COLOUR.blue();
+        TeamColour colour;
 
         if (Math.abs(red - blue) < JEWEL_COLOUR_THRESHOLD) {
-            return TeamColour.UNDEFINED;
+            colour = TeamColour.UNDEFINED;
         } else if (red > blue) {
-            return TeamColour.RED;
+            colour = TeamColour.RED;
         } else {
-            return TeamColour.BLUE;
+            colour = TeamColour.BLUE;
         }
+        return colour;
     }
 
     public void setJewelArmPosition(double position) {
-        JEWEL_SERVO.setPosition(position);
+        if (USE_JEWEL) {
+            JEWEL_SERVO.setPosition(position);
+        }
     }
 
     private boolean active() {
