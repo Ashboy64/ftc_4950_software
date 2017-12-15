@@ -34,6 +34,7 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
     int matLength = 24;
     public boolean seenPicture= false;
     RobotClassFinalUse robot = new RobotClassFinalUse();
+    VuforiaTrackable relicTemplate;
 
     /*
        *******HELPER METHOD DESCRIPTIONS*********
@@ -55,152 +56,59 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
 
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
-        VuforiaTrackable relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
 
         robot.init(hardwareMap);
 
         telemetry.addData(">", "Press Play to start");
+
         telemetry.update();
         waitForStart();
 
         relicTrackables.activate();
 
-        //robot.gyroTurning(225, opModeIsActive());
+        robot.gyroTurning(45, this);
 
-//        while (opModeIsActive()) {
-//
-//            for (int i = 0; i < relicTrackables.size(); i++) {
-//
-//                relicTemplate = relicTrackables.get(i);
-//
-//                RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-//                if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-//
-//                    telemetry.addData("VuMark", "%s visible", vuMark);
-//
-//                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) relicTemplate.getListener()).getPose();
-//                    telemetry.addData("Pose", format(pose));
-//
-//                    if (pose != null) {
-//
-//                        VectorF trans = pose.getTranslation();
-//                        Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-//
-//                        double tX = trans.get(0);
-//                        double tY = trans.get(1);
-//                        double tZ = trans.get(2);
-//
-//                        double rX = rot.firstAngle;
-//                        double rY = rot.secondAngle;
-//                        double rZ = rot.thirdAngle;
-//
-//                        if (i == 0) {
-//                            trackableViewed = 0;
-//                        } else if (i == 1) {
-//                            trackableViewed = 1;
-//                        } else {
-//                            trackableViewed = 2;
-//                        }
-//                        seenPicture = true;
-//                        break;
-//                    }
-//                } else {
-//                    telemetry.addData("VuMark", "not visible");
-//                }
-//            }
-//            if (seenPicture) {
-//                break;
-//            }
-//        }
-        //robot.gyroTurning(-225, opModeIsActive());
+        while (opModeIsActive()) {
+
+            for (int i = 0; i < relicTrackables.size(); i++) {
+
+                relicTemplate = relicTrackables.get(i);
+
+                RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+                if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+
+                    telemetry.addData("VuMark", "%s visible", vuMark);
+
+                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
+                    telemetry.addData("Pose", format(pose));
+
+                    if (pose != null) {
+                        if (i == 0) {
+                            trackableViewed = 1;
+                        } else if (i == 1) {
+                            trackableViewed = 2;
+                        } else {
+                            trackableViewed = 3;
+                        }
+                        seenPicture = true;
+                        break;
+                    }
+                } else {
+                    telemetry.addData("VuMark", "not visible");
+                }
+            }
+            if (seenPicture) {
+                break;
+            }
+        }
+        robot.gyroTurning(-45, this);
         robot.movingForward(24, this);
         robot.movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth), this);
-        gyroTurningy(-107.6100888);
+        robot.gyroTurning(-107.6100888, this);
         robot.movingForward(Math.sqrt((cryptoBoxWidth * cryptoBoxWidth) + (matLength * matLength)), this);
         robot.armRelease(this);
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
-    }
-
-    public void gyroTurning (double degrees) {
-        robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        double target = (robot.gyro.getHeading() + degrees)%360;
-        double range = 10;
-        while(robot.gyro.getHeading() > target|| robot.gyro.getHeading() < target){
-            if (robot.gyro.getHeading() > target) {
-                robot.leftMotor.setPower(-0.25);
-                robot.rightMotor.setPower(0.25);
-            }else if (robot.gyro.getHeading() < target) {
-                robot.leftMotor.setPower(0.25);
-                robot.rightMotor.setPower(-0.25);
-            }
-        }
-
-
-        robot.leftMotor.setPower(0);
-        robot.rightMotor.setPower(0);
-
-        robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
-    public void gyroTurninga (double degrees) {
-        robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        double target = (robot.gyro.getHeading() + degrees)%360;
-        double range = 10;
-        while(robot.gyro.getHeading() > target|| robot.gyro.getHeading() < target){
-            if (robot.gyro.getHeading() > target) {
-                robot.leftMotor.setPower(-0.5 * Math.sin(Math.abs(target - robot.gyro.getHeading())) - 0.1);
-                robot.rightMotor.setPower(0.5 * (Math.sin(Math.abs(target - robot.gyro.getHeading()))) + 0.1);
-            }else if (robot.gyro.getHeading() < target) {
-                robot.leftMotor.setPower(0.5 * Math.sin(Math.abs(degrees - target)) + 0.1);
-                robot.rightMotor.setPower(-0.5 * Math.sin(Math.abs(degrees - target)) - 0.1);
-            }
-
-            if(gamepad1.b){
-                break;
-            }
-        }
-
-
-        robot.leftMotor.setPower(0);
-        robot.rightMotor.setPower(0);
-
-        robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
-    public void gyroTurningy (double degrees) {
-        robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        double target = (robot.gyro.getHeading() + degrees)%360;
-        double range = 5.00001;
-        while(robot.gyro.getHeading() > target + range|| robot.gyro.getHeading() < target - range && opModeIsActive()){
-            if (robot.gyro.getHeading() > target) {
-                robot.leftMotor.setPower(-0.5);
-                robot.rightMotor.setPower(0.5);
-            }else if (robot.gyro.getHeading() < target) {
-                robot.leftMotor.setPower(0.5);
-                robot.rightMotor.setPower(-0.5);
-            }
-
-            if(gamepad1.b){
-                break;
-            }
-
-        }
-
-
-
-        robot.leftMotor.setPower(0);
-        robot.rightMotor.setPower(0);
-
-        robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }

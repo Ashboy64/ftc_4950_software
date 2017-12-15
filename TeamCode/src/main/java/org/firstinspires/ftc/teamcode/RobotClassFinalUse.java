@@ -134,17 +134,25 @@ public class RobotClassFinalUse {
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        if (degrees-gyro.getHeading() > 180) {
-            leftMotor.setPower(-0.5);
-            rightMotor.setPower(0.5);
-        } else {
-            leftMotor.setPower(0.5);
-            rightMotor.setPower(-0.5);
+        double target = (gyro.getHeading() + degrees)%360;
+        double range = 5.00001;
+        while(gyro.getHeading() > target + range || gyro.getHeading() < target - range && linearOpMode.opModeIsActive()){
+            if (gyro.getHeading() > target) {
+                leftMotor.setPower(-0.5);
+                rightMotor.setPower(0.5);
+            }else if (gyro.getHeading() < target) {
+                leftMotor.setPower(0.5);
+                rightMotor.setPower(-0.5);
+            }
+
+            if(linearOpMode.gamepad1.b){
+                break;
+            }
+
         }
 
-        while(((gyro.getHeading() < degrees - 5) || (gyro.getHeading() > degrees + 5)) && linearOpMode.opModeIsActive()) {
 
-        }
+
         leftMotor.setPower(0);
         rightMotor.setPower(0);
 

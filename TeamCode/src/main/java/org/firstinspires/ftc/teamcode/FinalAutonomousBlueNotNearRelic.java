@@ -64,10 +64,8 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
 
         relicTrackables.activate();
 
-
+        robot.gyroTurning(-45, this);
         while (opModeIsActive()) {
-            robot.gyroTurning(135, this);
-
             for (int i = 0; i < relicTrackables.size(); i++) {
                 relicTemplate = relicTrackables.get(i);
 
@@ -76,22 +74,10 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
 
                     telemetry.addData("VuMark", "%s visible", vuMark);
 
-                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) relicTemplate.getListener()).getPose();
+                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
                     telemetry.addData("Pose", format(pose));
 
                     if (pose != null) {
-
-                        VectorF trans = pose.getTranslation();
-                        Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-
-                        double tX = trans.get(0);
-                        double tY = trans.get(1);
-                        double tZ = trans.get(2);
-
-                        double rX = rot.firstAngle;
-                        double rY = rot.secondAngle;
-                        double rZ = rot.thirdAngle;
-
                         if (i == 0) {
                             trackableViewed = 0;
                         } else if (i == 1) {
@@ -110,7 +96,7 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
                 break;
             }
         }
-        robot.gyroTurning(-135, this);
+        robot.gyroTurning(45, this);
         robot.movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth), this);
         robot.gyroTurning(-107.6100888, this);
         robot.movingForward(Math.sqrt((cryptoBoxWidth * cryptoBoxWidth) + (matLength * matLength)), this);
