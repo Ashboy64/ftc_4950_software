@@ -31,8 +31,9 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
     public int trackableViewed;
     double cryptoBoxWidth = 7.63;
     int matLength = 24;
-    public boolean seenPicture= false;
     RobotClassFinalUse robot = new RobotClassFinalUse();
+    RelicRecoveryVuMark vuMark;
+
     /*
        *******HELPER METHOD DESCRIPTIONS*********
        *armMoving - moves the arm from the resting position to the dropping position and then back again
@@ -66,35 +67,25 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
 
         robot.gyroTurning(-45, this);
         while (opModeIsActive()) {
-            for (int i = 0; i < relicTrackables.size(); i++) {
-                relicTemplate = relicTrackables.get(i);
+            relicTemplate = relicTrackables.get(0);
 
-                RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-                if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+            vuMark = RelicRecoveryVuMark.from(relicTemplate);
 
-                    telemetry.addData("VuMark", "%s visible", vuMark);
+            if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+                telemetry.addData("VuMark", vuMark);
 
-                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
-                    telemetry.addData("Pose", format(pose));
-
-                    if (pose != null) {
-                        if (i == 0) {
-                            trackableViewed = 0;
-                        } else if (i == 1) {
-                            trackableViewed = 1;
-                        } else {
-                            trackableViewed = 2;
-                        }
-                        seenPicture = true;
-                        break;
-                    }
-                } else {
-                    telemetry.addData("VuMark", "not visible");
-                }
-            }
-            if (seenPicture) {
                 break;
+
+            } else {
+                telemetry.addData("VuMark", "not visible");
             }
+        }
+        if (vuMark == RelicRecoveryVuMark.CENTER) {
+            trackableViewed = 2;
+        } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
+            trackableViewed = 3;
+        } else if (vuMark == RelicRecoveryVuMark.LEFT) {
+            trackableViewed = 1;
         }
         robot.gyroTurning(45, this);
         robot.movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth), this);
