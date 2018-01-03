@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -25,6 +25,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Created by mnawani on 11/16/2017.
  */
 
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "BlueNotNearRelic")
 public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
     VuforiaLocalizer vuforia; //an image-processing library that allows us to analyze pictures
     float getToJewel = 0;
@@ -65,28 +66,29 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
 
         relicTrackables.activate();
 
-        robot.gyroTurning(-45, this);
-        while (opModeIsActive()) {
-            relicTemplate = relicTrackables.get(0);
-
-            vuMark = RelicRecoveryVuMark.from(relicTemplate);
-
-            if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-                telemetry.addData("VuMark", vuMark);
-
-                break;
-
-            } else {
-                telemetry.addData("VuMark", "not visible");
-            }
-        }
-        if (vuMark == RelicRecoveryVuMark.CENTER) {
-            trackableViewed = 2;
-        } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
-            trackableViewed = 3;
-        } else if (vuMark == RelicRecoveryVuMark.LEFT) {
-            trackableViewed = 1;
-        }
+//        robot.gyroTurning(-45, this);
+//        while (opModeIsActive()) {
+//            relicTemplate = relicTrackables.get(0);
+//
+//            vuMark = RelicRecoveryVuMark.from(relicTemplate);
+//
+//            if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+//                telemetry.addData("VuMark", vuMark);
+//
+//                break;
+//
+//            } else {
+//                telemetry.addData("VuMark", "not visible");
+//            }
+//        }
+//        if (vuMark == RelicRecoveryVuMark.CENTER) {
+//            trackableViewed = 2;
+//        } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
+//            trackableViewed = 3;
+//        } else if (vuMark == RelicRecoveryVuMark.LEFT) {
+//            trackableViewed = 1;
+//        }
+        trackableViewed = 1;
         robot.gyroTurning(45, this);
         robot.movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth), this);
         robot.gyroTurning(-107.6100888, this);
@@ -95,6 +97,8 @@ public class FinalAutonomousBlueNotNearRelic extends LinearOpMode {
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
+
+
     }
 
 }

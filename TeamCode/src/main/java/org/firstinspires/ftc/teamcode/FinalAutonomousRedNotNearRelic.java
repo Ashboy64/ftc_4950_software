@@ -28,13 +28,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
     double wheel_diameter = 3.5; //the diameter of the wheels of our robot.
     double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter
-    DcMotor leftMotor; //allows for control of the robot’s left motor’s actions
-    DcMotor rightMotor; //allows for control of the robot’s right motor’s actions
     int ticksPerRevolution = 2240; //the amount of ticks the encoder takes to revolve one wheel
     DcMotor armMotor; //allows for control of our robot’s arm
     GyroSensor gyro; //receives information about the direction of our robot
     VuforiaLocalizer vuforia; //an image-processing library that allows us to analyze pictures
-    CRServo clampServo;
     double armWaiting = 2.0;
     float getToJewel = 0;
    // CRServo jewelServo;
@@ -47,6 +44,7 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
     double secondDistance =  27.92762253;
     double firstDistance =  24.20052892;
     RobotClassFinalUse robot = new RobotClassFinalUse();
+    RelicRecoveryVuMark vuMark;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -64,58 +62,40 @@ public class FinalAutonomousRedNotNearRelic extends LinearOpMode {
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
 
-
-        gyro.calibrate();
-        while (gyro.isCalibrating() && opModeIsActive()) {
-            telemetry.addData(">", "Calibrating Gyro.");
-            telemetry.update();
-        }
-
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
         waitForStart();
 
         relicTrackables.activate();
 
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        robot.movingForward(getToJewel, this);
-        robot.gyroTurning(180.00, this);
-//
-//        if (colorSensor.red() > colorSensor.green() && colorSensor.red() > colorSensor.teamColour()) {
-//            ElapsedTime opmodeRunTime = new ElapsedTime();
-//            while (opmodeRunTime.seconds() < armWaiting) {
-//                telemetry.addData("waiting for arm to get to position", "");
-//                telemetry.update();
-//                idle();
-//            }
-//            ElapsedTime opModeRunTime = new ElapsedTime();
-//            while (opmodeRunTime.seconds() < armWaiting) {
-//                telemetry.addData("waiting for arm to get to position", "");
-//                telemetry.update();
-//                idle();
-//            }
-//            clampServo.setPower(0);
-//            clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
-//        }
-
-
-        while (opModeIsActive()) {
-            robot.gyroTurning(-45, this);
-
-            RelicRecoveryVuMark vuMark;
-
-        }
         robot.gyroTurning(45, this);
-        robot.movingForward(24 - (24/3)*trackableViewed, this);
-        robot.gyroTurning(deg, this);
-        if(trackableViewed == 3) {
-            robot.movingForward(thirdDistance, this);
-        }else if(trackableViewed == 2){
+        while (opModeIsActive()) {
+            relicTemplate = relicTrackables.get(0);
+
+            vuMark = RelicRecoveryVuMark.from(relicTemplate);
+
+            if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+                telemetry.addData("VuMark", vuMark);
+
+                break;
+
+            } else {
+                telemetry.addData("VuMark", "not visible");
+            }
+        }
+        robot.gyroTurning(-45, this);
+        if (vuMark == RelicRecoveryVuMark.CENTER) {
             robot.movingForward(secondDistance, this);
-        }else {
+            trackableViewed = 1;
+            robot.gyroTurning(Math.atan(3.815 + (trackableViewed * 7.63)), this);
+        } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
             robot.movingForward(firstDistance, this);
+            trackableViewed = 0;
+            robot.gyroTurning(Math.atan(5), this);
+        } else if (vuMark == RelicRecoveryVuMark.LEFT) {
+            robot.movingForward(thirdDistance, this);
+            trackableViewed = 2;
+            robot.gyroTurning(Math.atan(5), this);
         }
         robot.armRelease(this);
     }

@@ -40,6 +40,7 @@ public class RobotClassFinalUse {
     private ElapsedTime period  = new ElapsedTime();
 
     public RobotClassFinalUse() {
+
     }
 
     /* Initialize standard Hardware interfaces */
@@ -58,7 +59,7 @@ public class RobotClassFinalUse {
         ARM_TOUCH_OPEN.setMode(DigitalChannel.Mode.INPUT);
         ARM_TOUCH_CLOSED.setMode(DigitalChannel.Mode.INPUT);
 
-        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         gyro.calibrate();
 
@@ -82,12 +83,10 @@ public class RobotClassFinalUse {
         leftMotor.setTargetPosition(encoderTicks);
         rightMotor.setTargetPosition(encoderTicks);
 
-        leftMotor.setPower(1);
-        rightMotor.setPower(1);
+        leftMotor.setPower(0.5);
+        rightMotor.setPower(0.5);
 
-        while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition()
-                && rightMotor.getCurrentPosition() < rightMotor.getTargetPosition()
-                && linearOpMode.opModeIsActive()) {
+        while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition() && rightMotor.getCurrentPosition() < rightMotor.getTargetPosition() && linearOpMode.opModeIsActive()) {
 
         }
 
@@ -112,9 +111,9 @@ public class RobotClassFinalUse {
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        double target = (gyro.getHeading() + degrees)%360;
+        double target = (gyro.getHeading() + degrees);
         double range = 5.00001;
-        while(gyro.getHeading() > target + range || gyro.getHeading() < target - range && linearOpMode.opModeIsActive()){
+        while((gyro.getHeading() > target + range || gyro.getHeading() < target - range) && linearOpMode.opModeIsActive()){
             if (gyro.getHeading() > target) {
                 leftMotor.setPower(-0.5);
                 rightMotor.setPower(0.5);
@@ -122,15 +121,7 @@ public class RobotClassFinalUse {
                 leftMotor.setPower(0.5);
                 rightMotor.setPower(-0.5);
             }
-
-            if(linearOpMode.gamepad1.b){
-                break;
-            }
-
         }
-
-
-
         leftMotor.setPower(0);
         rightMotor.setPower(0);
 

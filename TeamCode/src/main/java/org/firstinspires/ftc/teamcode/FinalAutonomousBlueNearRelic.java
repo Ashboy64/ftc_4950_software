@@ -66,31 +66,32 @@ public class FinalAutonomousBlueNearRelic extends LinearOpMode{
 
         relicTrackables.activate();
     
-        robot.gyroTurning(45, this);
+        //robot.gyroTurning(45, this);
 
-        while (opModeIsActive()) {
-            relicTemplate = relicTrackables.get(0);
-
-            vuMark = RelicRecoveryVuMark.from(relicTemplate);
-
-            if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-                telemetry.addData("VuMark", vuMark);
-
-                break;
-
-            } else {
-                telemetry.addData("VuMark", "not visible");
-            }
-        }
-
-        if (vuMark == RelicRecoveryVuMark.CENTER) {
-            trackableViewed = 2;
-        } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
-            trackableViewed = 3;
-        } else if (vuMark == RelicRecoveryVuMark.LEFT) {
-            trackableViewed = 1;
-        }
-        robot.gyroTurning(-45, this);
+//        while (opModeIsActive()) {
+//            relicTemplate = relicTrackables.get(0);
+//
+//            vuMark = RelicRecoveryVuMark.from(relicTemplate);
+//
+//            if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+//                telemetry.addData("VuMark", vuMark);
+//
+//                break;
+//
+//            } else {
+//                telemetry.addData("VuMark", "not visible");
+//            }
+//        }
+//
+//        if (vuMark == RelicRecoveryVuMark.CENTER) {
+//            trackableViewed = 2;
+//        } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
+//            trackableViewed = 3;
+//        } else if (vuMark == RelicRecoveryVuMark.LEFT) {
+//            trackableViewed = 1;
+//        }
+        trackableViewed = 1;
+        //robot.gyroTurning(-45, this);
         robot.movingForward(24, this);
         robot.movingForward((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth), this);
         robot.gyroTurning(-107.6100888, this);
