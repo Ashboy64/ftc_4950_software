@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -31,6 +32,8 @@ public class RobotClassFinalUse {
     CRServo clampServo;
     //CRServo jewelServo;
     int version;
+    DigitalChannel ARM_TOUCH_OPEN;
+    DigitalChannel ARM_TOUCH_CLOSED;
 
 
     HardwareMap hwMap  = null;
@@ -50,6 +53,10 @@ public class RobotClassFinalUse {
         clampServo = ahwMap.crservo.get("clampServo");
         //colorSensor = ahwMap.colorSensor.get("colorSensor");
         //jewelServo = ahwMap.crservo.get("jewelServo");
+        ARM_TOUCH_OPEN = ahwMap.get(DigitalChannel.class, "tsOpen");
+        ARM_TOUCH_CLOSED = ahwMap.get(DigitalChannel.class, "tsClosed");
+        ARM_TOUCH_OPEN.setMode(DigitalChannel.Mode.INPUT);
+        ARM_TOUCH_CLOSED.setMode(DigitalChannel.Mode.INPUT);
 
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -91,39 +98,10 @@ public class RobotClassFinalUse {
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    public void armMoving(LinearOpMode linearOpMode) {
-        armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setTargetPosition(1120);
-        armMotor.setPower(1);
-        while (armMotor.getCurrentPosition() < armMotor.getTargetPosition() && linearOpMode.opModeIsActive()) {
-
-        }
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armGrabbing(linearOpMode);
-        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor.setTargetPosition(1120);
-        armMotor.setPower(1);
-    }
-
-    public void armGrabbing(LinearOpMode linearOpMode) {
-        ElapsedTime opmodeRunTime = new ElapsedTime();
-        clampServo.setPower(1);
-        while (opmodeRunTime.seconds() < armWaiting && linearOpMode.opModeIsActive()) {
-
-        }
-        clampServo.setPower(0);
-    }
-
     public void armRelease(LinearOpMode linearOpMode) {
-        ElapsedTime opmodeRunTime = new ElapsedTime();
         clampServo.setDirection(DcMotorSimple.Direction.REVERSE);
         clampServo.setPower(1);
-        while (opmodeRunTime.seconds() < armWaiting && linearOpMode.opModeIsActive()) {
+        while (getTouchOpen() && linearOpMode.opModeIsActive()) {
 
         }
         clampServo.setPower(0);
@@ -134,21 +112,37 @@ public class RobotClassFinalUse {
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        if (degrees-gyro.getHeading() > 180) {
-            leftMotor.setPower(-0.5);
-            rightMotor.setPower(0.5);
-        } else {
-            leftMotor.setPower(0.5);
-            rightMotor.setPower(-0.5);
+        double target = (gyro.getHeading() + degrees)%360;
+        double range = 5.00001;
+        while(gyro.getHeading() > target + range || gyro.getHeading() < target - range && linearOpMode.opModeIsActive()){
+            if (gyro.getHeading() > target) {
+                leftMotor.setPower(-0.5);
+                rightMotor.setPower(0.5);
+            }else if (gyro.getHeading() < target) {
+                leftMotor.setPower(0.5);
+                rightMotor.setPower(-0.5);
+            }
+
+            if(linearOpMode.gamepad1.b){
+                break;
+            }
+
         }
 
-        while(((gyro.getHeading() < degrees - 5) || (gyro.getHeading() > degrees + 5)) && linearOpMode.opModeIsActive()) {
 
-        }
+
         leftMotor.setPower(0);
         rightMotor.setPower(0);
 
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public boolean getTouchOpen() {
+        return !ARM_TOUCH_OPEN.getState();
+    }
+
+    public boolean getTouchClosed() {
+        return !ARM_TOUCH_CLOSED.getState();
     }
 }

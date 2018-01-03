@@ -22,9 +22,10 @@ import static com.sun.tools.javac.util.Constants.format;
  */
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "VuforiaTestForImageNumber ", group = "concept")
-@Disabled
 public class VuforiaImageFinder extends LinearOpMode {
     VuforiaLocalizer vuforia; //an image-processing library that allows us to analyze pictures
+    RelicRecoveryVuMark vuMark;
+
     @Override
     public void runOpMode() throws InterruptedException {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -45,41 +46,23 @@ public class VuforiaImageFinder extends LinearOpMode {
 
         relicTrackables.activate();
 
+        telemetry.addData(">", relicTrackables.size());
+        telemetry.update();
+
         while (opModeIsActive()) {
-            for (int i = 0; i < relicTrackables.size(); i++) {
+            relicTemplate = relicTrackables.get(0);
 
-                relicTemplate = relicTrackables.get(i);
+            vuMark = RelicRecoveryVuMark.from(relicTemplate);
 
-                RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+            if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+                telemetry.addData("VuMark", vuMark);
 
-                if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+                break;
 
-
-
-                    telemetry.addData("VuMark", "%s visible", vuMark);
-
-                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) relicTemplate.getListener()).getPose();
-                    telemetry.addData("Pose", format(pose));
-
-                    if (pose != null) {
-
-                        VectorF trans = pose.getTranslation();
-                        Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-
-                        double tX = trans.get(0);
-                        double tY = trans.get(1);
-                        double tZ = trans.get(2);
-
-                        double rX = rot.firstAngle;
-                        double rY = rot.secondAngle;
-                        double rZ = rot.thirdAngle;
-
-                        telemetry.addData(">", i);
-                    }
-                } else {
-                    telemetry.addData("VuMark", "not visible");
-                }
+            } else {
+                telemetry.addData("VuMark", "not visible");
             }
         }
+
     }
 }
