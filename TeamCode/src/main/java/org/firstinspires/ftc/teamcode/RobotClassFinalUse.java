@@ -22,7 +22,6 @@ public class RobotClassFinalUse {
     double wheel_diameter = 3.54331; //the diameter of the wheels of our robot.
     double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter
     int ticksPerRevolution = (1120 * 60)/96; //the amount of ticks the encoder takes to revolve one wheel
-    double armWaiting = 2.0;
     public DcMotor leftMotor = null;
     public DcMotor rightMotor = null;
     public DcMotor armMotor;
@@ -31,7 +30,6 @@ public class RobotClassFinalUse {
     VuforiaLocalizer vuforia;
     CRServo clampServo;
     //CRServo jewelServo;
-    int version;
     DigitalChannel ARM_TOUCH_OPEN;
     DigitalChannel ARM_TOUCH_CLOSED;
 
@@ -111,15 +109,22 @@ public class RobotClassFinalUse {
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        double target = (gyro.getHeading() + degrees);
-        double range = 5.00001;
-        while((gyro.getHeading() > target + range || gyro.getHeading() < target - range) && linearOpMode.opModeIsActive()){
-            if (gyro.getHeading() > target) {
-                leftMotor.setPower(-0.5);
-                rightMotor.setPower(0.5);
-            }else if (gyro.getHeading() < target) {
-                leftMotor.setPower(0.5);
-                rightMotor.setPower(-0.5);
+        double target = (gyro.getHeading() + degrees) % 360;
+        if (gyro.getHeading() > target) {
+            double originalDistance = gyro.getHeading() - target;
+            double distance = gyro.getHeading() - target;
+            while(gyro.getHeading() > target && linearOpMode.opModeIsActive()){
+                leftMotor.setPower(-((distance/(2*originalDistance)) + 0.5));
+                rightMotor.setPower((distance/(2*originalDistance)) + 0.5);
+                distance = gyro.getHeading() - target;
+            }
+        } else if (gyro.getHeading() < target) {
+            double originalDistance = target - gyro.getHeading();
+            double distance = target - gyro.getHeading();
+            while(gyro.getHeading() < target && linearOpMode.opModeIsActive()){
+                rightMotor.setPower(-((distance/(2*originalDistance)) + 0.5));
+                leftMotor.setPower((distance/(2*originalDistance)) + 0.5);
+                distance = target - gyro.getHeading();
             }
         }
         leftMotor.setPower(0);
@@ -131,9 +136,5 @@ public class RobotClassFinalUse {
 
     public boolean getTouchOpen() {
         return !ARM_TOUCH_OPEN.getState();
-    }
-
-    public boolean getTouchClosed() {
-        return !ARM_TOUCH_CLOSED.getState();
     }
 }
