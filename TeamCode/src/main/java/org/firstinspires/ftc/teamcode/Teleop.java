@@ -11,7 +11,7 @@ import static org.firstinspires.ftc.teamcode.ControlUtils.*;
 public class Teleop extends OpMode {
     private enum DriveMode {
         FORWARD(1, 0.5, 6, 4),
-        BACKWARD(0.75, 0.75, 6, 4),
+        BACKWARD(0.75, 0.75, 6, 2),
         TURN(0.75, 0.75, 12, 12);
 
         private final double POWER_DOWN;
