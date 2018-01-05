@@ -55,7 +55,7 @@ public abstract class NewAutonomous extends LinearOpMode {
             robot.turn(-90);
             robot.drive(18);
             robot.openClamp();
-        } else if (!red() && nearRelic()) {
+        } else if  (!red() && nearRelic()) {
             robot.turn(90);
             scoreJewel();
             robot.turn(45);
