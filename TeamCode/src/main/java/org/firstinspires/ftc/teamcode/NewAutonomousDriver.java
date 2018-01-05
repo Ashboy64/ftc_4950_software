@@ -59,7 +59,7 @@ public class NewAutonomousDriver {
         armMotor = hardwareMap.dcMotor.get("armMotor");
         gyro = hardwareMap.gyroSensor.get("gyro");
         clampServo = hardwareMap.crservo.get("clampServo");
-        colorSensor = hardwareMap.colorSensor.get("colorSensor");
+        colorSensor = hardwareMap.colorSensor.get("jewelColor");
         //jewelServo = hardwareMap.crservo.get("jewelServo");
         ARM_TOUCH_OPEN = hardwareMap.get(DigitalChannel.class, "tsOpen");
         ARM_TOUCH_CLOSED = hardwareMap.get(DigitalChannel.class, "tsClosed");
@@ -88,7 +88,6 @@ public class NewAutonomousDriver {
 
         opMode.telemetry.addData(">", "Press Play to start");
         opMode.telemetry.update();
-        opMode.waitForStart();
 
         relicTrackables.activate();
     }
@@ -99,9 +98,33 @@ public class NewAutonomousDriver {
      * @param degrees turns the robot by this angle; positive is clockwise, negative is counterclockwise
      */
     public void turn(int degrees) {
-        while (opMode.opModeIsActive()) {
-            //TODO
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        double currentHeading = gyro.getHeading();
+
+        double target = (currentHeading + degrees) % 360;
+        double fakeTarget = target;
+
+        if(target == 0){
+            fakeTarget = target + 1;
         }
+        double speed;
+        while (opMode.opModeIsActive() && (gyro.getHeading()>degrees+3 || gyro.getHeading()<degrees-3)) {
+            if(target != 0) {
+                speed = 0.4 + (0.2 * Math.abs((gyro.getHeading() - target) / target));
+            } else {
+                speed = 0.4 + (0.2 * Math.abs((gyro.getHeading() + 1 - fakeTarget) / fakeTarget));
+            }
+
+            rightMotor.setPower((degrees < 0 ? speed : -speed));
+            leftMotor.setPower((degrees < 0 ? -speed : speed));
+        }
+
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+        opMode.telemetry.addData("Final heading", gyro.getHeading());
+        opMode.telemetry.update();
     }
 
     /**
