@@ -23,7 +23,7 @@ public class RobotHardware {
 
     private static final int JEWEL_COLOUR_THRESHOLD = 64;
 
-    private static final boolean USE_JEWEL = false;
+    private static final boolean USE_JEWEL = true;
 
     public static final double TICKS_PER_MOTOR_REVOLUTION = 1120; //2240
 
@@ -78,7 +78,7 @@ public class RobotHardware {
 
         if (USE_JEWEL) {
             JEWEL_SERVO = hardwareMap.servo.get("jewelServo");
-            JEWEL_COLOUR = hardwareMap.colorSensor.get("jewelColour");
+            JEWEL_COLOUR = hardwareMap.colorSensor.get("jewelColor");
         } else {
             JEWEL_SERVO = null;
             JEWEL_COLOUR = null;

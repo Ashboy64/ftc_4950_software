@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 public class ControlUtils {
     public static double lerp(double min, double max, double t) {
-        return clamp((max - min) * t + min);
+        return clamp((max - min) * t + min, min, max);
     }
 
     public static double invLerp(double d, double min, double max) {
