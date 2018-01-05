@@ -74,13 +74,13 @@ public class Teleop extends OpMode {
         double armIn = INPUT.getArmPower();
         double armPower = armPower(armIn, armAngle);
         HARDWARE.armDrive(armPower);
+        double armHeight = armHeight(armAngle);
 
-        telemetry.addLine(String.format(Locale.ENGLISH, "arm angle: %.4f, sin: %.4f, cos: %.4f, power: %.4f",
-                armAngle, sin(armAngle), cos(armAngle), armPower));
+        telemetry.addLine(String.format(Locale.ENGLISH, "arm angle: %.4f, sin: %.4f, cos: %.4f, power: %.4f, height: %.4f",
+                armAngle, sin(armAngle), cos(armAngle), armPower, armHeight));
 
         double leftIn = INPUT.getLeftPower();
         double rightIn = INPUT.getRightPower();
-        double armHeight = armHeight(armAngle);
 
         DriveMode mode = DriveMode.mode(leftIn, rightIn);
         double power = mode.power(armHeight);
@@ -93,7 +93,7 @@ public class Teleop extends OpMode {
         double right = RIGHT_INTERPOLATOR.value(rightIn * power);
 
         HARDWARE.freeDrive(left, right);
-        telemetry.addLine(String.format(Locale.ENGLISH, "drive direction: %s, power: %.4f and %4f (%4f), accel: %.4f",
+        telemetry.addLine(String.format(Locale.ENGLISH, "drive direction: %s, power: %.4f and %.4f (%.4f), accel: %.4f",
                 mode.toString(), left, right, power, accel));
     }
 
@@ -135,6 +135,6 @@ public class Teleop extends OpMode {
     }
 
     private double armHeight(double armAngle) {
-        return scale(sin(armAngle), -1, 1, 0, 1);
+        return (sin(armAngle) + 1) / 2;
     }
 }
