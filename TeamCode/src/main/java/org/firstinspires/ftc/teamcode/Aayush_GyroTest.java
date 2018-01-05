@@ -2,12 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 /**
  * Created by Aayushiron on 9/12/17.
@@ -86,6 +87,39 @@ public class Aayush_GyroTest extends LinearOpMode{
         while (opModeIsActive()) {
             telemetry.addData(">", gyro.getHeading());
             telemetry.update();
+        }
+    }
+
+    public static class Robot
+    {
+        public DcMotor  leftMotor;
+        public DcMotor  rightMotor;
+        public DcMotor armMotor;
+        ColorSensor colorSensor;
+        GyroSensor gyro;
+        VuforiaLocalizer vuforia;
+
+        /* Local OpMode members. */
+        HardwareMap hwMap  = null;
+        private ElapsedTime period  = new ElapsedTime();
+
+        /* Constructor */
+        public Robot() {
+        }
+
+        /* Initialize standard Hardware interfaces */
+        public void init(HardwareMap ahwMap) {
+            leftMotor = hardwareMap.dcMotor.get("motor1");
+            rightMotor = hardwareMap.dcMotor.get("motor2");
+            colorSensor = hardwareMap.colorSensor.get("colorSensor1");
+            gyro = hardwareMap.gyroSensor.get("gyro1");
+
+            gyro.calibrate();
+
+            while(gyro.isCalibrating()){
+                telemetry.addData(">", "Calibrating gyro. Do not touch");
+                telemetry.update();
+            }
         }
     }
 }
