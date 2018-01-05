@@ -10,8 +10,8 @@ import static org.firstinspires.ftc.teamcode.ControlUtils.*;
 @TeleOp(name = "Teleop", group = "Concept")
 public class Teleop extends OpMode {
     private enum DriveMode {
-        FORWARD(1, 0.5, 6, 4),
-        BACKWARD(0.75, 0.75, 6, 2),
+        FORWARD(1, 0.5, 6, 2),
+        BACKWARD(0.75, 0.75, 4, 4),
         TURN(0.75, 0.75, 12, 12);
 
         private final double POWER_DOWN;
@@ -26,12 +26,22 @@ public class Teleop extends OpMode {
             ACCEL_UP = accelUp;
         }
 
-        public double power(double armHeight) {
+        private double power(double armHeight) {
             return lerp(POWER_DOWN, POWER_UP, armHeight);
         }
 
-        public double accel(double armHeight) {
+        private double accel(double armHeight) {
             return lerp(ACCEL_DOWN, ACCEL_UP, armHeight);
+        }
+
+        public static double power(double armHeight, double left, double right)
+        {
+            return mode(left, right).power(armHeight);
+        }
+
+        public static double accel(double armHeight, double left, double right)
+        {
+            return mode(left, right).accel(armHeight);
         }
 
         public static DriveMode mode(double left, double right) {
@@ -82,9 +92,8 @@ public class Teleop extends OpMode {
         double leftIn = INPUT.getLeftPower();
         double rightIn = INPUT.getRightPower();
 
-        DriveMode mode = DriveMode.mode(leftIn, rightIn);
-        double power = mode.power(armHeight);
-        double accel = mode.accel(armHeight);
+        double power = DriveMode.power(armHeight, leftIn, rightIn);
+        double accel = DriveMode.accel(armHeight, leftIn, rightIn);
 
         LEFT_INTERPOLATOR.setMaxDelta(accel);
         RIGHT_INTERPOLATOR.setMaxDelta(accel);
@@ -94,7 +103,7 @@ public class Teleop extends OpMode {
 
         HARDWARE.freeDrive(left, right);
         telemetry.addLine(String.format(Locale.ENGLISH, "drive direction: %s, power: %.4f and %.4f (%.4f), accel: %.4f",
-                mode.toString(), left, right, power, accel));
+                DriveMode.mode(leftIn, rightIn).toString(), left, right, power, accel));
     }
 
     private void updateClamp() {

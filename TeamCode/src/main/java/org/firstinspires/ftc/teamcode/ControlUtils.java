@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 public class ControlUtils {
-    public static double lerp(double min, double max, double t) {
-        return clamp((max - min) * t + min, min, max);
-    }
-
-    public static double invLerp(double d, double min, double max) {
-        return (d - min) / (max - min);
+    public static double lerp(double a, double b, double t)  {
+        return clamp((b - a) * t + a, Math.min(a, b), Math.max(a, b));
     }
 
     public static double sin(double degrees) {
@@ -19,14 +15,6 @@ public class ControlUtils {
 
     public static double clamp(double d, double min, double max) {
         return Math.min(max, Math.max(min, d));
-    }
-
-    public static double clamp(double d) {
-        return clamp(d, -1, 1);
-    }
-
-    public static double scale(double in, double oldMin, double oldMax, double newMin, double newMax) {
-        return lerp(newMin, newMax, invLerp(in, oldMin, oldMax));
     }
 }
 
