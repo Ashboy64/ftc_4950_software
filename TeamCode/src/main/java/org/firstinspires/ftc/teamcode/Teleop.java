@@ -10,9 +10,9 @@ import static org.firstinspires.ftc.teamcode.ControlUtils.*;
 @TeleOp(name = "Teleop", group = "Concept")
 public class Teleop extends OpMode {
     private enum DriveMode {
-        FORWARD(1, 0.5, 4, 2),
-        BACKWARD(0.75, 0.75, 3, 3),
-        TURN(0.75, 0.75, 8, 4);
+        FORWARD(1, 0.5, 6, 4),
+        BACKWARD(0.75, 0.75, 6, 4),
+        TURN(0.75, 0.75, 12, 12);
 
         private final double POWER_DOWN;
         private final double POWER_UP;
@@ -93,8 +93,8 @@ public class Teleop extends OpMode {
         double right = RIGHT_INTERPOLATOR.value(rightIn * power);
 
         HARDWARE.freeDrive(left, right);
-        telemetry.addLine(String.format(Locale.ENGLISH, "drive direction: %s, power: %.4f, accel: %.4f",
-                mode.toString(), power, accel));
+        telemetry.addLine(String.format(Locale.ENGLISH, "drive direction: %s, power: %.4f and %4f (%4f), accel: %.4f",
+                mode.toString(), left, right, power, accel));
     }
 
     private void updateClamp() {
@@ -111,9 +111,9 @@ public class Teleop extends OpMode {
 
     private void updateJewel() {
         if (INPUT.GAMEPAD.x()) {
-            HARDWARE.setJewelArmPosition(1);
-        } else {
             HARDWARE.setJewelArmPosition(0);
+        } else {
+            HARDWARE.setJewelArmPosition(1);
         }
     }
 
