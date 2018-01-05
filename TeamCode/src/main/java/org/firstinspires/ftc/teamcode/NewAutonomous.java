@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public abstract class NewAutonomous extends LinearOpMode {
     NewAutonomousDriver robot;
+    int trackableViewed;
 
     /**
      * the high-level autonomous code using the methods in NewAutonomousDriver
@@ -42,7 +43,7 @@ public abstract class NewAutonomous extends LinearOpMode {
      * column, inserts the glyph, opens the clamp, and backs up slightly
      */
     private void scoreGlyph() {
-        //TODO
+
     }
 
     /**

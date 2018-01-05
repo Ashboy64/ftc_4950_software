@@ -26,7 +26,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 public class NewAutonomousDriver {
     private LinearOpMode opMode;
-    VuforiaTrackable relicTemplate;
     RelicRecoveryVuMark vuMark;
 
     double wheel_diameter = 3.54331; //the diameter of the wheels of our robot.
@@ -44,6 +43,8 @@ public class NewAutonomousDriver {
     DigitalChannel ARM_TOUCH_OPEN;
     DigitalChannel ARM_TOUCH_CLOSED;
 
+    VuforiaTrackables relicTrackables;
+    VuforiaTrackable relicTemplate;
 
     HardwareMap hwMap  = null;
     private ElapsedTime period  = new ElapsedTime();
@@ -72,6 +73,24 @@ public class NewAutonomousDriver {
         while(gyro.isCalibrating()){
 
         }
+
+        int cameraMonitorViewId = opMode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
+        parameters.vuforiaLicenseKey = "AWnZ5xz/////AAAAGYmbM16TXEdKscTtfaECY6FzIRnxfc6SV0uwUV+dwPVIWbGyu9567BTp2qzh6ohnawdFrbL290ECRr04ew/QX0Q90SUrGh52+s55yVFPN429A93YJm6AlnV/TEJKb8omxdlqC+Hfy0SLPZSu+UEq9xQMOIfeW+OiRNQyFlUTZNCtQDNuK5jwObgulF83zrexs+c95Cd1jU7PnoX+NgHPjmUWS5H+WVr4yZsewES+oa0jRjGrcGU0/P5USRnqVbKh4976SNjPBGy6fanxJZmQb2Pam56UROtERcdaPDSWg4Nrr0MFlHCvi3PcfyLfdPtBW06JZGWBXu23VJCBQFw3SxGm/IO057P4kbTFti3W5xkU";
+
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+
+        relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        relicTemplate = relicTrackables.get(0);
+        relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
+
+        opMode.telemetry.addData(">", "Press Play to start");
+        opMode.telemetry.update();
+        opMode.waitForStart();
+
+        relicTrackables.activate();
     }
 
     /**
@@ -163,24 +182,6 @@ public class NewAutonomousDriver {
      * @return 0 for the left column, 1 for the centre column, 2 for the right column, 3 for unknown
      */
     public int getTargetColumn() {
-        int cameraMonitorViewId = opMode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-
-        parameters.vuforiaLicenseKey = "AWnZ5xz/////AAAAGYmbM16TXEdKscTtfaECY6FzIRnxfc6SV0uwUV+dwPVIWbGyu9567BTp2qzh6ohnawdFrbL290ECRr04ew/QX0Q90SUrGh52+s55yVFPN429A93YJm6AlnV/TEJKb8omxdlqC+Hfy0SLPZSu+UEq9xQMOIfeW+OiRNQyFlUTZNCtQDNuK5jwObgulF83zrexs+c95Cd1jU7PnoX+NgHPjmUWS5H+WVr4yZsewES+oa0jRjGrcGU0/P5USRnqVbKh4976SNjPBGy6fanxJZmQb2Pam56UROtERcdaPDSWg4Nrr0MFlHCvi3PcfyLfdPtBW06JZGWBXu23VJCBQFw3SxGm/IO057P4kbTFti3W5xkU";
-
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-
-        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
-        VuforiaTrackable relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
-
-        opMode.telemetry.addData(">", "Press Play to start");
-        opMode.telemetry.update();
-        opMode.waitForStart();
-
-        relicTrackables.activate();
-
         while (opMode.opModeIsActive()) {
             relicTemplate = relicTrackables.get(0);
 
