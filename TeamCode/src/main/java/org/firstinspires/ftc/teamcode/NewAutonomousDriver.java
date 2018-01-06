@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -17,6 +19,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import java.io.InterruptedIOException;
 
 /**
  * Created by justi on 2018-01-03.
@@ -39,7 +43,7 @@ public class NewAutonomousDriver {
     GyroSensor gyro;
     VuforiaLocalizer vuforia;
     CRServo clampServo;
-    //CRServo jewelServo;
+    Servo jewelServo;
     DigitalChannel ARM_TOUCH_OPEN;
     DigitalChannel ARM_TOUCH_CLOSED;
 
@@ -57,10 +61,10 @@ public class NewAutonomousDriver {
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
         armMotor = hardwareMap.dcMotor.get("armMotor");
-        gyro = hardwareMap.gyroSensor.get("gyro");
+        gyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
         clampServo = hardwareMap.crservo.get("clampServo");
         colorSensor = hardwareMap.colorSensor.get("jewelColor");
-        //jewelServo = hardwareMap.crservo.get("jewelServo");
+        jewelServo = hardwareMap.servo.get("jewelServo");
         ARM_TOUCH_OPEN = hardwareMap.get(DigitalChannel.class, "tsOpen");
         ARM_TOUCH_CLOSED = hardwareMap.get(DigitalChannel.class, "tsClosed");
         ARM_TOUCH_OPEN.setMode(DigitalChannel.Mode.INPUT);
@@ -98,27 +102,18 @@ public class NewAutonomousDriver {
      * @param degrees turns the robot by this angle; positive is clockwise, negative is counterclockwise
      */
     public void turn(int degrees) {
+        if(degrees == 0) return;
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
         double currentHeading = gyro.getHeading();
-
         double target = (currentHeading + degrees) % 360;
-        double fakeTarget = target;
 
-        if(target == 0){
-            fakeTarget = target + 1;
-        }
-        double speed;
-        while (opMode.opModeIsActive() && (gyro.getHeading()>degrees+3 || gyro.getHeading()<degrees-3)) {
-            if(target != 0) {
-                speed = 0.4 + (0.2 * Math.abs((gyro.getHeading() - target) / target));
-            } else {
-                speed = 0.4 + (0.2 * Math.abs((gyro.getHeading() + 1 - fakeTarget) / fakeTarget));
-            }
-
+        while (opMode.opModeIsActive() && !((gyro.getHeading()<degrees+5) && (gyro.getHeading()>degrees-5))) {
+            double speed = 0.3 + (0.2 * Math.abs((gyro.getHeading() - target) / degrees));
             rightMotor.setPower((degrees < 0 ? speed : -speed));
             leftMotor.setPower((degrees < 0 ? -speed : speed));
+            opMode.telemetry.addData("Heading:", gyro.getHeading());
+            opMode.telemetry.update();
         }
 
         leftMotor.setPower(0);
@@ -164,6 +159,40 @@ public class NewAutonomousDriver {
         }
     }
 
+    public void gyroEncoders (double degrees) {
+        int ticks = ticksPerRevolution;
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftMotor.setTargetPosition((int)degrees*ticks);
+        rightMotor.setTargetPosition((int)-degrees*ticks);
+        if(degrees > 0) {
+            leftMotor.setPower(0.5);
+            rightMotor.setPower(-0.5);
+        }else{
+            leftMotor.setPower(-0.5);
+            rightMotor.setPower(0.5);
+        }
+
+        while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition() && rightMotor.getCurrentPosition() > rightMotor.getTargetPosition() && opMode.opModeIsActive()) {
+            opMode.telemetry.addData(">" , gyro.getHeading());
+            opMode.telemetry.update();
+        }
+
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
     /**
      * opens the clamp by running the clamp servo until the open touch sensor is pressed
      */
@@ -186,7 +215,7 @@ public class NewAutonomousDriver {
      * @param position the position to set the jewel arm to; 0 is retracted, 1 is lowered
      */
     public void setJewelArmPosition(double position) {
-        //TODO
+        jewelServo.setPosition(position);
     }
 
     /**
@@ -194,9 +223,12 @@ public class NewAutonomousDriver {
      *
      * @return -1 for a blue jewel, 1 for a red jewel
      */
-    public int getJewelColour() {
-        //TODO
-        return 0;
+    public int getJewelColour() throws InterruptedException{
+        setJewelArmPosition(1);
+        wait(1000);
+        double blueColor = colorSensor.blue();
+        double redColor = colorSensor.red();
+        return (blueColor > redColor ? -1 : 1);
     }
 
     /**

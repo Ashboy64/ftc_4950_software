@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /**
- * Created by justi on 2018-01-03.
+ * Created by justin on 2018-01-03.
  */
 
 public abstract class NewAutonomous extends LinearOpMode {
@@ -44,8 +45,9 @@ public abstract class NewAutonomous extends LinearOpMode {
      * lowers the jewel arm, reads the jewel colour, turns the robot to knock off the jewel,
      * turns back to starting angle, retracts the jewel arm
      */
-    private void scoreJewel() {
-        //TODO
+    private void scoreJewel() throws InterruptedException{
+        int detected = robot.getJewelColour();
+        robot.gyroEncoders((red() ? (detected == -1 ? -90 : 90) : (detected == 1 ? 90 : -90)));
     }
 
     /**
@@ -54,9 +56,7 @@ public abstract class NewAutonomous extends LinearOpMode {
      */
     private void scoreGlyph() {
         if (!red() && !nearRelic()) {
-            robot.turn(90);
-            scoreJewel();
-            robot.turn(45);
+            robot.turn(135);
             trackableViewed = robot.getTargetColumn();
             robot.turn(-135);
             robot.drive(((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth)) - 2.8515);
@@ -64,9 +64,7 @@ public abstract class NewAutonomous extends LinearOpMode {
             robot.drive(18);
             robot.openClamp();
         } else if  (!red() && nearRelic()) {
-            robot.turn(90);
-            scoreJewel();
-            robot.turn(45);
+            robot.turn(135);
             trackableViewed = robot.getTargetColumn();
             robot.turn(135);
             robot.drive(24);
@@ -75,19 +73,15 @@ public abstract class NewAutonomous extends LinearOpMode {
             robot.drive(18);
             robot.openClamp();
         } else if (red() && nearRelic()) {
-            robot.turn(90);
-            scoreJewel();
-            robot.turn(45);
+            robot.turn(135);
             trackableViewed = robot.getTargetColumn();
             robot.turn(-135);
             robot.drive(((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth)) - 2.8515);
             robot.turn(90);
             robot.drive(18);
             robot.openClamp();
-        } else if (red() && !nearRelic()) {
-            robot.turn(90);
-            scoreJewel();
-            robot.turn(45);
+        } else {
+            robot.turn(135);
             trackableViewed = robot.getTargetColumn();
             robot.turn(-45);
             robot.drive(24);

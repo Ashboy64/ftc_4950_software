@@ -12,8 +12,11 @@ public class NewAutonomousDriverTester extends NewAutonomous {
         waitForStart();
 
         //driveTest();
-
-        turnTest();
+        try {
+            jewelTest();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         //robot.openClamp();
 
@@ -21,6 +24,17 @@ public class NewAutonomousDriverTester extends NewAutonomous {
         //    telemetry.addData("detected colour", robot.getJewelColour());
         //    telemetry.addData("detected target column", robot.getTargetColumn());
         //}
+    }
+
+    private  void jewelTest() throws InterruptedException{
+        robot.setJewelArmPosition(1);
+        scoreJewelTest();
+        robot.setJewelArmPosition(0);
+    }
+
+    private void scoreJewelTest() throws InterruptedException{
+        int detected = robot.getJewelColour();
+        robot.gyroEncoders((red() ? (detected == -1 ? -90 : 90) : (detected == 1 ? 90 : -90)));
     }
 
     private void turnTest() {
@@ -31,7 +45,7 @@ public class NewAutonomousDriverTester extends NewAutonomous {
         robot.turn(90);
         telemetry.addData("finished 1","");
         telemetry.update();
-        robot.turn(-90);
+      //  robot.turn(-90);
         //testTurn(180);
         //testTurn(-180);
     }
@@ -54,7 +68,7 @@ public class NewAutonomousDriverTester extends NewAutonomous {
 
     @Override
     boolean red() {
-        throw new IllegalStateException();
+        return true;
     }
 
     @Override
