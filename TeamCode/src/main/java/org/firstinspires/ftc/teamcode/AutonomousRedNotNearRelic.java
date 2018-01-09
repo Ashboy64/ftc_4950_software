@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "RED NOT NEAR RELIC")
 public class AutonomousRedNotNearRelic extends Autonomous {
     @Override
     RobotHardware.TeamColour teamColour() {

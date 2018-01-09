@@ -2,8 +2,24 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+/*
+TESTING CONTROLS - hold Back while starting autonomous to enter testing mode
+x: test jewel code
+y: get column using vuforia
+a: log jewel colour and vuforia vision target
+b: open clamp
+dpad:
+    up: forward 4 inches
+    down: backward 4 inches
+    left: turn counterclockwise 15 degrees (gyro)
+    right: turn clockwise 15 degrees (gyro)
+trigger:
+    left: turn counterclockwise 15 degrees (encoder)
+    right: turn clockwise 15 degrees (encoder)
+*/
+
 public abstract class Autonomous extends LinearOpMode {
-    private final boolean TESTING = true;
+    private boolean testing = false;
     private final double DRIVE_POWER = 0.25;
     private final double TURN_POWER = 0.25;
     private RobotHardware HARDWARE;
@@ -17,9 +33,9 @@ public abstract class Autonomous extends LinearOpMode {
         HARDWARE.motorZeroPowerBrake(true);
         HARDWARE.gyroCalibrate();
 
+        testing = INPUT.GAMEPAD.back();
 
-
-        if (TESTING) {
+        if (testing) {
             testing();
         } else {
             autonomous();
@@ -28,62 +44,54 @@ public abstract class Autonomous extends LinearOpMode {
 
     private void testing() {
         while (opModeIsActive()) {
-            int turnTestLarge = 90;
-            int turnTestSmall = 45;
-            double driveTestLarge = 12;
-            double driveTestSmall = 4;
-
             if (INPUT.GAMEPAD.x()) {
-                if (INPUT.GAMEPAD.leftTrigger() > 0) {
-                    HARDWARE.gyroTurn(-turnTestLarge, TURN_POWER);
-                } else if (INPUT.GAMEPAD.rightTrigger() > 0) {
-                    HARDWARE.gyroTurn(turnTestLarge, TURN_POWER);
-                } else if (INPUT.GAMEPAD.leftBumper()) {
-                    HARDWARE.gyroTurn(-turnTestSmall, TURN_POWER);
-                } else if (INPUT.GAMEPAD.rightBumper()) {
-                    HARDWARE.gyroTurn(turnTestSmall, TURN_POWER);
-                }
+                jewel();
             } else if (INPUT.GAMEPAD.y()) {
-                if (INPUT.GAMEPAD.leftTrigger() > 0) {
-                    HARDWARE.encoderDrive(-driveTestLarge, DRIVE_POWER);
-                } else if (INPUT.GAMEPAD.rightTrigger() > 0) {
-                    HARDWARE.encoderDrive(driveTestLarge, DRIVE_POWER);
-                } else if (INPUT.GAMEPAD.leftBumper()) {
-                    HARDWARE.encoderDrive(-driveTestSmall, DRIVE_POWER);
-                } else if (INPUT.GAMEPAD.rightBumper()) {
-                    HARDWARE.encoderDrive(driveTestSmall, DRIVE_POWER);
-                }
-            } else if (INPUT.GAMEPAD.b()) {
-                if (INPUT.GAMEPAD.leftTrigger() > 0) {
-                    HARDWARE.encoderTurn(-turnTestLarge, TURN_POWER);
-                } else if (INPUT.GAMEPAD.rightTrigger() > 0) {
-                    HARDWARE.encoderTurn(turnTestLarge, TURN_POWER);
-                } else if (INPUT.GAMEPAD.leftBumper()) {
-                    HARDWARE.encoderTurn(-turnTestSmall, TURN_POWER);
-                } else if (INPUT.GAMEPAD.rightBumper()) {
-                    HARDWARE.encoderTurn(turnTestSmall, TURN_POWER);
-                }
+                telemetry.addData("column detected", getColumn());
             } else if (INPUT.GAMEPAD.a()) {
+                telemetry.addData("jewel colour", HARDWARE.jewelColour());
+                telemetry.addData("vision pattern", HARDWARE.targetColumn());
+            } else if (INPUT.GAMEPAD.b()) {
                 HARDWARE.openClamp();
-            } else if (INPUT.GAMEPAD.rightTrigger() > 0) {
-                HARDWARE.setJewelArmPosition(0);
-            } else if (INPUT.GAMEPAD.leftTrigger() > 0) {
-                HARDWARE.setJewelArmPosition(1);
+            } else if (INPUT.GAMEPAD.dpadUp()) {
+                telemetry.addLine("driving forward");
+                HARDWARE.encoderDrive(4, DRIVE_POWER);
+            } else if (INPUT.GAMEPAD.dpadDown()) {
+                telemetry.addLine("driving backward");
+                HARDWARE.encoderDrive(-4, DRIVE_POWER);
+            } else if (INPUT.GAMEPAD.dpadRight()) {
+                telemetry.addLine("turning right (gyro)");
+                HARDWARE.gyroTurn(15, TURN_POWER);
+            } else if (INPUT.GAMEPAD.dpadLeft()) {
+                telemetry.addLine("turning left (gyro)");
+                HARDWARE.gyroTurn(-15, TURN_POWER);
+            } else if (INPUT.GAMEPAD.rightBumper()) {
+                telemetry.addLine("turning right (encoder)");
+                HARDWARE.encoderTurn(15, TURN_POWER);
+            } else if (INPUT.GAMEPAD.leftBumper()) {
+                telemetry.addLine("turning left (encoder)");
+                HARDWARE.encoderTurn(-15, TURN_POWER);
             }
-
-            telemetry.addLine("jewel colour: " + HARDWARE.jewelColour().toString());
-            telemetry.addLine("vision pattern: " + HARDWARE.targetColumn().toString());
         }
     }
 
     private void autonomous() {
-        double balanceBoardCompensation = 0.5;
-        double glyphInsert = 24 - RobotHardware.GLYPH_OFFSET_FORWARD;
-        double backAway = -4;
-
         jewel();
 
         RobotHardware.TargetColumn targetColumn = getColumn();
+
+        glyph(targetColumn);
+    }
+
+    private void glyph(RobotHardware.TargetColumn targetColumn) {
+        //if given no column, go for the centre
+        if (targetColumn == RobotHardware.TargetColumn.UNDEFINED) {
+            targetColumn = RobotHardware.TargetColumn.CENTRE;
+        }
+
+        double balanceBoardCompensation = 0.5;
+        double glyphInsert = 24 - RobotHardware.GLYPH_OFFSET_FORWARD;
+        double backAway = -4;
 
         int turnDirection;
         if (teamColour() == RobotHardware.TeamColour.BLUE) {
@@ -93,23 +101,23 @@ public abstract class Autonomous extends LinearOpMode {
         }
 
         if (nearRelic()) {
-            HARDWARE.encoderTurn(-90 * turnDirection, TURN_POWER);
+            HARDWARE.turn(-90 * turnDirection, TURN_POWER);
             HARDWARE.encoderDrive(36 + columnCompensation(targetColumn) + balanceBoardCompensation, DRIVE_POWER);
         } else {
-            HARDWARE.encoderTurn(-90 * turnDirection, TURN_POWER);
+            HARDWARE.turn(-90 * turnDirection, TURN_POWER);
             HARDWARE.encoderDrive(24 + balanceBoardCompensation, DRIVE_POWER);
-            HARDWARE.encoderTurn(90 * turnDirection, TURN_POWER);
+            HARDWARE.turn(90 * turnDirection, TURN_POWER);
             HARDWARE.encoderDrive(6 + columnCompensation(targetColumn), DRIVE_POWER);
         }
 
-        HARDWARE.encoderTurn(-90 * turnDirection, TURN_POWER);
+        HARDWARE.turn(-90 * turnDirection, TURN_POWER);
         HARDWARE.openClamp();
         HARDWARE.encoderDrive(glyphInsert, DRIVE_POWER);
         HARDWARE.encoderDrive(backAway, DRIVE_POWER);
     }
 
     private double columnCompensation(RobotHardware.TargetColumn column) {
-        double columnOffset = 7.5;
+        double columnOffset = 7.5; //distance between cryptobox columns in inches
         double compensation = 0;
 
         if (nearRelic()) {
@@ -150,46 +158,65 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     private void jewel() {
-        double forwardAdjustment = -0.5;
-        int turnDegrees = 15;
+        double adjustment = 1; //positive value backs away from jewel
+        int turnDegrees = 15; //turns clockwise
 
+        //backs away, lowers arm, moves forward (prevents arm hitting field wall)
+        HARDWARE.encoderDrive(adjustment, DRIVE_POWER);
         HARDWARE.setJewelArmPosition(1);
-        HARDWARE.encoderDrive(forwardAdjustment, DRIVE_POWER);
+        HARDWARE.encoderDrive(-adjustment, DRIVE_POWER);
 
         RobotHardware.TeamColour jewelColour = HARDWARE.jewelColour();
+        telemetry.addData("jewel colour", jewelColour);
 
         if (jewelColour != RobotHardware.TeamColour.UNDEFINED) {
-            if (jewelColour == teamColour()) {
+            //our colour sensor faces left (counterclockwise)
+            //if we are facing our own jewel, we turn clockwise
+            if (jewelColour != teamColour()) {
+                //not facing our jewel, turn counterclockwise
                 turnDegrees *= -1;
             }
 
+            //turns to knock off the jewel, then turns back
             HARDWARE.gyroTurn(turnDegrees, TURN_POWER);
             HARDWARE.gyroTurn(-turnDegrees, TURN_POWER);
         }
 
-        HARDWARE.encoderDrive(-forwardAdjustment, DRIVE_POWER);
+        //backs away, raises arm, moves forward
+        HARDWARE.encoderDrive(adjustment, DRIVE_POWER);
         HARDWARE.setJewelArmPosition(0);
+        HARDWARE.encoderDrive(-adjustment, DRIVE_POWER);
     }
 
     private RobotHardware.TargetColumn getColumn() {
-        HARDWARE.initVuforia();
+        int totalTurned = 0;
 
-        int turns = 0;
+        //vision target mounted to the left when facing toward the jewels
+        //turn counterclockwise if vision target not visible
         int turnDegrees = -5;
+
+        //maximum number of turns before giving up on vision target and turning back
+        int maxTurns = 10;
+
         RobotHardware.TargetColumn column = RobotHardware.TargetColumn.UNDEFINED;
 
-        while (true) {
+        while (totalTurned / turnDegrees < maxTurns) {
+            //get vision target
             column = HARDWARE.targetColumn();
 
             if (column == RobotHardware.TargetColumn.UNDEFINED) {
-                turns++;
-                HARDWARE.encoderTurn(turnDegrees, TURN_POWER);
+                //vision target not visible, turn clockwise
+                totalTurned += turnDegrees;
+                HARDWARE.turn(turnDegrees, TURN_POWER);
             } else {
-                int turnBack = turnDegrees * turns * -1;
-                HARDWARE.encoderTurn(turnBack, TURN_POWER);
-                return column;
+                //vision target detected, stop turning
+                break;
             }
         }
+
+        //turn back and return detected vision target
+        HARDWARE.turn(-totalTurned, TURN_POWER);
+        return column;
     }
 
     abstract RobotHardware.TeamColour teamColour();

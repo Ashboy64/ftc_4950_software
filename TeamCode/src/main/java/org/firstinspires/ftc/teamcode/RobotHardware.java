@@ -83,6 +83,8 @@ public class RobotHardware {
             JEWEL_SERVO = null;
             JEWEL_COLOUR = null;
         }
+
+        initVuforia();
     }
 
     public RobotHardware(HardwareMap hardwareMap) {
@@ -132,11 +134,16 @@ public class RobotHardware {
         stopDrive();
     }
 
-    public void encoderTurn(double angle, double power) {
+    public void encoderTurn(int angle, double power) {
         double robotRotations = angle / 360;
         double distance = robotRotations * TURN_DISTANCE;
 
         encoderDrive(distance, -distance, power);
+    }
+
+    public void turn(int angle, double power) {
+        gyroTurn(angle, power);
+        //encoderTurn(angle, power);
     }
 
     public void encoderDrive(double distance, double power) {
@@ -250,7 +257,7 @@ public class RobotHardware {
         }
     }
 
-    public void initVuforia() {
+    private void initVuforia() {
         int cameraMonitorViewId = HARDWARE_MAP.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", HARDWARE_MAP.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
