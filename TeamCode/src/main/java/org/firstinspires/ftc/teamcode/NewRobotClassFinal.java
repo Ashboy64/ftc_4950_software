@@ -107,14 +107,6 @@ public class NewRobotClassFinal {
 
     public void setJewelArmPosition(double position) {
         jewelServo.setPosition(position);
-
-        try {
-            wait(1000);
-        } catch (InterruptedException e) {
-            opMode.telemetry.addData("biggie killed tupac > ", "1");
-            opMode.telemetry.update();
-        }
-
     }
 
     public void drive(double distance, LinearOpMode linearOpMode) {

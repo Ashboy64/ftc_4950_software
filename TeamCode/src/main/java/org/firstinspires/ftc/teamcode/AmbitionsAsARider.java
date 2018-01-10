@@ -12,6 +12,8 @@ public class AmbitionsAsARider extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap, this);
+        telemetry.addData("ready", "");
+        telemetry.update();
         jewelTest();
     }
 

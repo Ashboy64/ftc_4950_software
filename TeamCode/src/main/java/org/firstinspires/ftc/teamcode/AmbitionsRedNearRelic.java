@@ -12,6 +12,9 @@ public class AmbitionsRedNearRelic extends LinearOpMode {
     public void runOpMode(){
 
         robot.init(hardwareMap, this);
+        telemetry.addData("ready", "");
+        telemetry.update();
+        waitForStart();
         scoreJewel();
 
     }
