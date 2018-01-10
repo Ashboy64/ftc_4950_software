@@ -9,14 +9,10 @@ public class NewAutonomousDriverTester extends NewAutonomous {
     @Override
     public void runOpMode() {
         initRobot();
-        waitForStart();
 
         //driveTest();
-        try {
-            jewelTest();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        jewelTest();
+
 
         //robot.openClamp();
 
@@ -26,15 +22,15 @@ public class NewAutonomousDriverTester extends NewAutonomous {
         //}
     }
 
-    private  void jewelTest() throws InterruptedException{
+    private  void jewelTest() {
         robot.setJewelArmPosition(1);
         scoreJewelTest();
         robot.setJewelArmPosition(0);
     }
 
-    private void scoreJewelTest() throws InterruptedException{
+    private void scoreJewelTest(){
         int detected = robot.getJewelColour();
-        robot.gyroEncoders((red() ? (detected == -1 ? -90 : 90) : (detected == 1 ? 90 : -90)));
+        robot.gyroEncoders((true ? (detected == -1 ? -90 : 90) : (detected == 1 ? 90 : -90)));
     }
 
     private void turnTest() {
@@ -68,11 +64,13 @@ public class NewAutonomousDriverTester extends NewAutonomous {
 
     @Override
     boolean red() {
+        /*throw new IllegalStateException();*/
         return true;
     }
 
     @Override
     boolean nearRelic() {
-        throw new IllegalStateException();
+        /*throw new IllegalStateException();*/
+        return true;
     }
 }

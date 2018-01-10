@@ -61,7 +61,7 @@ public class NewAutonomousDriver {
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
         armMotor = hardwareMap.dcMotor.get("armMotor");
-        gyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
+        gyro = hardwareMap.gyroSensor.get("gyro");
         clampServo = hardwareMap.crservo.get("clampServo");
         colorSensor = hardwareMap.colorSensor.get("jewelColor");
         jewelServo = hardwareMap.servo.get("jewelServo");
@@ -92,6 +92,8 @@ public class NewAutonomousDriver {
 
         opMode.telemetry.addData(">", "Press Play to start");
         opMode.telemetry.update();
+
+        opMode.waitForStart();
 
         relicTrackables.activate();
     }
@@ -223,9 +225,9 @@ public class NewAutonomousDriver {
      *
      * @return -1 for a blue jewel, 1 for a red jewel
      */
-    public int getJewelColour() throws InterruptedException{
-        setJewelArmPosition(1);
-        wait(1000);
+    public int getJewelColour(){
+        //setJewelArmPosition(1);
+        //wait(1000);
         double blueColor = colorSensor.blue();
         double redColor = colorSensor.red();
         return (blueColor > redColor ? -1 : 1);
