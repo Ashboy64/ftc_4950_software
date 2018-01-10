@@ -122,6 +122,9 @@ public class RobotHardware {
     }
 
     public void gyroTurn(int angle, double power) {
+        if (LINEAR_OP_MODE != null) {
+            LINEAR_OP_MODE.telemetry.addLine("gyro turn " + angle + " " + power);
+        }
         int current = angleNormalize(gyroHeading());
         int target = angleNormalize(current + angle);
         int delta = angleNormalize(target - current);
@@ -135,6 +138,9 @@ public class RobotHardware {
     }
 
     public void encoderTurn(int angle, double power) {
+        if (LINEAR_OP_MODE != null) {
+            LINEAR_OP_MODE.telemetry.addLine("encoder turn " + angle + " " + power);
+        }
         double robotRotations = angle / 360;
         double distance = robotRotations * TURN_DISTANCE;
 
@@ -142,8 +148,8 @@ public class RobotHardware {
     }
 
     public void turn(int angle, double power) {
-        gyroTurn(angle, power);
-        //encoderTurn(angle, power);
+        //gyroTurn(angle, power);
+        encoderTurn(angle, power);
     }
 
     public void encoderDrive(double distance, double power) {
@@ -151,6 +157,9 @@ public class RobotHardware {
     }
 
     private void encoderDrive(double leftInches, double rightInches, double power) {
+        if (LINEAR_OP_MODE != null) {
+            LINEAR_OP_MODE.telemetry.addLine("encoder drive " + leftInches + " " rightInches + " " + power);
+        }
         double leftRotations = leftInches / WHEEL_CIRCUMFERENCE_IN;
         double rightRotations = rightInches / WHEEL_CIRCUMFERENCE_IN;
 

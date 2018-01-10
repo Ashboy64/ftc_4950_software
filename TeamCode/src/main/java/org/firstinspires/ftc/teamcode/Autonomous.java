@@ -33,7 +33,7 @@ public abstract class Autonomous extends LinearOpMode {
         HARDWARE.motorZeroPowerBrake(true);
         HARDWARE.gyroCalibrate();
 
-        testing = INPUT.GAMEPAD.back();
+        testing = INPUT.GAMEPAD.rightStickButton();
 
         if (testing) {
             testing();
