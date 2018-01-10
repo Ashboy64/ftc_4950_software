@@ -18,22 +18,8 @@ public class AmbitionsAsARider extends LinearOpMode {
     private  void jewelTest() {
         robot.setJewelArmPosition(1);
 
-        try {
-            wait(1000);
-        } catch (InterruptedException e) {
-            telemetry.addData("biggie killed tupac > ", "1");
-            telemetry.update();
-        }
-
-        scoreJewelTest();
-        robot.setJewelArmPosition(0);
-
-        try {
-            wait(1000);
-        } catch (InterruptedException e) {
-            telemetry.addData("biggie killed tupac > ", "2");
-            telemetry.update();
-        }
+        long time = System.currentTimeMillis();
+        while (System.currentTimeMillis() - time < 1000);
 
         telemetry.addData("done!", "");
         telemetry.update();
