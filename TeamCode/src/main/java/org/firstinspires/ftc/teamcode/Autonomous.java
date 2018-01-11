@@ -10,17 +10,9 @@ import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 public abstract class Autonomous extends LinearOpMode {
@@ -62,26 +54,66 @@ public abstract class Autonomous extends LinearOpMode {
         input = new RobotInput(gamepad1, gamepad2);
 
         initHardware();
+
+        telemetry.addData("team", teamColour());
+        telemetry.addData("near relic", nearRelic());
+
         waitForStart();
 
-        autonomous();
+        movementTest();
+        //autonomous();
+    }
+
+    private void movementTest() {
+        telemetry.addData("current task", "encoder drive test");
+        telemetry.update();
+
+        encoderDrive(24, DRIVE_POWER);
+        sleep();
+        encoderDrive(-24, DRIVE_POWER);
+        sleep();
+
+        telemetry.addData("current task", "encoder turn test");
+        telemetry.update();
+
+        encoderTurn(90, TURN_POWER);
+        sleep();
+        encoderTurn(-90, TURN_POWER);
+        sleep();
+
+        telemetry.addData("current task", "gyro turn test");
+        telemetry.update();
+
+        gyroTurn(90, TURN_POWER);
+        sleep();
+        gyroTurn(-90, TURN_POWER);
+        sleep();
+
+        telemetry.addData("current task", "open clamp");
+        telemetry.update();
+
+        openClamp();
+        sleep();
+
+        telemetry.addData("current task", "all tests complete");
+        telemetry.update();
     }
 
     private void autonomous() {
-        telemetry.addData("current task", "jewel");
-        telemetry.update();
         jewel();
 
-        telemetry.addData("current task", "get column");
-        telemetry.update();
         int column = getColumn();
 
-        telemetry.addData("current task", "score glyph");
-        telemetry.update();
         glyph(column);
+
+        telemetry.addData("current task", "autonomous complete");
+        telemetry.update();
     }
 
     private void jewel() {
+        telemetry.addData("current task", "jewel");
+        telemetry.update();
+
         double adjustment = 1; //positive value backs away from jewel
         int turnDegrees = 15; //turns clockwise
 
@@ -125,6 +157,9 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     private int getColumn() {
+        telemetry.addData("current task", "get column");
+        telemetry.update();
+
         int turn = -25;
 
         //turns toward vision target
@@ -147,6 +182,9 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     private void glyph(int column) {
+        telemetry.addData("current task", "score glyph");
+        telemetry.update();
+
         double balanceDismountOffset = 0;
         double cryptoboxInsertion = 24 - GLYPH_OFFSET_FORWARD;
         double backAway = -2;
