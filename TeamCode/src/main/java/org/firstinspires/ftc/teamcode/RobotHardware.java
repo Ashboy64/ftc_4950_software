@@ -129,10 +129,13 @@ public class RobotHardware {
         int target = angleNormalize(current + angle);
         int delta = angleNormalize(target - current);
 
+        LINEAR_OP_MODE.telemetry.addLine("current " + current + " target " + target + " delta " + delta);
+
         int direction = delta > 0 ? 1 : -1;
 
         while (active() && angleNormalize(gyroHeading()) != target) {
             freeDrive(direction * power, -direction * power);
+            LINEAR_OP_MODE.telemetry.addData("angle", gyroHeading());
         }
         stopDrive();
     }
@@ -148,8 +151,8 @@ public class RobotHardware {
     }
 
     public void turn(int angle, double power) {
-        //gyroTurn(angle, power);
-        encoderTurn(angle, power);
+        gyroTurn(angle, power);
+        //encoderTurn(angle, power);
     }
 
     public void encoderDrive(double distance, double power) {
@@ -158,7 +161,7 @@ public class RobotHardware {
 
     private void encoderDrive(double leftInches, double rightInches, double power) {
         if (LINEAR_OP_MODE != null) {
-            LINEAR_OP_MODE.telemetry.addLine("encoder drive " + leftInches + " " rightInches + " " + power);
+            LINEAR_OP_MODE.telemetry.addLine("encoder drive " + leftInches + " " + rightInches + " " + power);
         }
         double leftRotations = leftInches / WHEEL_CIRCUMFERENCE_IN;
         double rightRotations = rightInches / WHEEL_CIRCUMFERENCE_IN;
@@ -169,15 +172,18 @@ public class RobotHardware {
         int leftTicks = (int) Math.round(leftShaft * TICKS_PER_MOTOR_REVOLUTION);
         int rightTicks = (int) Math.round(rightShaft * TICKS_PER_MOTOR_REVOLUTION);
 
+        LINEAR_OP_MODE.telemetry.addLine("left rot " + leftRotations + " shaft " + leftShaft + " ticks " + leftTicks);
+        LINEAR_OP_MODE.telemetry.addLine("right rot " + rightRotations + " shaft " + rightShaft + " ticks " + rightTicks);
+
         encoderDriveTicks(leftTicks, rightTicks, power);
     }
 
     private void encoderDriveTicks(int left, int right, double power) {
         driveWithEncoders(true);
-        LEFT_MOTOR.setTargetPosition(left);
         LEFT_MOTOR.setPower(power);
-        RIGHT_MOTOR.setTargetPosition(right);
         RIGHT_MOTOR.setPower(power);
+        LEFT_MOTOR.setTargetPosition(left);
+        RIGHT_MOTOR.setTargetPosition(right);
         while (active() && (LEFT_MOTOR.isBusy() || RIGHT_MOTOR.isBusy())) ;
     }
 

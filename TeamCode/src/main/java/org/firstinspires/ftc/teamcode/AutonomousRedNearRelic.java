@@ -4,8 +4,8 @@ package org.firstinspires.ftc.teamcode;
 
 public class AutonomousRedNearRelic extends Autonomous {
     @Override
-    RobotHardware.TeamColour teamColour() {
-        return RobotHardware.TeamColour.RED;
+    int teamColour() {
+        return 1;
     }
 
     @Override
