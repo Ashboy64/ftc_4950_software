@@ -28,7 +28,6 @@ public abstract class Autonomous extends LinearOpMode {
 
     private static final double TICKS_PER_MOTOR_REVOLUTION = 1120; //2240
 
-    private static final double ARM_SPROCKET_RATIO = 15.0 / 54;
     private static final double WHEEL_CIRCUMFERENCE_IN = 90 * 0.0393701 * Math.PI;
     private static final double DRIVE_GEAR_RATIO = 45.0 / 30;
     private static final double TURN_DISTANCE = 12.75 * Math.PI;
@@ -257,9 +256,9 @@ public abstract class Autonomous extends LinearOpMode {
 
         int direction = delta > 0 ? 1 : -1;
 
-        while (opModeIsActive() && angleNormalize(gyroHeading() - target) > GYRO_TURN_THRESHOLD) {
+        while (opModeIsActive() && Math.abs(angleNormalize(gyroHeading() - target)) > GYRO_TURN_THRESHOLD) {
             freeDrive(direction * power, -direction * power);
-            telemetry.addData("angle", gyroHeading());
+            telemetry.addData("heading", gyroHeading());
             telemetry.update();
         }
         stopDrive();
@@ -359,14 +358,14 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     private int angleNormalize(int angle) {
-        angle %= 360;
-        if (angle < -180) {
-            return angle + 360;
-        } else if (angle >= 180) {
-            return angle - 360;
-        } else {
-            return angle;
+        while (angle < -180) {
+            angle += 360;
         }
+        while (angle >= 180) {
+            angle -= 360;
+        }
+
+        return angle;
     }
 
     //returns -2 for unknown, -1 for left, 0 for centre, 1 for right
