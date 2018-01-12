@@ -59,7 +59,7 @@ public abstract class NewAutonomous extends LinearOpMode {
             robot.turn(135);
             trackableViewed = robot.getTargetColumn();
             robot.turn(-135);
-            robot.drive(((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth)) - 2.8515);
+            robot.drive(((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth)) - armOffset);
             robot.turn(-90);
             robot.drive(18);
             robot.openClamp();
@@ -68,7 +68,7 @@ public abstract class NewAutonomous extends LinearOpMode {
             trackableViewed = robot.getTargetColumn();
             robot.turn(135);
             robot.drive(24);
-            robot.drive(((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth)) - 2.8515);
+            robot.drive(((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth)) - armOffset);
             robot.turn(-90);
             robot.drive(18);
             robot.openClamp();
@@ -76,16 +76,17 @@ public abstract class NewAutonomous extends LinearOpMode {
             robot.turn(135);
             trackableViewed = robot.getTargetColumn();
             robot.turn(-135);
-            robot.drive(((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth)) - 2.8515);
+            robot.drive(((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth)) - armOffset);
             robot.turn(90);
             robot.drive(18);
             robot.openClamp();
         } else {
             robot.turn(135);
+            robot.turn(135);
             trackableViewed = robot.getTargetColumn();
             robot.turn(-45);
             robot.drive(24);
-            robot.drive(((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth)) - 2.8515);
+            robot.drive(((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth)) - armOffset);
             robot.turn(90);
             robot.drive(18);
             robot.openClamp();
