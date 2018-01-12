@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
  * Created by rao_a on 11/30/2017.
  */
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -26,7 +27,7 @@ public class RobotClassFinalUse {
     public DcMotor rightMotor = null;
     public DcMotor armMotor;
     ColorSensor colorSensor;
-    GyroSensor gyro;
+    ModernRoboticsI2cGyro gyro;
     VuforiaLocalizer vuforia;
     CRServo clampServo;
     //CRServo jewelServo;
@@ -48,7 +49,7 @@ public class RobotClassFinalUse {
         leftMotor = ahwMap.dcMotor.get("leftMotor");
         rightMotor = ahwMap.dcMotor.get("rightMotor");
         armMotor = ahwMap.dcMotor.get("armMotor");
-        gyro = ahwMap.gyroSensor.get("gyro");
+        gyro = ahwMap.get(ModernRoboticsI2cGyro.class, "gyro");
         clampServo = ahwMap.crservo.get("clampServo");
         //colorSensor = ahwMap.colorSensor.get("colorSensor");
         //jewelServo = ahwMap.crservo.get("jewelServo");
@@ -129,6 +130,35 @@ public class RobotClassFinalUse {
                 distance = target - gyro.getHeading();
             }
         }
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public void gyroEncoders (double degrees, LinearOpMode linearOpMode) {
+        int ticks = ticksPerRevolution;
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftMotor.setTargetPosition(ticks);
+        rightMotor.setTargetPosition(-ticks);
+
+        leftMotor.setPower(0.5);
+        rightMotor.setPower(-0.5);
+
+        while (leftMotor.getCurrentPosition() < leftMotor.getTargetPosition() && rightMotor.getCurrentPosition() > rightMotor.getTargetPosition() && linearOpMode.opModeIsActive()) {
+
+        }
+
         leftMotor.setPower(0);
         rightMotor.setPower(0);
 

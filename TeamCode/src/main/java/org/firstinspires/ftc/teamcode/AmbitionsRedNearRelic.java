@@ -8,19 +8,21 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 public class AmbitionsRedNearRelic extends LinearOpMode {
     NewRobotClassFinal robot =  new NewRobotClassFinal();
+    int trackableViewed;
+    double cryptoBoxWidth = 7.63;
+    double armOffset = 2.8515;
 
     public void runOpMode(){
 
         robot.init(hardwareMap, this);
-        telemetry.addData("ready", "");
-        telemetry.update();
-        waitForStart();
-        scoreJewel();
-
-    }
-
-    public void scoreJewel(){
-
+        robot.gyroTurning(135);
+        trackableViewed = robot.getTargetColumn();
+        robot.gyroTurning(135);
+        robot.drive(24);
+        robot.drive(((cryptoBoxWidth/2) + (trackableViewed * cryptoBoxWidth)) - armOffset);
+        robot.gyroTurning(-90);
+        robot.openClamp();
+        robot.drive(18);
     }
 
     private  void jewelTest() {
@@ -43,7 +45,7 @@ public class AmbitionsRedNearRelic extends LinearOpMode {
 //            telemetry.update();
 //        }
 
-        telemetry.addData("done!", "");
+        telemetry.addData("done!", " ");
         telemetry.update();
     }
 
@@ -56,4 +58,10 @@ public class AmbitionsRedNearRelic extends LinearOpMode {
         return true;
     }
 
+    public void scoreJewel() {
+        robot.jewelServo.setPosition(0);
+        int detected = robot.getJewelColour();
+        robot.gyroEncoders((true ? (detected == -1 ? -90 : 90) : (detected == 1 ? 90 : -90)));
+        robot.jewelServo.setPosition(1);
+    }
 }
