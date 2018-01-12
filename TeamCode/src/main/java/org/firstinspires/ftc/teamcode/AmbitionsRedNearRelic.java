@@ -19,10 +19,6 @@ public class AmbitionsRedNearRelic extends LinearOpMode {
 
     }
 
-    public void scoreJewel(){
-
-    }
-
     private  void jewelTest() {
         robot.setJewelArmPosition(1);
 
@@ -56,4 +52,10 @@ public class AmbitionsRedNearRelic extends LinearOpMode {
         return true;
     }
 
+    public void scoreJewel() {
+        robot.jewelServo.setPosition(0);
+        int detected = robot.getJewelColour();
+        robot.gyroEncoders((true ? (detected == -1 ? -90 : 90) : (detected == 1 ? 90 : -90)));
+        robot.jewelServo.setPosition(1);
+    }
 }

@@ -24,4 +24,11 @@ public class AmbitionsBlueNearRelic extends LinearOpMode {
         robot.drive(18);
         robot.openClamp();
     }
+
+    public void scoreJewel() {
+        robot.jewelServo.setPosition(0);
+        int detected = robot.getJewelColour();
+        robot.gyroEncoders((false ? (detected == -1 ? -90 : 90) : (detected == 1 ? 90 : -90)));
+        robot.jewelServo.setPosition(1);
+    }
 }
