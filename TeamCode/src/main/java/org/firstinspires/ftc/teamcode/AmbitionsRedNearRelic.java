@@ -45,7 +45,7 @@ public class AmbitionsRedNearRelic extends LinearOpMode {
 //            telemetry.update();
 //        }
 
-        telemetry.addData("done!", "");
+        telemetry.addData("done!", " ");
         telemetry.update();
     }
 
