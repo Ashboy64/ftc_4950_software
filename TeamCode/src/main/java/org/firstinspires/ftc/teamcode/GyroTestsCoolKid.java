@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  */
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "RaChItBaLlEr")
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
 
 public class GyroTestsCoolKid extends LinearOpMode {
 

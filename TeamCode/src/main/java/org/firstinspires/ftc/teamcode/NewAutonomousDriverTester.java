@@ -5,6 +5,7 @@ package org.firstinspires.ftc.teamcode;
  */
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "drivertester")
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
 public class NewAutonomousDriverTester extends NewAutonomous {
     @Override
     public void runOpMode() {

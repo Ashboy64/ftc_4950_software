@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  */
 
 @TeleOp(name="gyro turning tests", group ="Concept")
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
 
 public class GyroTurningTests extends OpMode {
     RobotClassFinalUse robot = new RobotClassFinalUse();

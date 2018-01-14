@@ -29,6 +29,7 @@ import static com.sun.tools.javac.util.Constants.format;
  */
 
 @Autonomous(name = "FinalAutononousRedNearRelic", group = "Concept")
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
 public class FinalAutonomousRedNearRelic extends LinearOpMode{
     double wheel_diameter = 3.5; //the diameter of the wheels of our robot.
     double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter

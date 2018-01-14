@@ -26,6 +26,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  */
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "BlueNearRelic")
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
 public class FinalAutonomousBlueNearRelic extends LinearOpMode{
     VuforiaLocalizer vuforia; //an image-processing library that allows us to analyze pictures
     float getToJewel = 0;

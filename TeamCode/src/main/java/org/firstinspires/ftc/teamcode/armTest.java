@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  * Created by mnawani on 11/7/2017.
  */
 
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
 public class armTest extends LinearOpMode {
     double wheel_diameter = 3.5; //the diameter of the wheels of our robot.
     double wheel_circumference = Math.PI * wheel_diameter; //the value of π times the wheel diameter

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  */
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Rasputin")
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
 
 public class gyrotestslalala extends LinearOpMode {
 

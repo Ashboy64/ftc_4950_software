@@ -5,6 +5,7 @@ package org.firstinspires.ftc.teamcode;
  * DO NOT EDIT
  */
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "RED NEAR RELIC")
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
 public class NewAutonomousRedNearRelic extends NewAutonomous {
     @Override
     boolean red() {

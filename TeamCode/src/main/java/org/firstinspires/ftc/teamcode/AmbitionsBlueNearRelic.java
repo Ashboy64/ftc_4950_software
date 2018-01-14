@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  * Created by Aayushiron on 1/11/18.
  */
 
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
 public class AmbitionsBlueNearRelic extends LinearOpMode {
     NewRobotClassFinal robot = new NewRobotClassFinal();
     int trackableViewed;

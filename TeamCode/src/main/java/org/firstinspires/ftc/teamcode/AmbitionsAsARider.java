@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  */
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "AmbitionsAsARider")
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
 public class AmbitionsAsARider extends LinearOpMode {
     NewRobotClassFinal robot =  new NewRobotClassFinal();
     @Override
