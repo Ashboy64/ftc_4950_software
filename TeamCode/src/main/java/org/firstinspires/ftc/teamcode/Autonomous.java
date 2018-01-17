@@ -1,21 +1,14 @@
-/*
-AUTONOMOUS TODO
-test gyro turning
-test different field positions
-test column detection with vuforia
-read jewel colours and adjust thresholds
- */
-
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
@@ -24,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 public abstract class Autonomous extends LinearOpMode {
-    private static final double TICKS_PER_MOTOR_REVOLUTION = 1120; //2240
+    private static final double TICKS_PER_MOTOR_REVOLUTION = 1120;
 
     private static final double WHEEL_CIRCUMFERENCE_IN = 90 * 0.0393701 * Math.PI;
     private static final double DRIVE_GEAR_RATIO = 45.0 / 30;
@@ -33,21 +26,15 @@ public abstract class Autonomous extends LinearOpMode {
     private static final double GLYPH_OFFSET_RIGHT = 2.8515;
     private static final double GLYPH_OFFSET_FORWARD = 7.588 + 3;
 
-    private long startTime;
-
-    private static final double DRIVE_POWER = 1.0 / 8;
+    private static final double DRIVE_POWER = 3.0 / 16;
     private static final double TURN_POWER = 1.0 / 8;
 
     private static final double ENCODER_TURN_MULTIPLIER = 1.1;
-
-    private static final int GYRO_TURN_THRESHOLD = 2;
 
     private CRServo clampServo;
 
     private DcMotor leftMotor;
     private DcMotor rightMotor;
-
-    private GyroSensor gyro;
 
     private DigitalChannel armTouchOpen;
     private DigitalChannel armTouchClosed;
@@ -57,30 +44,22 @@ public abstract class Autonomous extends LinearOpMode {
 
     private VuforiaTrackable vuforiaTrackable;
 
-    private RobotInput input;
+    private ModernRoboticsI2cGyro gyro;
+
+    private boolean useGyro = false;
+    private boolean useVuforia = false;
 
     private int targetHeading = 0;
 
-    private boolean useGyro = false;
-    private boolean jewel = true;
-    private boolean useVuforia = false;
+    private ElapsedTime autonomousTimer;
 
     @Override
     public void runOpMode() {
-        input = new RobotInput(gamepad1, gamepad2);
-
         initHardware();
 
         waitForStart();
-        /*
-        while (!isStarted() && !isStopRequested()) {
-            sensorTelemetry();
-        }
-        */
 
-        //movementTest();
-        //sensorTest();
-        startTime = System.currentTimeMillis();
+        autonomousTimer = new ElapsedTime();
 
         autonomous();
     }
@@ -91,58 +70,12 @@ public abstract class Autonomous extends LinearOpMode {
             telemetry.addData("near relic", nearRelic());
             telemetry.addData("jewel colour", jewelColour());
             telemetry.addData("column", targetColumn());
-            if (useGyro) {
-                telemetry.addData("gyro heading", gyroHeading());
-            }
             telemetry.update();
-        }
-    }
-
-    private void movementTest() {
-        telemetry.addData("current task", "encoder drive test");
-        telemetry.update();
-
-        encoderDrive(24, DRIVE_POWER);
-        sleep();
-        encoderDrive(-24, DRIVE_POWER);
-        sleep();
-
-        if (useGyro) {
-            telemetry.addData("current task", "gyro turn test");
-            telemetry.update();
-
-            gyroTurn(90, TURN_POWER);
-            sleep();
-            gyroTurn(-90, TURN_POWER);
-            sleep();
-        } else {
-            telemetry.addData("current task", "encoder turn test");
-            telemetry.update();
-
-            encoderTurn(90, TURN_POWER);
-            sleep();
-            encoderTurn(-90, TURN_POWER);
-            sleep();
-        }
-
-        telemetry.addData("current task", "open clamp");
-        telemetry.update();
-
-        openClamp();
-        sleep();
-
-        telemetry.addData("current task", "all tests complete");
-        telemetry.update();
-
-        while (opModeIsActive()) {
-            sensorTelemetry();
         }
     }
 
     private void autonomous() {
-        if (jewel) {
-            jewel();
-        }
+        jewel();
 
         if (useVuforia) {
             int column = getColumn();
@@ -165,7 +98,7 @@ public abstract class Autonomous extends LinearOpMode {
         telemetry.update();
 
         //drives slightly closer to jewel
-        double adjustment = -1;
+        double adjustment = -1.0;
 
         //amount to turn to reread jewel colour
         int turnRead = 3;
@@ -173,6 +106,9 @@ public abstract class Autonomous extends LinearOpMode {
         //degrees to turn to knock off jewel
         //positive is clockwise
         int turnDegrees = 25;
+
+        //number of times to turn and retry reading jewel
+        int maxTries = 3;
 
         //lower jewel arm
         setJewelArmPosition(0);
@@ -184,17 +120,22 @@ public abstract class Autonomous extends LinearOpMode {
 
         //get jewel colour
         int jewelColour = jewelColour();
+        int tries = 0;
+        int turned = 0;
 
-        //if uncertain, get closer and read again
-        if (jewelColour == 0) {
+        //if uncertain, get closer and read again, repeat
+        while (jewelColour == 0 && tries < maxTries) {
+            tries++;
+
             turn(turnRead, TURN_POWER);
+            turned += turnRead;
+
             sleep();
 
             jewelColour = jewelColour();
-
-            turn(-turnRead, TURN_POWER);
-            sleep();
         }
+
+        turn(-turned, TURN_POWER);
 
         telemetry.addData("jewel colour", jewelColour);
         telemetry.update();
@@ -260,10 +201,10 @@ public abstract class Autonomous extends LinearOpMode {
         telemetry.update();
 
         //we drive a little farther because of dismounting the balancing stone
-        double balanceDismountOffset = 4;
+        double balanceDismountOffset = 3.5;
 
         //distance to drive to insert the glyph into the cryptobox
-        double cryptoboxInsertion = 24 - GLYPH_OFFSET_FORWARD - 3;
+        double cryptoboxInsertion = 24 - GLYPH_OFFSET_FORWARD;
 
         //distance to back away at the end
         double backAway = -2.5;
@@ -316,7 +257,7 @@ public abstract class Autonomous extends LinearOpMode {
         sleep();
 
         //inserts glyph, with timeout so that we back away before the 30 second time limit
-        encoderDrive(cryptoboxInsertion, DRIVE_POWER, 27000);
+        encoderDrive(cryptoboxInsertion, cryptoboxInsertion, DRIVE_POWER, 27000);
         sleep();
 
         //backs away from glyph so we aren't touching it
@@ -327,12 +268,17 @@ public abstract class Autonomous extends LinearOpMode {
     private double glyphHorizontalOffset(int column) {
         double columnOffset = 7.5;
 
+        //compensates for the offset of our target column
+        //column is an int, -1 is left, 0 is centre, 1 is right
+        //teamColour is our team colour, -1 for blue, 1 for red
         //red means left is farther (approach from right)
         //blue means right is farther (approach from left)
 
         double offset = column * columnOffset * teamColour() * -1;
 
-        //if approaching from right, need to drive farther
+        //compensates for our glyph mechanism design
+        //the glyph is closer to the right side
+        //if approaching from right (red), need to drive farther
         //otherwise, need to drive less
 
         offset += GLYPH_OFFSET_RIGHT * teamColour();
@@ -351,11 +297,6 @@ public abstract class Autonomous extends LinearOpMode {
         armTouchOpen.setMode(DigitalChannel.Mode.INPUT);
         armTouchClosed.setMode(DigitalChannel.Mode.INPUT);
 
-        if (useGyro) {
-            gyro = hardwareMap.gyroSensor.get("gyro");
-        }
-
-
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
         leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -366,9 +307,20 @@ public abstract class Autonomous extends LinearOpMode {
         jewelColour = hardwareMap.colorSensor.get("jewelColor");
 
         initVuforia();
+
         if (useGyro) {
-            gyroCalibrate();
+            gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+            gyro.calibrate();
+
+            ElapsedTime gyroCalibrate = new ElapsedTime();
+
+            while (gyro.isCalibrating()) {
+                telemetry.addData("gyro calibrating %d ms", (int) gyroCalibrate.milliseconds());
+                telemetry.update();
+            }
         }
+
+        encoderReset();
 
         telemetry.addData("hardware initialization", "complete");
         telemetry.update();
@@ -384,41 +336,9 @@ public abstract class Autonomous extends LinearOpMode {
         }
     }
 
-    public void freeDrive(double left, double right) {
-        telemetry.addData("freedrive", "left %.4f right %.4f", left, right);
-        telemetry.update();
-
-        driveWithEncoders(false);
-        leftMotor.setPower(left);
-        rightMotor.setPower(right);
-    }
-
-    private void stopDrive() {
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
-    }
-
-    private void gyroTurn(int angle, double power) {
-        int current = angleNormalize(gyroHeading());
-        targetHeading = angleNormalize(targetHeading + angle);
-        int delta = angleNormalize(targetHeading - current);
-
-        telemetry.addData("gyro turn", "current %d, target %d, delta %d", current, targetHeading, delta);
-        //telemetry.update();
-
-        int direction = delta > 0 ? 1 : -1;
-
-        freeDrive(direction * power, -direction * power);
-
-        telemetry.addData("gyro turn", "power %.4f direction %d", power, direction);
-        telemetry.update();
-
-        long time = System.currentTimeMillis();
-        while (opModeIsActive() && Math.abs(angleNormalize(gyroHeading() - targetHeading)) > GYRO_TURN_THRESHOLD) {
-            //telemetry.addData("gyro turn", "angle %d, %d ms", gyroHeading(), System.currentTimeMillis() - time);
-            //telemetry.update();
-        }
-        stopDrive();
+    private void turn(int angle, double power) {
+        targetHeading += angle;
+        encoderTurn(angle, power);
     }
 
     private void encoderTurn(int angle, double power) {
@@ -428,78 +348,84 @@ public abstract class Autonomous extends LinearOpMode {
         telemetry.addData("encoder turn", "angle %d distance %.4f", angle, distance);
         telemetry.update();
 
-        encoderDrive(distance, -distance, power, 99999999);
+        encoderDrive(distance, -distance, power);
     }
 
-    private void turn(int angle, double power) {
+    //TODO
+    private void encoderGyroTurn(int angle, double power) {
+
+    }
+
+    private int gyroHeading() {
         if (useGyro) {
-            gyroTurn(angle, power);
-        } else {
-            encoderTurn(angle, power);
+            return gyro.getHeading();
         }
+
+        return -Integer.MAX_VALUE;
     }
 
-    private void encoderDrive(double distance, double power) {
-        encoderDrive(distance, distance, power, 99999999);
+    private void encoderDrive(double inches, double power) {
+        encoderDrive(inches, inches, power, 0);
     }
 
-    private void encoderDrive(double distance, double power, int timeout) {
-        encoderDrive(distance, distance, power, timeout);
+    private void encoderDrive(double leftInches, double rightInches, double power) {
+        encoderDrive(leftInches, rightInches, power, 0);
     }
 
     private void encoderDrive(double leftInches, double rightInches, double power, int timeout) {
-        double leftRotations = leftInches / WHEEL_CIRCUMFERENCE_IN;
-        double rightRotations = rightInches / WHEEL_CIRCUMFERENCE_IN;
+        int left = inchesToEncoderTicks(leftInches);
+        int right = inchesToEncoderTicks(rightInches);
 
-        double leftShaft = leftRotations / DRIVE_GEAR_RATIO;
-        double rightShaft = rightRotations / DRIVE_GEAR_RATIO;
+        encoderDriveTicks(left, right, power);
 
-        int leftTicks = (int) Math.round(leftShaft * TICKS_PER_MOTOR_REVOLUTION);
-        int rightTicks = (int) Math.round(rightShaft * TICKS_PER_MOTOR_REVOLUTION);
+        //negative timeout: continue driving but return
+        //zero timeout: lock until driving complete
+        //positive timeout: drive until complete or timeout reached
 
-        encoderDriveTicks(leftTicks, rightTicks, power, timeout);
+        if (timeout > 0) {
+            while (encodersBusy() && autonomousTimer.milliseconds() < timeout) {
+                sleep();
+            }
+        } else if (timeout == 0) {
+            while (encodersBusy()) {
+                sleep();
+            }
+        }
     }
 
-    private void encoderDriveTicks(int left, int right, double power, int timeout) {
-        stopDrive();
+    private int inchesToEncoderTicks(double inches) {
+        double wheelRotations = inches / WHEEL_CIRCUMFERENCE_IN;
+        double shaftRotations = wheelRotations / DRIVE_GEAR_RATIO;
+        return (int) Math.round(shaftRotations * TICKS_PER_MOTOR_REVOLUTION);
+    }
 
+    private void encoderDriveTicks(int left, int right, double power) {
         if (left == 0 && right == 0) {
             return;
         }
 
-        driveWithEncoders(true);
-
-        leftMotor.setPower(power);
-        rightMotor.setPower(power);
+        encoderReset();
 
         leftMotor.setTargetPosition(left);
         rightMotor.setTargetPosition(right);
 
         telemetry.addData("encoder drive", "driving");
         telemetry.update();
-
-        while (opModeIsActive() && (leftMotor.isBusy() || rightMotor.isBusy()) && System.currentTimeMillis() < startTime + timeout) {
-            telemetry.addData("encoder drive", "left %d target %d, right %d target %d",
-                    leftMotor.getCurrentPosition(), left, rightMotor.getCurrentPosition(), right);
-            telemetry.update();
-        }
-
-        stopDrive();
-        telemetry.addData("encoder drive", "complete");
-        telemetry.update();
     }
 
-    private void driveWithEncoders(boolean enabled) {
-        if (enabled) {
-            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    private boolean encodersBusy() {
+        return leftMotor.isBusy() || rightMotor.isBusy();
+    }
 
-        } else {
-            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
+    private void encoderReset() {
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     private boolean getTouchOpen() {
@@ -520,39 +446,6 @@ public abstract class Autonomous extends LinearOpMode {
         telemetry.addData("clamp", "opened");
         telemetry.update();
         sleep();
-    }
-
-    private void gyroCalibrate() {
-        telemetry.addData("gyro", "calibrating");
-        telemetry.update();
-        gyro.calibrate();
-
-        long startTime = System.currentTimeMillis();
-        while (!isStopRequested() && gyro.isCalibrating()) {
-            telemetry.addData("gyro", "calibrating %d ms", System.currentTimeMillis() - startTime);
-            telemetry.update();
-            sleep(50);
-            idle();
-        }
-
-        telemetry.addData("gyro", "calibrated");
-        telemetry.update();
-    }
-
-    private int gyroHeading() {
-        int heading = gyro.getHeading();
-        return angleNormalize(heading);
-    }
-
-    private int angleNormalize(int angle) {
-        while (angle < -180) {
-            angle += 360;
-        }
-        while (angle >= 180) {
-            angle -= 360;
-        }
-
-        return angle;
     }
 
     //returns -2 for unknown, -1 for left, 0 for centre, 1 for right
@@ -585,24 +478,27 @@ public abstract class Autonomous extends LinearOpMode {
         trackables.activate();
     }
 
-    //return -1 for blue, 1 for red, 0 for unknown
     private int jewelColour() {
-        int blueThreshold = -32; //-128;
-        int redThreshold = 64; //0;
+        //value of red - blue below which we consider this a blue jewel
+        int blueThreshold = -48;
+        //value of red - blue above which we consider this a red jewel
+        int redThreshold = 64;
 
+        //get relevant colour sensor values
         int red = jewelColour.red();
-        int green = jewelColour.green();
         int blue = jewelColour.blue();
 
+        //how much more red there is than blue
         int colourRaw = red - blue;
 
-        telemetry.addData("colour", "%d %d %d (red - blue = %d)", red, green, blue, colourRaw);
-
         if (colourRaw < blueThreshold) {
+            //below blue threshold, return -1 for blue
             return -1;
         } else if (colourRaw > redThreshold) {
+            //above red threshold, return 1 for red
             return 1;
         } else {
+            //unsure about jewel colour
             return 0;
         }
     }
@@ -614,5 +510,6 @@ public abstract class Autonomous extends LinearOpMode {
     //return -1 for blue, 1 for red
     abstract int teamColour();
 
+    //whether near relic recovery zone
     abstract boolean nearRelic();
 }

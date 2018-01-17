@@ -2,6 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.Locale;
 
@@ -10,9 +15,9 @@ import static org.firstinspires.ftc.teamcode.ControlUtils.*;
 @TeleOp(name = "Teleop", group = "Concept")
 public class Teleop extends OpMode {
     private enum DriveMode {
-        FORWARD(1, 0.5, 3, 1.5),
+        FORWARD(1, 0.5, 3, 1),
         BACKWARD(0.75, 0.75, 2, 2),
-        TURN(0.75, 0.75, 4, 4);
+        TURN(0.75, 0.75, 4, 3);
 
         private final double POWER_DOWN;
         private final double POWER_UP;
@@ -57,12 +62,25 @@ public class Teleop extends OpMode {
 
     private static final boolean TOUCH_LIMIT_ARM = true;
 
-    private static final double ARM_MIN_POWER_FALLING = 0.25;
+    private static final double ARM_MIN_POWER_FALLING = 0.375;
     private static final double ARM_MIN_POWER_LIFTING = 0.5;
     private static final double ARM_BALANCE_ANGLE_OFFSET = 45;
 
     private RobotInput INPUT;
-    private RobotHardware HARDWARE;
+
+    public static final double TICKS_PER_MOTOR_REVOLUTION = 1120;
+    public static final double ARM_SPROCKET_RATIO = 15.0 / 54;
+
+    private CRServo clampServo;
+
+    private DcMotor armMotor;
+    private DcMotor leftMotor;
+    private DcMotor rightMotor;
+
+    private DigitalChannel armTouchOpen;
+    private DigitalChannel armTouchClosed;
+
+    private Servo jewelServo;
 
     private final Interpolator LEFT_INTERPOLATOR = new Interpolator(DriveMode.FORWARD.power(0));
     private final Interpolator RIGHT_INTERPOLATOR = new Interpolator(DriveMode.FORWARD.power(0));
@@ -70,8 +88,32 @@ public class Teleop extends OpMode {
     @Override
     public void init() {
         INPUT = new RobotInput(gamepad1, gamepad2);
-        HARDWARE = new RobotHardware(hardwareMap);
-        HARDWARE.motorZeroPowerBrake(false);
+        initHardware();
+    }
+
+    private void initHardware() {
+        clampServo = hardwareMap.crservo.get("clampServo");
+
+        armTouchOpen = hardwareMap.get(DigitalChannel.class, "tsOpen");
+        armTouchClosed = hardwareMap.get(DigitalChannel.class, "tsClosed");
+        armTouchOpen.setMode(DigitalChannel.Mode.INPUT);
+        armTouchClosed.setMode(DigitalChannel.Mode.INPUT);
+
+        leftMotor = hardwareMap.dcMotor.get("leftMotor");
+        rightMotor = hardwareMap.dcMotor.get("rightMotor");
+        leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+
+        armMotor = hardwareMap.dcMotor.get("armMotor");
+        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        resetArm();
+
+        jewelServo = hardwareMap.servo.get("jewelServo");
     }
 
     @Override
@@ -79,11 +121,11 @@ public class Teleop extends OpMode {
         updateClamp();
         updateJewel();
 
-        double armAngle = (HARDWARE.armPosition() - ARM_BALANCE_ANGLE_OFFSET + 360) % 360;
+        double armAngle = (armPosition() - ARM_BALANCE_ANGLE_OFFSET + 360) % 360;
 
         double armIn = INPUT.getArmPower();
         double armPower = armPower(armIn, armAngle);
-        HARDWARE.armDrive(armPower);
+        armDrive(armPower);
         double armHeight = armHeight(armAngle);
 
         telemetry.addLine(String.format(Locale.ENGLISH, "arm angle: %.4f, sin: %.4f, cos: %.4f, power: %.4f, height: %.4f",
@@ -101,7 +143,7 @@ public class Teleop extends OpMode {
         double left = LEFT_INTERPOLATOR.value(leftIn * power);
         double right = RIGHT_INTERPOLATOR.value(rightIn * power);
 
-        HARDWARE.freeDrive(left, right);
+        freeDrive(left, right);
         telemetry.addLine(String.format(Locale.ENGLISH, "drive direction: %s, power: %.4f and %.4f (%.4f), accel: %.4f",
                 DriveMode.mode(leftIn, rightIn).toString(), left, right, power, accel));
     }
@@ -109,20 +151,20 @@ public class Teleop extends OpMode {
     private void updateClamp() {
         double clampPower = INPUT.getClampPower();
         if (TOUCH_LIMIT_ARM) {
-            if (HARDWARE.getTouchOpen()) {
+            if (getTouchOpen()) {
                 clampPower = Math.max(clampPower, 0);
-            } else if (HARDWARE.getTouchClosed()) {
+            } else if (getTouchClosed()) {
                 clampPower = Math.min(clampPower, 0);
             }
         }
-        HARDWARE.setClampPower(clampPower);
+        setClampPower(clampPower);
     }
 
     private void updateJewel() {
         if (INPUT.GAMEPAD.x()) {
-            HARDWARE.setJewelArmPosition(0);
+            setJewelArmPosition(0);
         } else {
-            HARDWARE.setJewelArmPosition(1);
+            setJewelArmPosition(1);
         }
     }
 
@@ -145,5 +187,43 @@ public class Teleop extends OpMode {
 
     private double armHeight(double armAngle) {
         return (sin(armAngle) + 1) / 2;
+    }
+
+    private void resetArm() {
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+    }
+
+    public void armDrive(double power) {
+        armMotor.setPower(power);
+    }
+
+    private void freeDrive(double left, double right) {
+        leftMotor.setPower(left);
+        rightMotor.setPower(right);
+    }
+
+    private void setClampPower(double power) {
+        clampServo.setPower(power);
+    }
+
+    private boolean getTouchOpen() {
+        return !armTouchOpen.getState();
+    }
+
+    private boolean getTouchClosed() {
+        return !armTouchClosed.getState();
+    }
+
+    public double armPosition() {
+        return armMotor.getCurrentPosition()
+                / TICKS_PER_MOTOR_REVOLUTION
+                * ARM_SPROCKET_RATIO
+                * 360;
+    }
+
+    private void setJewelArmPosition(double position) {
+        jewelServo.setPosition(position);
     }
 }
