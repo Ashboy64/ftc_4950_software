@@ -49,7 +49,7 @@ public abstract class Autonomous extends LinearOpMode {
     private static final double GYRO_TURN_THRESHOLD = 2;
 
     private boolean useGyro = true;
-    private boolean useVuforia = false;
+    private boolean useVuforia = true;
 
     private int targetHeading = 0;
 
@@ -207,7 +207,8 @@ public abstract class Autonomous extends LinearOpMode {
         double balanceDismountOffset = 3.5;
 
         //distance to drive to insert the glyph into the cryptobox
-        double cryptoboxInsertion = 24 - GLYPH_OFFSET_FORWARD;
+        //double cryptoboxInsertion = 24 - GLYPH_OFFSET_FORWARD;
+        int cryptoboxDriveMillis = 5000;
 
         //distance to back away at the end
         double backAway = -2.5;
@@ -260,7 +261,8 @@ public abstract class Autonomous extends LinearOpMode {
         sleep();
 
         //inserts glyph, with timeout so that we back away before the 30 second time limit
-        freeDrive(DRIVE_POWER, DRIVE_POWER, Math.min(5000, 27000 - (int) autonomousTimer.milliseconds()));
+        freeDrive(DRIVE_POWER, DRIVE_POWER, Math.min(cryptoboxDriveMillis,
+                    27000 - (int) autonomousTimer.milliseconds()));
         sleep();
 
         //backs away from glyph so we aren't touching it
@@ -476,7 +478,7 @@ public abstract class Autonomous extends LinearOpMode {
         return !armTouchOpen.getState();
     }
 
-    public void openClamp() {
+    private void openClamp() {
         telemetry.addData("clamp", "opening");
         telemetry.update();
         clampServo.setPower(-1);
