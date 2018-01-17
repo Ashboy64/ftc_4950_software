@@ -46,7 +46,9 @@ public abstract class Autonomous extends LinearOpMode {
 
     private ModernRoboticsI2cGyro gyro;
 
-    private boolean useGyro = false;
+    private static final double GYRO_TURN_THRESHOLD = 2;
+
+    private boolean useGyro = true;
     private boolean useVuforia = false;
 
     private int targetHeading = 0;
@@ -62,14 +64,19 @@ public abstract class Autonomous extends LinearOpMode {
         autonomousTimer = new ElapsedTime();
 
         autonomous();
+
+        while (opModeIsActive()) {
+            sensorTelemetry();
+        }
     }
 
-    private void sensorTelemetry() {
+    void sensorTelemetry() {
         while (opModeIsActive()) {
             telemetry.addData("team", teamColour());
             telemetry.addData("near relic", nearRelic());
             telemetry.addData("jewel colour", jewelColour());
             telemetry.addData("column", targetColumn());
+            telemetry.addData("heading", gyroHeading());
             telemetry.update();
         }
     }
@@ -87,10 +94,6 @@ public abstract class Autonomous extends LinearOpMode {
 
         telemetry.addData("current task", "autonomous complete");
         telemetry.update();
-
-        while (opModeIsActive()) {
-            sensorTelemetry();
-        }
     }
 
     private void jewel() {
@@ -257,7 +260,7 @@ public abstract class Autonomous extends LinearOpMode {
         sleep();
 
         //inserts glyph, with timeout so that we back away before the 30 second time limit
-        encoderDrive(cryptoboxInsertion, cryptoboxInsertion, DRIVE_POWER, 27000);
+        freeDrive(DRIVE_POWER, DRIVE_POWER, Math.min(5000, 27000 - (int) autonomousTimer.milliseconds()));
         sleep();
 
         //backs away from glyph so we aren't touching it
@@ -286,7 +289,7 @@ public abstract class Autonomous extends LinearOpMode {
         return offset;
     }
 
-    private void initHardware() {
+    void initHardware() {
         telemetry.addData("hardware initialization", "working");
         telemetry.update();
 
@@ -301,7 +304,8 @@ public abstract class Autonomous extends LinearOpMode {
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
         leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorZeroPowerBrake(true);
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         jewelServo = hardwareMap.servo.get("jewelServo");
         jewelColour = hardwareMap.colorSensor.get("jewelColor");
@@ -315,30 +319,24 @@ public abstract class Autonomous extends LinearOpMode {
             ElapsedTime gyroCalibrate = new ElapsedTime();
 
             while (gyro.isCalibrating()) {
-                telemetry.addData("gyro calibrating %d ms", (int) gyroCalibrate.milliseconds());
+                telemetry.addData("gyro calibrating", gyroCalibrate);
                 telemetry.update();
             }
         }
 
-        encoderReset();
+        setEncoder(false);
 
         telemetry.addData("hardware initialization", "complete");
         telemetry.update();
     }
 
-    private void motorZeroPowerBrake(boolean brake) {
-        for (DcMotor motor : new DcMotor[]{leftMotor, rightMotor}) {
-            if (brake) {
-                motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            } else {
-                motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            }
-        }
-    }
-
     private void turn(int angle, double power) {
         targetHeading += angle;
-        encoderTurn(angle, power);
+        if (useGyro) {
+            gyroTurn(targetHeading, TURN_POWER);
+        } else {
+            encoderTurn(angle, power);
+        }
     }
 
     private void encoderTurn(int angle, double power) {
@@ -351,9 +349,61 @@ public abstract class Autonomous extends LinearOpMode {
         encoderDrive(distance, -distance, power);
     }
 
-    //TODO
-    private void encoderGyroTurn(int angle, double power) {
+    private void gyroTurn(int targetHeading, double power) {
+        int error = headingError(targetHeading);
 
+        double leftPower = (error > 0 ? 1 : -1) * power;
+        double rightPower = -leftPower;
+
+        freeDrive(leftPower, rightPower);
+
+        while (Math.abs(error) > GYRO_TURN_THRESHOLD) {
+            error = headingError(targetHeading);
+            telemetry.addData("gyro turn", "target %d error %d", targetHeading, error);
+            telemetry.update();
+        }
+
+        stopDrive();
+    }
+
+    private int headingError(int target) {
+        return angleNormalize(target - gyroHeading());
+    }
+
+    private int angleNormalize(int degrees) {
+        while (degrees < -180) {
+            degrees += 360;
+        }
+
+        while (degrees >= 180) {
+            degrees -= 360;
+        }
+
+        return degrees;
+    }
+
+    private void freeDrive(double left, double right, int timeMillis) {
+        freeDrive(left, right);
+
+        ElapsedTime driveTime = new ElapsedTime();
+
+        while (driveTime.milliseconds() < timeMillis) {
+            telemetry.addData("free drive", driveTime);
+            telemetry.update();
+        }
+
+        stopDrive();
+    }
+
+    private void freeDrive(double left, double right) {
+        setEncoder(false);
+
+        leftMotor.setPower(left);
+        rightMotor.setPower(right);
+    }
+
+    private void stopDrive() {
+        freeDrive(0, 0);
     }
 
     private int gyroHeading() {
@@ -361,36 +411,18 @@ public abstract class Autonomous extends LinearOpMode {
             return gyro.getHeading();
         }
 
-        return -Integer.MAX_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     private void encoderDrive(double inches, double power) {
-        encoderDrive(inches, inches, power, 0);
+        encoderDrive(inches, inches, power);
     }
 
     private void encoderDrive(double leftInches, double rightInches, double power) {
-        encoderDrive(leftInches, rightInches, power, 0);
-    }
-
-    private void encoderDrive(double leftInches, double rightInches, double power, int timeout) {
         int left = inchesToEncoderTicks(leftInches);
         int right = inchesToEncoderTicks(rightInches);
 
         encoderDriveTicks(left, right, power);
-
-        //negative timeout: continue driving but return
-        //zero timeout: lock until driving complete
-        //positive timeout: drive until complete or timeout reached
-
-        if (timeout > 0) {
-            while (encodersBusy() && autonomousTimer.milliseconds() < timeout) {
-                sleep();
-            }
-        } else if (timeout == 0) {
-            while (encodersBusy()) {
-                sleep();
-            }
-        }
     }
 
     private int inchesToEncoderTicks(double inches) {
@@ -404,28 +436,40 @@ public abstract class Autonomous extends LinearOpMode {
             return;
         }
 
-        encoderReset();
+        setEncoder(true);
 
         leftMotor.setTargetPosition(left);
         rightMotor.setTargetPosition(right);
 
-        telemetry.addData("encoder drive", "driving");
-        telemetry.update();
+        leftMotor.setPower(power);
+        rightMotor.setPower(power);
+
+        ElapsedTime driveTime = new ElapsedTime();
+
+        while (opModeIsActive() && encodersBusy()) {
+            telemetry.addData("encoder drive", driveTime);
+            telemetry.update();
+        }
     }
 
     private boolean encodersBusy() {
         return leftMotor.isBusy() || rightMotor.isBusy();
     }
 
-    private void encoderReset() {
+    private void setEncoder(boolean encoder) {
         leftMotor.setPower(0);
         rightMotor.setPower(0);
 
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        if (encoder) {
+            leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        } else {
+            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
     }
 
     private boolean getTouchOpen() {
@@ -437,11 +481,12 @@ public abstract class Autonomous extends LinearOpMode {
         telemetry.update();
         clampServo.setPower(-1);
 
-        long time = System.currentTimeMillis();
+        ElapsedTime openTime = new ElapsedTime();
         while (opModeIsActive() && !getTouchOpen()) {
-            telemetry.addData("clamp", "opening %d ms", System.currentTimeMillis() - time);
+            telemetry.addData("clamp open", openTime);
             telemetry.update();
         }
+
         clampServo.setPower(0);
         telemetry.addData("clamp", "opened");
         telemetry.update();
@@ -490,6 +535,8 @@ public abstract class Autonomous extends LinearOpMode {
 
         //how much more red there is than blue
         int colourRaw = red - blue;
+
+        telemetry.addData("jewel colour", "red %d blue %d (%d)", red, blue, colourRaw);
 
         if (colourRaw < blueThreshold) {
             //below blue threshold, return -1 for blue
