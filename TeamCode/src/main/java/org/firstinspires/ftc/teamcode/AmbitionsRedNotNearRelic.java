@@ -13,7 +13,7 @@ public class AmbitionsRedNotNearRelic extends LinearOpMode{
     double cryptoBoxWidth = 7.63;
     double armOffset = 2.8515;
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         robot.gyroTurning(135);
         trackableViewed = robot.getTargetColumn();
         robot.gyroTurning(-135);

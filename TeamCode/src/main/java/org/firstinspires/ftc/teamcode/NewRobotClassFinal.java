@@ -180,11 +180,11 @@ public class NewRobotClassFinal {
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double currentHeading = gyro.getHeading();
         double target = (currentHeading + degrees) % 360;
-
-        while (opMode.opModeIsActive() && !((gyro.getHeading()<degrees+5) && (gyro.getHeading()>degrees-5))) {
-            double speed = 0.3 + (0.2 * Math.abs((gyro.getHeading() - target) / degrees));
-            rightMotor.setPower((degrees < 0 ? speed : -speed));
-            leftMotor.setPower((degrees < 0 ? -speed : speed));
+        double speed = 0.5;
+        rightMotor.setPower((degrees < 0 ? speed : -speed));
+        leftMotor.setPower((degrees < 0 ? -speed : speed));
+        while (opMode.opModeIsActive() && !((gyro.getHeading()<target+13) && (gyro.getHeading()>target-13))) {
+            //double speed = 0.3 + (0.2 * Math.abs((gyro.getHeading() - target) / degrees));
             opMode.telemetry.addData("Heading:", gyro.getHeading());
             opMode.telemetry.update();
         }
