@@ -3,19 +3,21 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 /**
- * Created by rao_a on 1/9/2018.
+ * Created by rao_a on 1/18/2018.
  */
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "AmbitionsAsARider")
-//@com.qualcomm.robotcore.eventloop.opmode.Disabled
-public class AmbitionsAsARider extends LinearOpMode {
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "turn test")
+public class gyroSignTest extends LinearOpMode {
     NewRobotClassFinal robot =  new NewRobotClassFinal();
     @Override
     public void runOpMode(){
         robot.init(hardwareMap, this);
         telemetry.addData("ready", "");
         telemetry.update();
-        robot.gyroTurning(90);
+        while(opModeIsActive()){
+            telemetry.addData("Heading: ", robot.gyro.getHeading());
+            telemetry.update();
+        }
     }
 
     private void jewelTest() {
@@ -33,5 +35,4 @@ public class AmbitionsAsARider extends LinearOpMode {
         int detected = robot.getJewelColour();
         robot.gyroEncoders((true ? (detected == -1 ? -90 : 90) : (detected == 1 ? 90 : -90)));
     }
-
 }

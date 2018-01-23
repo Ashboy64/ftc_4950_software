@@ -58,13 +58,13 @@ public class NewRobotClassFinal {
         rightMotor = ahwMap.dcMotor.get("rightMotor");
         armMotor = ahwMap.dcMotor.get("armMotor");
         gyro = ahwMap.gyroSensor.get("gyro");
-        clampServo = ahwMap.crservo.get("clampServo");
+        //clampServo = ahwMap.crservo.get("clampServo");
         colorSensor = ahwMap.colorSensor.get("jewelColor");
         jewelServo = ahwMap.servo.get("jewelServo");
-        ARM_TOUCH_OPEN = ahwMap.get(DigitalChannel.class, "tsOpen");
-        ARM_TOUCH_CLOSED = ahwMap.get(DigitalChannel.class, "tsClosed");
-        ARM_TOUCH_OPEN.setMode(DigitalChannel.Mode.INPUT);
-        ARM_TOUCH_CLOSED.setMode(DigitalChannel.Mode.INPUT);
+        //ARM_TOUCH_OPEN = ahwMap.get(DigitalChannel.class, "tsOpen");
+        //ARM_TOUCH_CLOSED = ahwMap.get(DigitalChannel.class, "tsClosed");
+        //ARM_TOUCH_OPEN.setMode(DigitalChannel.Mode.INPUT);
+        //ARM_TOUCH_CLOSED.setMode(DigitalChannel.Mode.INPUT);
 
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -173,17 +173,68 @@ public class NewRobotClassFinal {
         clampServo.setPower(0);
         clampServo.setDirection(DcMotorSimple.Direction.FORWARD);
     }
-
+    // degrees >= - 360 AND degrees is <= 360
+    public double max(double one, double two){
+        if(one >  two) return one;
+        return two;
+    }
+    public double min(double one, double two){
+        if(one <  two) return one;
+        return two;
+    }
     public void gyroTurning(int degrees) {
         if(degrees == 0) return;
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double currentHeading = gyro.getHeading();
-        double target = (currentHeading + degrees) % 360;
+        double target = (currentHeading + degrees + 360) % 360;
         double speed = 0.5;
         rightMotor.setPower((degrees < 0 ? speed : -speed));
         leftMotor.setPower((degrees < 0 ? -speed : speed));
-        while (opMode.opModeIsActive() && !((gyro.getHeading()<target+13) && (gyro.getHeading()>target-13))) {
+        if(target  - 5 < 0 || target + 5 >= 360){
+            opMode.telemetry.addData(" edge case ","");
+            opMode.telemetry.update();
+            while(opMode.opModeIsActive()){
+                currentHeading = gyro.getHeading();
+                if(currentHeading <= 359.9 && currentHeading >= target  - 5 + 360){
+                    break;
+                }else if(currentHeading >= 0 && currentHeading <= (target  +  5) % 360){
+                    break;
+                }
+            }
+        }else {
+            while (opMode.opModeIsActive() && !((gyro.getHeading() <= (target + 5) % 360) && (gyro.getHeading() >= target - 5))) {
+                opMode.telemetry.addData("no edge","");
+                opMode.telemetry.update();
+                speed = 0.3 + (0.2 * Math.abs((gyro.getHeading() - target) / degrees));
+                opMode.telemetry.addData("Heading:", gyro.getHeading());
+                opMode.telemetry.update();
+            }
+        }
+       /* while(opMode.opModeIsActive()){
+            currentHeading = gyro.getHeading();
+            if((currentHeading ) % 360 < (target + 5) % 360 && (currentHeading + 360) % 360  > (target - 5 + 360)%360){
+                break;
+            }
+            opMode.telemetry.addData("Heading:", gyro.getHeading());
+            opMode.telemetry.update();
+        }*/
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+        opMode.telemetry.addData("Final heading", gyro.getHeading());
+        opMode.telemetry.update();
+    }
+
+    public void gyroTurningNeg(int degrees){
+        if(degrees == 0) return;
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        double currentHeading = gyro.getHeading();
+        double target = (currentHeading + degrees + 360) % 360;
+        double speed = 0.5;
+        rightMotor.setPower((degrees < 0 ? speed : -speed));
+        leftMotor.setPower((degrees < 0 ? -speed : speed));
+        while (opMode.opModeIsActive() && !((gyro.getHeading()<=target+5) && (gyro.getHeading()>=target-5))) {
             //double speed = 0.3 + (0.2 * Math.abs((gyro.getHeading() - target) / degrees));
             opMode.telemetry.addData("Heading:", gyro.getHeading());
             opMode.telemetry.update();
