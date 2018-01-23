@@ -26,8 +26,8 @@ public abstract class Autonomous extends LinearOpMode {
     private static final double GLYPH_OFFSET_RIGHT = 2.8515;
     private static final double GLYPH_OFFSET_FORWARD = 7.588 + 3;
 
-    private static final double DRIVE_POWER = 3.0 / 16;
-    private static final double TURN_POWER = 1.0 / 8;
+    static final double DRIVE_POWER = 3.0 / 16;
+    static final double TURN_POWER = 1.0 / 8;
 
     private static final double ENCODER_TURN_MULTIPLIER = 1.1;
 
@@ -37,7 +37,6 @@ public abstract class Autonomous extends LinearOpMode {
     private DcMotor rightMotor;
 
     private DigitalChannel armTouchOpen;
-    private DigitalChannel armTouchClosed;
 
     private Servo jewelServo;
     private ColorSensor jewelColour;
@@ -48,7 +47,7 @@ public abstract class Autonomous extends LinearOpMode {
 
     private static final double GYRO_TURN_THRESHOLD = 2;
 
-    private boolean useGyro = true;
+    boolean useGyro = true;
     private boolean useVuforia = true;
 
     private int targetHeading = 0;
@@ -64,24 +63,32 @@ public abstract class Autonomous extends LinearOpMode {
         autonomousTimer = new ElapsedTime();
 
         autonomous();
+    }
 
+    void sensorTelemetry(String message) {
+        telemetry.addData(message, autonomousTimer);
+
+        telemetry.addData("position", "team %s near relic %s", teamColour(), nearRelic());
+
+        int raw = jewelColourRaw();
+        telemetry.addData("jewel", "colour %d (raw %d)", jewelColour(raw), raw);
+
+        telemetry.addData("motor", "left %.4f right %.4f", leftMotor.getPower(), rightMotor.getPower());
+
+        telemetry.addData("column", targetColumn());
+
+        telemetry.addData("heading", gyroHeading());
+
+        telemetry.update();
+    }
+
+    void sensorTelemetryLoop() {
         while (opModeIsActive()) {
-            sensorTelemetry();
+            sensorTelemetry("sensor telemetry loop");
         }
     }
 
-    void sensorTelemetry() {
-        while (opModeIsActive()) {
-            telemetry.addData("team", teamColour());
-            telemetry.addData("near relic", nearRelic());
-            telemetry.addData("jewel colour", jewelColour());
-            telemetry.addData("column", targetColumn());
-            telemetry.addData("heading", gyroHeading());
-            telemetry.update();
-        }
-    }
-
-    private void autonomous() {
+    void autonomous() {
         jewel();
 
         if (useVuforia) {
@@ -92,13 +99,11 @@ public abstract class Autonomous extends LinearOpMode {
             glyph(0);
         }
 
-        telemetry.addData("current task", "autonomous complete");
-        telemetry.update();
+        sensorTelemetry("autonomous complete");
     }
 
     private void jewel() {
-        telemetry.addData("current task", "jewel");
-        telemetry.update();
+        sensorTelemetry("jewel");
 
         //drives slightly closer to jewel
         double adjustment = -1.0;
@@ -122,7 +127,8 @@ public abstract class Autonomous extends LinearOpMode {
         sleep();
 
         //get jewel colour
-        int jewelColour = jewelColour();
+        sensorTelemetry("jewel read colour");
+        int jewelColour = jewelColour(jewelColourRaw());
         int tries = 0;
         int turned = 0;
 
@@ -135,16 +141,17 @@ public abstract class Autonomous extends LinearOpMode {
 
             sleep();
 
-            jewelColour = jewelColour();
+            sensorTelemetry("jewel reread, try " + tries);
+            jewelColour = jewelColour(jewelColourRaw());
         }
 
+        sensorTelemetry("jewel read complete, turning back");
         turn(-turned, TURN_POWER);
-
-        telemetry.addData("jewel colour", jewelColour);
-        telemetry.update();
 
         //if certain about jewel colour
         if (jewelColour != 0) {
+            sensorTelemetry("jewel identified " + jewelColour);
+
             if (jewelColour == teamColour()) {
                 //our colour sensor faces right
                 //facing our own jewel, turn ccw
@@ -162,6 +169,8 @@ public abstract class Autonomous extends LinearOpMode {
             turn(-turnDegrees, TURN_POWER);
             sleep();
         } else {
+            sensorTelemetry("jewel not identified");
+
             //raise jewel arm, abandon attempt
             setJewelArmPosition(1);
         }
@@ -176,10 +185,14 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     private int getColumn() {
-        telemetry.addData("current task", "get column");
-        telemetry.update();
+        sensorTelemetry("identifying column");
 
-        int turn = -25;
+        int turn = -20;
+        int turnMore = -3;
+        int turned = turn;
+
+        int tries = 0;
+        int maxTries = 3;
 
         //turns toward vision target
         turn(turn, TURN_POWER);
@@ -188,12 +201,25 @@ public abstract class Autonomous extends LinearOpMode {
         //gets column value
         int column = targetColumn();
 
+        while ((column > 1 || column < -1) && tries < maxTries)
+        {
+            tries++;
+            sensorTelemetry("column reread, try " + tries);
+
+            turned += turnMore;
+
+            encoderTurn(turnMore, TURN_POWER);
+            column = targetColumn();
+        }
+
+        sensorTelemetry("column " + column);
+
         if (column < -1 || column > 1) {
             column = 0;
         }
 
         //turns back
-        turn(-turn, TURN_POWER);
+        turn(-turned, TURN_POWER);
         sleep();
 
         return column;
@@ -261,8 +287,15 @@ public abstract class Autonomous extends LinearOpMode {
         sleep();
 
         //inserts glyph, with timeout so that we back away before the 30 second time limit
-        freeDrive(DRIVE_POWER, DRIVE_POWER, Math.min(cryptoboxDriveMillis,
-                    27000 - (int) autonomousTimer.milliseconds()));
+        double stopTime = Math.min(27000, autonomousTimer.milliseconds() + cryptoboxDriveMillis);
+
+        freeDrive(DRIVE_POWER, DRIVE_POWER);
+
+        while (autonomousTimer.milliseconds() < stopTime) {
+            sensorTelemetry("pushing, stop " + stopTime);
+        }
+
+        stopDrive();
         sleep();
 
         //backs away from glyph so we aren't touching it
@@ -298,9 +331,7 @@ public abstract class Autonomous extends LinearOpMode {
         clampServo = hardwareMap.crservo.get("clampServo");
 
         armTouchOpen = hardwareMap.get(DigitalChannel.class, "tsOpen");
-        armTouchClosed = hardwareMap.get(DigitalChannel.class, "tsClosed");
         armTouchOpen.setMode(DigitalChannel.Mode.INPUT);
-        armTouchClosed.setMode(DigitalChannel.Mode.INPUT);
 
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
@@ -332,7 +363,7 @@ public abstract class Autonomous extends LinearOpMode {
         telemetry.update();
     }
 
-    private void turn(int angle, double power) {
+    void turn(int angle, double power) {
         targetHeading += angle;
         if (useGyro) {
             gyroTurn(targetHeading, TURN_POWER);
@@ -344,9 +375,6 @@ public abstract class Autonomous extends LinearOpMode {
     private void encoderTurn(int angle, double power) {
         double robotRotations = angle / 360.0;
         double distance = robotRotations * TURN_DISTANCE * ENCODER_TURN_MULTIPLIER;
-
-        telemetry.addData("encoder turn", "angle %d distance %.4f", angle, distance);
-        telemetry.update();
 
         encoderDrive(distance, -distance, power);
     }
@@ -361,8 +389,7 @@ public abstract class Autonomous extends LinearOpMode {
 
         while (Math.abs(error) > GYRO_TURN_THRESHOLD) {
             error = headingError(targetHeading);
-            telemetry.addData("gyro turn", "target %d error %d", targetHeading, error);
-            telemetry.update();
+            sensorTelemetry("turn to heading " + targetHeading + " error " + error);
         }
 
         stopDrive();
@@ -384,27 +411,14 @@ public abstract class Autonomous extends LinearOpMode {
         return degrees;
     }
 
-    private void freeDrive(double left, double right, int timeMillis) {
-        freeDrive(left, right);
-
-        ElapsedTime driveTime = new ElapsedTime();
-
-        while (driveTime.milliseconds() < timeMillis) {
-            telemetry.addData("free drive", driveTime);
-            telemetry.update();
-        }
-
-        stopDrive();
-    }
-
-    private void freeDrive(double left, double right) {
+    void freeDrive(double left, double right) {
         setEncoder(false);
 
         leftMotor.setPower(left);
         rightMotor.setPower(right);
     }
 
-    private void stopDrive() {
+    void stopDrive() {
         freeDrive(0, 0);
     }
 
@@ -413,10 +427,10 @@ public abstract class Autonomous extends LinearOpMode {
             return gyro.getHeading();
         }
 
-        return Integer.MIN_VALUE;
+        return 0;
     }
 
-    private void encoderDrive(double inches, double power) {
+    void encoderDrive(double inches, double power) {
         encoderDrive(inches, inches, power);
     }
 
@@ -525,12 +539,7 @@ public abstract class Autonomous extends LinearOpMode {
         trackables.activate();
     }
 
-    private int jewelColour() {
-        //value of red - blue below which we consider this a blue jewel
-        int blueThreshold = -48;
-        //value of red - blue above which we consider this a red jewel
-        int redThreshold = 64;
-
+    private int jewelColourRaw() {
         //get relevant colour sensor values
         int red = jewelColour.red();
         int blue = jewelColour.blue();
@@ -538,7 +547,14 @@ public abstract class Autonomous extends LinearOpMode {
         //how much more red there is than blue
         int colourRaw = red - blue;
 
-        telemetry.addData("jewel colour", "red %d blue %d (%d)", red, blue, colourRaw);
+        return colourRaw;
+    }
+
+    private int jewelColour(int colourRaw) {
+        //value of red - blue below which we consider this a blue jewel
+        int blueThreshold = -48;
+        //value of red - blue above which we consider this a red jewel
+        int redThreshold = 64;
 
         if (colourRaw < blueThreshold) {
             //below blue threshold, return -1 for blue

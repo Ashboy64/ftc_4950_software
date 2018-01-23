@@ -78,7 +78,6 @@ public class Teleop extends OpMode {
     private DcMotor rightMotor;
 
     private DigitalChannel armTouchOpen;
-    private DigitalChannel armTouchClosed;
 
     private Servo jewelServo;
 
@@ -95,9 +94,7 @@ public class Teleop extends OpMode {
         clampServo = hardwareMap.crservo.get("clampServo");
 
         armTouchOpen = hardwareMap.get(DigitalChannel.class, "tsOpen");
-        armTouchClosed = hardwareMap.get(DigitalChannel.class, "tsClosed");
         armTouchOpen.setMode(DigitalChannel.Mode.INPUT);
-        armTouchClosed.setMode(DigitalChannel.Mode.INPUT);
 
         leftMotor = hardwareMap.dcMotor.get("leftMotor");
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
@@ -105,9 +102,8 @@ public class Teleop extends OpMode {
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         armMotor = hardwareMap.dcMotor.get("armMotor");
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -153,8 +149,6 @@ public class Teleop extends OpMode {
         if (TOUCH_LIMIT_ARM) {
             if (getTouchOpen()) {
                 clampPower = Math.max(clampPower, 0);
-            } else if (getTouchClosed()) {
-                clampPower = Math.min(clampPower, 0);
             }
         }
         setClampPower(clampPower);
@@ -210,10 +204,6 @@ public class Teleop extends OpMode {
 
     private boolean getTouchOpen() {
         return !armTouchOpen.getState();
-    }
-
-    private boolean getTouchClosed() {
-        return !armTouchClosed.getState();
     }
 
     public double armPosition() {
