@@ -14,7 +14,7 @@ public class AmbitionsBlueNearRelic extends LinearOpMode {
     double armOffset = 2.8515;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode(){
         robot.init(hardwareMap, this);
         robot.gyroTurning(135);
         trackableViewed = robot.getTargetColumn();
