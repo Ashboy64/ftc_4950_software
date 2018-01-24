@@ -47,7 +47,7 @@ public abstract class Autonomous extends LinearOpMode {
 
     private static final double GYRO_TURN_THRESHOLD = 2;
 
-    boolean useGyro = true;
+    boolean useGyro = false;
     private boolean useVuforia = true;
 
     private int targetHeading = 0;
@@ -109,7 +109,7 @@ public abstract class Autonomous extends LinearOpMode {
         double adjustment = -1.0;
 
         //amount to turn to reread jewel colour
-        int turnRead = 3;
+        int turnRead = 4;
 
         //degrees to turn to knock off jewel
         //positive is clockwise
@@ -230,7 +230,7 @@ public abstract class Autonomous extends LinearOpMode {
         telemetry.update();
 
         //we drive a little farther because of dismounting the balancing stone
-        double balanceDismountOffset = 3.5;
+        double balanceDismountOffset = 2; //3.5;
 
         //distance to drive to insert the glyph into the cryptobox
         //double cryptoboxInsertion = 24 - GLYPH_OFFSET_FORWARD;
@@ -241,7 +241,7 @@ public abstract class Autonomous extends LinearOpMode {
 
         //drives angled slightly away from cryptobox so we don't run into it
         //in case turning is not accurate, will still score glyph
-        int outAngle = 5;
+        int outAngle = 0;
 
         //here we multiply by teamColour(), an integer representing -1 for blue or 1 for red
         //this reverses our turning direction if we are on the opposite alliance while
@@ -304,7 +304,7 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     private double glyphHorizontalOffset(int column) {
-        double columnOffset = 7.5;
+        double columnOffset = 6.0; //7.5;
 
         //compensates for the offset of our target column
         //column is an int, -1 is left, 0 is centre, 1 is right
