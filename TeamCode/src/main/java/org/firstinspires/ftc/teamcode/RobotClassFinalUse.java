@@ -109,11 +109,12 @@ public class RobotClassFinalUse {
 
 
     public void gyroTurning (double degrees, LinearOpMode linearOpMode) {
+        degrees = -degrees;
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         double target = (gyro.getHeading() + degrees) % 360;
-        if (gyro.getHeading() > target) {
+        if (gyro.getHeading() < target) {
             double originalDistance = gyro.getHeading() - target;
             double distance = gyro.getHeading() - target;
             while(gyro.getHeading() > target && linearOpMode.opModeIsActive()){
@@ -121,7 +122,7 @@ public class RobotClassFinalUse {
                 rightMotor.setPower((distance/(2*originalDistance)) + 0.5);
                 distance = gyro.getHeading() - target;
             }
-        } else if (gyro.getHeading() < target) {
+        } else if (gyro.getHeading() > target) {
             double originalDistance = target - gyro.getHeading();
             double distance = target - gyro.getHeading();
             while(gyro.getHeading() < target && linearOpMode.opModeIsActive()){

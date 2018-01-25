@@ -254,6 +254,8 @@ public class NewRobotClassFinal {
         opMode.telemetry.update();
     }
 
+
+
     public boolean getTouchOpen() {
         return !ARM_TOUCH_OPEN.getState();
     }

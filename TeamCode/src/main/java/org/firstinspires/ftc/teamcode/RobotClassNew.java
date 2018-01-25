@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
@@ -12,21 +13,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  * Created by rao_a on 11/29/2017.
  */
 
-public class RobotClassNew {
-    public DcMotor leftMotor = null;
-    public DcMotor rightMotor = null;
-    public GyroSensor gyro = null;
-    public DcMotor armMotor = null;
-    public CRServo clampServo = null;
-    public VuforiaLocalizer vuforiaLocalizer = null;
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "#dfdfdf")
+public class RobotClassNew extends LinearOpMode{
 
-    public void robot(){
-    }
-
-    public void config(HardwareMap hardwareMap){
-        leftMotor = hardwareMap.dcMotor.get("leftMotor");
-        rightMotor = hardwareMap.dcMotor.get("rightMotor");
-        armMotor = hardwareMap.dcMotor.get("armMotor");
-        clampServo = hardwareMap.crservo.get("clampServo");
+    RobotClassFinalUse robot = new RobotClassFinalUse();
+    @Override
+    public void runOpMode() throws InterruptedException {
+        robot.gyroTurning(90, this);
     }
 }
