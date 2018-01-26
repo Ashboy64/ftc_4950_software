@@ -91,6 +91,8 @@ public class NewRobotClassFinal {
 
         opMode.waitForStart();
 
+        opMode.telemetry.addData("ready!", "");
+
         relicTrackables.activate();
     }
 
@@ -183,9 +185,9 @@ public class NewRobotClassFinal {
         return two;
     }
 
-    private void sleep() {
+    public void sleep(long millis) {
         long time = System.currentTimeMillis();
-        while (System.currentTimeMillis() - time < 125);
+        while (System.currentTimeMillis() - time < millis);
     }
     public void gyroTurning(int degrees) {
         if(degrees == 0) return;
@@ -194,8 +196,8 @@ public class NewRobotClassFinal {
         double currentHeading = realDeg; //gyro.getHeading();
         double target = (currentHeading + degrees + 360) % 360;
         double speed = 0.375;
-        rightMotor.setPower((degrees < 0 ? -speed : speed));
-        leftMotor.setPower((degrees < 0 ? speed : -speed));
+        rightMotor.setPower((degrees < 0 ? speed : -speed));
+        leftMotor.setPower((degrees < 0 ? -speed : speed));
         if(target  - turningRange < 0 || target + turningRange >= 360){
             opMode.telemetry.addData(" edge case ","");
             opMode.telemetry.update();
@@ -230,7 +232,7 @@ public class NewRobotClassFinal {
         rightMotor.setPower(0);
         opMode.telemetry.addData("Final heading", gyro.getHeading());
         opMode.telemetry.update();
-        sleep();
+        sleep(125);
     }
 
     public void gyroTurningNeg(int degrees){
@@ -270,6 +272,18 @@ public class NewRobotClassFinal {
         opMode.telemetry.addData("exiting getJewelColour", "");
         opMode.telemetry.update();
         return (blueColor > redColor ? -1 : 1);
+    }
+
+    public void scoreJewel(int side) { // 0 is red, 1 is blue. 1 is near_relic, 0 is not
+        jewelServo.setPosition(0);
+        sleep(1000);
+        int detected = getJewelColour();
+        if(side == 0) {
+            detected = -detected;
+        }
+        gyroTurning(detected*25);
+        jewelServo.setPosition(1);
+        sleep(1000);
     }
 
     public int getTargetColumn() {

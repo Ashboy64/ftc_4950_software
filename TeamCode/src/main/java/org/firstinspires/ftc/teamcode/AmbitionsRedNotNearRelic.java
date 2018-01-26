@@ -14,6 +14,8 @@ public class AmbitionsRedNotNearRelic extends LinearOpMode{
     double armOffset = 2.8515;
     @Override
     public void runOpMode() {
+        robot.init(hardwareMap, this);
+        robot.scoreJewel(0);
         robot.gyroTurning(135);
         trackableViewed = robot.getTargetColumn();
         robot.gyroTurning(-135);
