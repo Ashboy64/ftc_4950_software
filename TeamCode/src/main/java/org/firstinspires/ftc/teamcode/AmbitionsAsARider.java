@@ -13,25 +13,27 @@ public class AmbitionsAsARider extends LinearOpMode {
     @Override
     public void runOpMode(){
         robot.init(hardwareMap, this);
-        telemetry.addData("ready", "");
-        telemetry.update();
-       // robot.gyroTurning(135);
-      //  robot.gyroTurning(-145);
-        robot.gyroTurning(45);
-        robot.gyroTurning(-45);
-        robot.gyroTurning(90);
-        robot.gyroTurning(-90);
-        robot.gyroTurning(135);
-        robot.gyroTurning(-135);
-        robot.gyroTurning(270);
-        robot.gyroTurning(-270);
-        /*robot.gyroTurning(350);
-        robot.gyroTurning(-30);
-        robot.gyroTurning(55);*/
-        /*
-        robot.gyroTurning(120);
-        robot.gyroTurning(-25);
-        */
+        while (opModeIsActive()) {
+            robot.imuHeading();
+        }
+//        telemetry.update();
+//       // robot.gyroTurning(135);
+//      //  robot.gyroTurning(-145);
+//        robot.gyroTurning(45);
+//        robot.gyroTurning(-45);
+//        robot.gyroTurning(90);
+//        robot.gyroTurning(-90);
+//        robot.gyroTurning(135);
+//        robot.gyroTurning(-135);
+//        robot.gyroTurning(270);
+//        robot.gyroTurning(-270);
+//        /*robot.gyroTurning(350);
+//        robot.gyroTurning(-30);
+//        robot.gyroTurning(55);*/
+//        /*
+//        robot.gyroTurning(120);
+//        robot.gyroTurning(-25);
+//        */
 
     }
 

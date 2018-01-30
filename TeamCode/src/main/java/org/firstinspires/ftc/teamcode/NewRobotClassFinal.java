@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -13,6 +15,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -45,6 +51,9 @@ public class NewRobotClassFinal {
     HardwareMap hwMap = null;
     private ElapsedTime period = new ElapsedTime();
     boolean start = false;
+    BNO055IMU imu;
+    Orientation angles;
+
     public NewRobotClassFinal() {
 
     }
@@ -61,6 +70,13 @@ public class NewRobotClassFinal {
         //clampServo = ahwMap.crservo.get("clampServo");
         colorSensor = ahwMap.colorSensor.get("jewelColor");
         jewelServo = ahwMap.servo.get("jewelServo");
+        BNO055IMU.Parameters parameters_imu = new BNO055IMU.Parameters();
+        parameters_imu.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters_imu.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters_imu.loggingEnabled      = false;
+        parameters_imu.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu = ahwMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters_imu);
         //ARM_TOUCH_OPEN = ahwMap.get(DigitalChannel.class, "tsOpen");
         //ARM_TOUCH_CLOSED = ahwMap.get(DigitalChannel.class, "tsClosed");
         //ARM_TOUCH_OPEN.setMode(DigitalChannel.Mode.INPUT);
@@ -91,9 +107,15 @@ public class NewRobotClassFinal {
 
         opMode.waitForStart();
 
-        opMode.telemetry.addData("ready!", "");
+//        opMode.telemetry.addData("ready!", "");
 
         relicTrackables.activate();
+    }
+
+    public void imuHeading () {
+        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        opMode.telemetry.addData(angles.firstAngle + "", "");
+        opMode.telemetry.update();
     }
 
 
