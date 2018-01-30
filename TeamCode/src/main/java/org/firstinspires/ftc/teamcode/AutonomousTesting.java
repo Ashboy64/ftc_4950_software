@@ -1,46 +1,26 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
-
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "AUTO TESTING")
 public class AutonomousTesting extends Autonomous {
     @Override
     void autonomous() {
-        useGyro = false;
+        turn(45, TURN_POWER);
+        sleep();
 
-        ElapsedTime drive = new ElapsedTime();
-        freeDrive(DRIVE_POWER, DRIVE_POWER);
-        while (drive.milliseconds() < 2000) {
-            sensorTelemetry("driving " + drive.milliseconds());
-        }
-        stopDrive();
+        turn(-45, TURN_POWER);
+        sleep();
+
         turn(90, TURN_POWER);
+        sleep();
 
-        drive = new ElapsedTime();
-        freeDrive(DRIVE_POWER, DRIVE_POWER);
-        while (drive.milliseconds() < 2000) {
-            sensorTelemetry("driving " + drive.milliseconds());
-        }
-        stopDrive();
-        turn(90, TURN_POWER);
+        turn(-90, TURN_POWER);
+        sleep();
 
-        useGyro = true;
+        turn(135, TURN_POWER);
+        sleep();
 
-        drive = new ElapsedTime();
-        freeDrive(DRIVE_POWER, DRIVE_POWER);
-        while (drive.milliseconds() < 2000) {
-            sensorTelemetry("driving " + drive.milliseconds());
-        }
-        stopDrive();
-        turn(90, TURN_POWER);
-
-        drive = new ElapsedTime();
-        freeDrive(DRIVE_POWER, DRIVE_POWER);
-        while (drive.milliseconds() < 2000) {
-            sensorTelemetry("driving " + drive.milliseconds());
-        }
-        stopDrive();
-        turn(90, TURN_POWER);
+        turn(-135, TURN_POWER);
+        sleep();
     }
 
     @Override

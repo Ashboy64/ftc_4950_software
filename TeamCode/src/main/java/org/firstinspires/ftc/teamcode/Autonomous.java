@@ -47,7 +47,7 @@ public abstract class Autonomous extends LinearOpMode {
 
     private static final double GYRO_TURN_THRESHOLD = 2;
 
-    boolean useGyro = false;
+    boolean useGyro = true;
     private boolean useVuforia = true;
 
     private int targetHeading = 0;
@@ -180,7 +180,7 @@ public abstract class Autonomous extends LinearOpMode {
         sleep();
     }
 
-    private void sleep() {
+    void sleep() {
         sleep(125);
     }
 
@@ -380,23 +380,19 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     private void gyroTurn(int targetHeading, double power) {
-        int error = headingError(targetHeading);
+        int error = angleNormalize(targetHeading - gyroHeading());
 
-        double leftPower = (error > 0 ? 1 : -1) * power;
+        double leftPower = (error > 0 ? -1 : 1) * power;
         double rightPower = -leftPower;
 
         freeDrive(leftPower, rightPower);
 
         while (Math.abs(error) > GYRO_TURN_THRESHOLD) {
-            error = headingError(targetHeading);
+            error = angleNormalize(targetHeading - gyroHeading());
             sensorTelemetry("turn to heading " + targetHeading + " error " + error);
         }
 
         stopDrive();
-    }
-
-    private int headingError(int target) {
-        return angleNormalize(target - gyroHeading());
     }
 
     private int angleNormalize(int degrees) {

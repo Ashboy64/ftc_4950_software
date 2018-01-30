@@ -163,6 +163,12 @@ public class Teleop extends OpMode {
     }
 
     private double armPower(double armPower, double armAngle) {
+        if (INPUT.GAMEPAD.a())
+        {
+            telemetry.addLine("arm power override");
+            return armPower;
+        }
+
         if (armPower == 0) {
             return 0;
         }
