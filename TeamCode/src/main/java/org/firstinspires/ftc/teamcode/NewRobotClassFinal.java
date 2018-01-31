@@ -114,7 +114,7 @@ public class NewRobotClassFinal {
 
     public float imuHeading () {
         angles  = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return angles.firstAngle;
+        return (360 + angles.firstAngle) % 360;
     }
 
     public void imuTurning(int degrees) {
@@ -346,14 +346,14 @@ public class NewRobotClassFinal {
 
     public void scoreJewel(int side) { // 0 is red, 1 is blue.
         jewelServo.setPosition(0);
-        sleep(1000);
+        sleep(3000);
         int detected = getJewelColor();
         if(side == 0) {
             detected = -detected;
         }
         gyroTurning(detected*25);
         jewelServo.setPosition(1);
-        sleep(1000);
+        sleep(3000);
         gyroTurning(-detected*25);
         sleep(125);
     }
