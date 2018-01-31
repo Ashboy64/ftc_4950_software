@@ -19,4 +19,20 @@ public class gyroSignTest extends LinearOpMode {
             telemetry.update();
         }
     }
+
+    private void jewelTest() {
+        robot.setJewelArmPosition(1);
+
+        long time = System.currentTimeMillis();
+        while (System.currentTimeMillis() - time < 1000);
+
+        telemetry.addData("done!", "");
+        telemetry.update();
+        scoreJewelTest();
+    }
+
+    private void scoreJewelTest(){
+        int detected = robot.getJewelColor();
+        robot.gyroEncoders((true ? (detected == -1 ? -90 : 90) : (detected == 1 ? 90 : -90)));
+    }
 }

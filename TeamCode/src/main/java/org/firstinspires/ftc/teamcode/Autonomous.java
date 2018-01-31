@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -11,6 +13,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -27,7 +32,7 @@ public abstract class Autonomous extends LinearOpMode {
     private static final double GLYPH_OFFSET_FORWARD = 7.588 + 3;
 
     static final double DRIVE_POWER = 3.0 / 16;
-    static final double TURN_POWER = 1.0 / 8;
+    static final double TURN_POWER = 0.3; //1.0 / 2;
 
     private static final double ENCODER_TURN_MULTIPLIER = 1.1;
 
@@ -45,7 +50,7 @@ public abstract class Autonomous extends LinearOpMode {
 
     private ModernRoboticsI2cGyro gyro;
 
-    private static final double GYRO_TURN_THRESHOLD = 2;
+    private static final int GYRO_TURN_THRESHOLD = 2;
 
     boolean useGyro = true;
     private boolean useVuforia = true;
@@ -53,6 +58,8 @@ public abstract class Autonomous extends LinearOpMode {
     private int targetHeading = 0;
 
     private ElapsedTime autonomousTimer;
+
+    private BNO055IMU imu;
 
     @Override
     public void runOpMode() {
@@ -357,6 +364,14 @@ public abstract class Autonomous extends LinearOpMode {
             }
         }
 
+        BNO055IMU.Parameters parameters_imu = new BNO055IMU.Parameters();
+        parameters_imu.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters_imu.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters_imu.loggingEnabled      = false;
+        parameters_imu.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters_imu);
+
         setEncoder(false);
 
         telemetry.addData("hardware initialization", "complete");
@@ -382,17 +397,22 @@ public abstract class Autonomous extends LinearOpMode {
     private void gyroTurn(int targetHeading, double power) {
         int error = angleNormalize(targetHeading - gyroHeading());
 
-        double leftPower = (error > 0 ? -1 : 1) * power;
+        double leftPower = (error > 0 ? 1 : -1) * power;
         double rightPower = -leftPower;
 
-        freeDrive(leftPower, rightPower);
+        sensorTelemetry(String.format("left %.4f right %.4f target %d heading %d", leftPower, rightPower, targetHeading, gyroHeading()));
 
-        while (Math.abs(error) > GYRO_TURN_THRESHOLD) {
+        sleep(); //TODO
+        freeDrive(leftPower, rightPower);
+        sleep(); //TODO
+
+        while (Math.abs(error) >= GYRO_TURN_THRESHOLD && opModeIsActive()) {
             error = angleNormalize(targetHeading - gyroHeading());
-            sensorTelemetry("turn to heading " + targetHeading + " error " + error);
+            //sensorTelemetry("turn to heading " + targetHeading + " error " + error);
         }
 
         stopDrive();
+        sleep();
     }
 
     private int angleNormalize(int degrees) {
@@ -420,7 +440,9 @@ public abstract class Autonomous extends LinearOpMode {
 
     private int gyroHeading() {
         if (useGyro) {
-            return gyro.getHeading();
+            return -Math.round(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+
+            //return gyro.getHeading();
         }
 
         return 0;

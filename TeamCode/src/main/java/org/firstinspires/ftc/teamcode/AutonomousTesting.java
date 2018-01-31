@@ -21,6 +21,42 @@ public class AutonomousTesting extends Autonomous {
 
         turn(-135, TURN_POWER);
         sleep();
+
+        turn(45, TURN_POWER);
+        sleep();
+
+        turn(-45, TURN_POWER);
+        sleep();
+
+        turn(90, TURN_POWER);
+        sleep();
+
+        turn(-90, TURN_POWER);
+        sleep();
+
+        turn(135, TURN_POWER);
+        sleep();
+
+        turn(-135, TURN_POWER);
+        sleep();
+
+        turn(45, TURN_POWER);
+        sleep();
+
+        turn(-45, TURN_POWER);
+        sleep();
+
+        turn(90, TURN_POWER);
+        sleep();
+
+        turn(-90, TURN_POWER);
+        sleep();
+
+        turn(135, TURN_POWER);
+        sleep();
+
+        turn(-135, TURN_POWER);
+        sleep();
     }
 
     @Override
