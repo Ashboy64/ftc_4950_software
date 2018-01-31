@@ -113,11 +113,14 @@ public class NewRobotClassFinal {
     }
 
     public float imuHeading () {
-        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        angles  = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         return angles.firstAngle;
     }
 
     public void imuTurning(int degrees) {
+        opMode.telemetry.addData("inside imuTurning","");
+        opMode.telemetry.update();
+        sleep(125);
         if(degrees == 0) return;
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -158,7 +161,7 @@ public class NewRobotClassFinal {
         }*/
         leftMotor.setPower(0);
         rightMotor.setPower(0);
-        opMode.telemetry.addData("Final heading", imuHeading());
+        opMode.telemetry.addData("Final heading > ", imuHeading());
         opMode.telemetry.update();
         sleep(125);
     }
