@@ -47,7 +47,7 @@ public class NewRobotClassFinal {
     VuforiaTrackable relicTemplate;
     VuforiaLocalizer vuforia;
     RelicRecoveryVuMark vuMark;
-    double turningRange = 2.0;
+    double turningRange = 3.0;
     HardwareMap hwMap = null;
     private ElapsedTime period = new ElapsedTime();
     boolean start = false;
