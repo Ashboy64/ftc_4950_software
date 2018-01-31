@@ -34,23 +34,9 @@ public class AmbitionsAsARider extends LinearOpMode {
         robot.imuTurning(120);
         robot.imuTurning(-25);
         */
-
-    }
-
-    private void jewelTest() {
-        robot.setJewelArmPosition(1);
-
-        long time = System.currentTimeMillis();
-        while (System.currentTimeMillis() - time < 1000);
-
-        telemetry.addData("done!", "");
+        telemetry.addData(">", "Scoring jewel");
         telemetry.update();
-        scoreJewelTest();
+        robot.sleep(1000);
+        robot.scoreJewel(1);
     }
-
-    private void scoreJewelTest(){
-        int detected = robot.getJewelColour();
-        robot.gyroEncoders((true ? (detected == -1 ? -90 : 90) : (detected == 1 ? 90 : -90)));
-    }
-
 }

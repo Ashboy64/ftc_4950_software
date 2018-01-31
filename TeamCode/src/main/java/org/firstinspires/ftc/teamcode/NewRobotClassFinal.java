@@ -329,7 +329,7 @@ public class NewRobotClassFinal {
         return !ARM_TOUCH_OPEN.getState();
     }
 
-    public int getJewelColour(){
+    public int getJewelColor(){
         //setJewelArmPosition(1);
         //wait(1000);
         opMode.telemetry.addData("in getJewelColour", "");
@@ -341,16 +341,18 @@ public class NewRobotClassFinal {
         return (blueColor > redColor ? -1 : 1);
     }
 
-    public void scoreJewel(int side) { // 0 is red, 1 is blue. 1 is near_relic, 0 is not
+    public void scoreJewel(int side) { // 0 is red, 1 is blue.
         jewelServo.setPosition(0);
         sleep(1000);
-        int detected = getJewelColour();
+        int detected = getJewelColor();
         if(side == 0) {
             detected = -detected;
         }
         gyroTurning(detected*25);
         jewelServo.setPosition(1);
         sleep(1000);
+        gyroTurning(-detected*25);
+        sleep(125);
     }
 
     public int getTargetColumn() {
