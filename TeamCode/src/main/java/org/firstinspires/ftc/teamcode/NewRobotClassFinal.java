@@ -126,7 +126,9 @@ public class NewRobotClassFinal {
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double currentHeading = realDeg; //gyro.getHeading();
         double target = (currentHeading + degrees + 360) % 360;
-        double speed = 0.3;
+        double speed = 1/8;
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setPower((degrees < 0 ? -speed : speed));
         leftMotor.setPower((degrees < 0 ? speed : -speed));
         if(target  - turningRange < 0 || target + turningRange >= 360){
