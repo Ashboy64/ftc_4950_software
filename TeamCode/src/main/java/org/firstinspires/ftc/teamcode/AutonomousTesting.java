@@ -4,6 +4,11 @@ package org.firstinspires.ftc.teamcode;
 public class AutonomousTesting extends Autonomous {
     @Override
     void autonomous() {
+        encoderDrive(24, DRIVE_POWER);
+
+        //turn(3600, TURN_POWER);
+
+        /*
         turn(45, TURN_POWER);
         sleep();
 
@@ -57,6 +62,7 @@ public class AutonomousTesting extends Autonomous {
 
         turn(-135, TURN_POWER);
         sleep();
+        */
     }
 
     @Override

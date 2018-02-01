@@ -28,13 +28,13 @@ public abstract class Autonomous extends LinearOpMode {
     private static final double DRIVE_GEAR_RATIO = 45.0 / 30;
     private static final double TURN_DISTANCE = 12.75 * Math.PI;
 
-    private static final double GLYPH_OFFSET_RIGHT = 2.8515;
+    private static final double GLYPH_OFFSET_RIGHT = 5.375; //2.8515;
     private static final double GLYPH_OFFSET_FORWARD = 7.588 + 3;
 
     static final double DRIVE_POWER = 3.0 / 16;
-    static final double TURN_POWER = 0.3; //1.0 / 2;
+    static final double TURN_POWER = 3.0 / 16; //0.3; //1.0 / 2;
 
-    private static final double ENCODER_TURN_MULTIPLIER = 1.1;
+    private static final double ENCODER_TURN_MULTIPLIER = 1.054;
 
     private CRServo clampServo;
 
@@ -52,8 +52,9 @@ public abstract class Autonomous extends LinearOpMode {
 
     private static final int GYRO_TURN_THRESHOLD = 2;
 
-    boolean useGyro = true;
+    int useGyro = 0; //0 for none, 1 for gyro, 2 for imu
     private boolean useVuforia = true;
+    private boolean freeDriveEncoder = true;
 
     private int targetHeading = 0;
 
@@ -140,7 +141,7 @@ public abstract class Autonomous extends LinearOpMode {
         int turned = 0;
 
         //if uncertain, get closer and read again, repeat
-        while (jewelColour == 0 && tries < maxTries) {
+        while (jewelColour == 0 && tries < maxTries && opModeIsActive()) {
             tries++;
 
             turn(turnRead, TURN_POWER);
@@ -208,8 +209,7 @@ public abstract class Autonomous extends LinearOpMode {
         //gets column value
         int column = targetColumn();
 
-        while ((column > 1 || column < -1) && tries < maxTries)
-        {
+        while ((column > 1 || column < -1) && tries < maxTries) {
             tries++;
             sensorTelemetry("column reread, try " + tries);
 
@@ -237,7 +237,7 @@ public abstract class Autonomous extends LinearOpMode {
         telemetry.update();
 
         //we drive a little farther because of dismounting the balancing stone
-        double balanceDismountOffset = 2; //3.5;
+        double balanceDismountOffset = 0; //-0.5; //2; //3.5;
 
         //distance to drive to insert the glyph into the cryptobox
         //double cryptoboxInsertion = 24 - GLYPH_OFFSET_FORWARD;
@@ -311,7 +311,7 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     private double glyphHorizontalOffset(int column) {
-        double columnOffset = 6.0; //7.5;
+        double columnOffset = 7.5;
 
         //compensates for the offset of our target column
         //column is an int, -1 is left, 0 is centre, 1 is right
@@ -352,25 +352,31 @@ public abstract class Autonomous extends LinearOpMode {
 
         initVuforia();
 
-        if (useGyro) {
-            gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
-            gyro.calibrate();
+        switch (useGyro) {
+            case 1:
+                gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
+                gyro.calibrate();
+                ElapsedTime gyroCalibrate = new ElapsedTime();
+                while (opModeIsActive() && gyro.isCalibrating()) {
+                    telemetry.addData("gyro calibrating", gyroCalibrate);
+                    telemetry.update();
+                }
+                break;
 
-            ElapsedTime gyroCalibrate = new ElapsedTime();
+            case 2:
+                BNO055IMU.Parameters parameters_imu = new BNO055IMU.Parameters();
+                parameters_imu.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+                parameters_imu.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+                parameters_imu.loggingEnabled = false;
+                parameters_imu.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+                imu = hardwareMap.get(BNO055IMU.class, "imu");
+                telemetry.addLine("imu calibrating");
+                imu.initialize(parameters_imu);
+                break;
 
-            while (gyro.isCalibrating()) {
-                telemetry.addData("gyro calibrating", gyroCalibrate);
-                telemetry.update();
-            }
+            default:
+                break;
         }
-
-        BNO055IMU.Parameters parameters_imu = new BNO055IMU.Parameters();
-        parameters_imu.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters_imu.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters_imu.loggingEnabled      = false;
-        parameters_imu.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters_imu);
 
         setEncoder(false);
 
@@ -380,7 +386,7 @@ public abstract class Autonomous extends LinearOpMode {
 
     void turn(int angle, double power) {
         targetHeading += angle;
-        if (useGyro) {
+        if (useGyro > 0) {
             gyroTurn(targetHeading, TURN_POWER);
         } else {
             encoderTurn(angle, power);
@@ -397,21 +403,24 @@ public abstract class Autonomous extends LinearOpMode {
     private void gyroTurn(int targetHeading, double power) {
         int error = angleNormalize(targetHeading - gyroHeading());
 
-        double leftPower = (error > 0 ? 1 : -1) * power;
-        double rightPower = -leftPower;
-
-        sensorTelemetry(String.format("left %.4f right %.4f target %d heading %d", leftPower, rightPower, targetHeading, gyroHeading()));
-
-        sleep(); //TODO
-        freeDrive(leftPower, rightPower);
-        sleep(); //TODO
+        if (freeDriveEncoder) {
+            freeTurnEncoder(error > 0, power);
+        } else {
+            double leftPower = (error > 0 ? -1 : 1) * power;
+            double rightPower = -leftPower;
+            freeDrive(leftPower, rightPower);
+        }
 
         while (Math.abs(error) >= GYRO_TURN_THRESHOLD && opModeIsActive()) {
             error = angleNormalize(targetHeading - gyroHeading());
-            //sensorTelemetry("turn to heading " + targetHeading + " error " + error);
+            sensorTelemetry("turn to heading " + targetHeading + " error " + error);
         }
 
-        stopDrive();
+        if (freeDriveEncoder) {
+            freeTurnStop();
+        } else {
+            stopDrive();
+        }
         sleep();
     }
 
@@ -427,6 +436,25 @@ public abstract class Autonomous extends LinearOpMode {
         return degrees;
     }
 
+    void freeTurnEncoder(boolean clockwise, double power)
+    {
+        setEncoder(true);
+
+        int left = 1_000_000 * (clockwise ? 1 : -1);
+        int right = -left;
+
+        leftMotor.setTargetPosition(left);
+        rightMotor.setTargetPosition(right);
+
+        leftMotor.setPower(power);
+        rightMotor.setPower(power);
+    }
+
+    void freeTurnStop()
+    {
+        setEncoder(true);
+    }
+
     void freeDrive(double left, double right) {
         setEncoder(false);
 
@@ -439,13 +467,14 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     private int gyroHeading() {
-        if (useGyro) {
-            return -Math.round(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
-
-            //return gyro.getHeading();
+        switch (useGyro) {
+            case 1:
+                return -gyro.getHeading();
+            case 2:
+                return Math.round(imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+            default:
+                return 0;
         }
-
-        return 0;
     }
 
     void encoderDrive(double inches, double power) {
@@ -478,11 +507,8 @@ public abstract class Autonomous extends LinearOpMode {
         leftMotor.setPower(power);
         rightMotor.setPower(power);
 
-        ElapsedTime driveTime = new ElapsedTime();
-
         while (opModeIsActive() && encodersBusy()) {
-            telemetry.addData("encoder drive", driveTime);
-            telemetry.update();
+            sensorTelemetry("encoder drive");
         }
     }
 
@@ -517,8 +543,7 @@ public abstract class Autonomous extends LinearOpMode {
 
         ElapsedTime openTime = new ElapsedTime();
         while (opModeIsActive() && !getTouchOpen()) {
-            telemetry.addData("clamp open", openTime);
-            telemetry.update();
+            sensorTelemetry("clamp open " + openTime);
         }
 
         clampServo.setPower(0);
