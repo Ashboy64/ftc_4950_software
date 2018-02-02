@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  * Created by rao_a on 1/9/2018.
  */
 
-@com.qualcomm.robotcore.eventloop.opmode.Disabled
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "AmbitionsRedNear")
 public class AmbitionsRedNearRelic extends LinearOpMode {
     NewRobotClassFinal robot =  new NewRobotClassFinal();
     int trackableViewed;
