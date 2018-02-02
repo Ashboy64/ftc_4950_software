@@ -265,7 +265,7 @@ public class NewRobotClassFinal {
         if(degrees == 0) return;
         double currentHeading = realDeg; //gyro.getHeading();
         double target = (currentHeading + degrees + 360) % 360;
-        double speed = 0.28;
+        double speed = 0.125;
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setPower((degrees < 0 ? speed : -speed));
