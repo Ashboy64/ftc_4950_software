@@ -38,6 +38,6 @@ public class AmbitionsAsARider extends LinearOpMode {
         telemetry.addData(">", "Scoring jewel");
         telemetry.update();
         robot.sleep(1000);
-        robot.scoreJewel(1);
+        //robot.scoreJewel(1);
     }
 }
