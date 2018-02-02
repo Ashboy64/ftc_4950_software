@@ -32,7 +32,7 @@ public abstract class Autonomous extends LinearOpMode {
     private static final double GLYPH_OFFSET_FORWARD = 7.588 + 3;
 
     static final double DRIVE_POWER = 3.0 / 16;
-    static final double TURN_POWER = 3.0 / 16; //0.3; //1.0 / 2;
+    static final double TURN_POWER = 1.0 / 8; //3.0 / 16; //0.3; //1.0 / 2;
 
     private static final double ENCODER_TURN_MULTIPLIER = 1.054;
 
@@ -54,7 +54,6 @@ public abstract class Autonomous extends LinearOpMode {
 
     int useGyro = 0; //0 for none, 1 for gyro, 2 for imu
     private boolean useVuforia = true;
-    private boolean freeDriveEncoder = true;
 
     private int targetHeading = 0;
 
@@ -233,11 +232,10 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     private void glyph(int column) {
-        telemetry.addData("current task", "score glyph");
-        telemetry.update();
+        sensorTelemetry("scoring glyph");
 
         //we drive a little farther because of dismounting the balancing stone
-        double balanceDismountOffset = 0; //-0.5; //2; //3.5;
+        double balanceDismountOffset = -1; //-0.5; //2; //3.5;
 
         //distance to drive to insert the glyph into the cryptobox
         //double cryptoboxInsertion = 24 - GLYPH_OFFSET_FORWARD;
@@ -298,7 +296,7 @@ public abstract class Autonomous extends LinearOpMode {
 
         freeDrive(DRIVE_POWER, DRIVE_POWER);
 
-        while (autonomousTimer.milliseconds() < stopTime) {
+        while (autonomousTimer.milliseconds() < stopTime && opModeIsActive()) {
             sensorTelemetry("pushing, stop " + stopTime);
         }
 
@@ -385,7 +383,7 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     void turn(int angle, double power) {
-        targetHeading += angle;
+        targetHeading = angleNormalize(targetHeading + angle);
         if (useGyro > 0) {
             gyroTurn(targetHeading, TURN_POWER);
         } else {
@@ -394,6 +392,8 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     private void encoderTurn(int angle, double power) {
+        sensorTelemetry("encoder turn " + angle + " degrees");
+
         double robotRotations = angle / 360.0;
         double distance = robotRotations * TURN_DISTANCE * ENCODER_TURN_MULTIPLIER;
 
@@ -403,24 +403,17 @@ public abstract class Autonomous extends LinearOpMode {
     private void gyroTurn(int targetHeading, double power) {
         int error = angleNormalize(targetHeading - gyroHeading());
 
-        if (freeDriveEncoder) {
-            freeTurnEncoder(error > 0, power);
-        } else {
-            double leftPower = (error > 0 ? -1 : 1) * power;
-            double rightPower = -leftPower;
-            freeDrive(leftPower, rightPower);
-        }
+        double leftPower = (error > 0 ? -1 : 1) * power;
+        double rightPower = -leftPower;
+        freeDrive(leftPower, rightPower);
 
         while (Math.abs(error) >= GYRO_TURN_THRESHOLD && opModeIsActive()) {
             error = angleNormalize(targetHeading - gyroHeading());
             sensorTelemetry("turn to heading " + targetHeading + " error " + error);
         }
 
-        if (freeDriveEncoder) {
-            freeTurnStop();
-        } else {
-            stopDrive();
-        }
+
+        stopDrive();
         sleep();
     }
 
@@ -434,25 +427,6 @@ public abstract class Autonomous extends LinearOpMode {
         }
 
         return degrees;
-    }
-
-    void freeTurnEncoder(boolean clockwise, double power)
-    {
-        setEncoder(true);
-
-        int left = 1_000_000 * (clockwise ? 1 : -1);
-        int right = -left;
-
-        leftMotor.setTargetPosition(left);
-        rightMotor.setTargetPosition(right);
-
-        leftMotor.setPower(power);
-        rightMotor.setPower(power);
-    }
-
-    void freeTurnStop()
-    {
-        setEncoder(true);
     }
 
     void freeDrive(double left, double right) {
@@ -508,7 +482,7 @@ public abstract class Autonomous extends LinearOpMode {
         rightMotor.setPower(power);
 
         while (opModeIsActive() && encodersBusy()) {
-            sensorTelemetry("encoder drive");
+            //sensorTelemetry("encoder drive");
         }
     }
 
@@ -547,8 +521,7 @@ public abstract class Autonomous extends LinearOpMode {
         }
 
         clampServo.setPower(0);
-        telemetry.addData("clamp", "opened");
-        telemetry.update();
+        sensorTelemetry("clamp opened");
         sleep();
     }
 
