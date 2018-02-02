@@ -18,11 +18,11 @@ public class AmbitionsRedNearRelic extends LinearOpMode {
         robot.sleep(125);
         robot.scoreJewel(0);
         robot.sleep(125);
-        robot.gyroTurning(-45);
+        robot.gyroTurning(-23);
         robot.sleep(125);
         trackableViewed = robot.getTargetColumn();
         robot.sleep(125);
-        robot.gyroTurning(135);
+        robot.gyroTurning(113);
         robot.sleep(125);
         robot.drive(24);
         robot.sleep(125);
