@@ -15,15 +15,28 @@ public class AmbitionsBlueNotNearRelic extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init(hardwareMap, this);
+        robot.sleep(125);
         robot.scoreJewel(1);
-        robot.gyroTurning(135);
+        robot.sleep(125);
+        robot.gyroTurning(-45);
+        robot.sleep(125);
         trackableViewed = robot.getTargetColumn();
-        robot.gyroEncoders(-135);
+        robot.sleep(125);
+        robot.gyroTurning(-45);
+        robot.sleep(125);
+        robot.drive(24);
+        robot.sleep(125);
+        robot.gyroTurning(90);
+        robot.sleep(125);
         robot.drive(((cryptoBoxWidth / 2) + (trackableViewed * cryptoBoxWidth)) - armOffset);
-        robot.gyroEncoders(-90);
+        robot.sleep(125);
+        robot.gyroTurning(-90);
+        robot.sleep(125);
         robot.openClamp();
-        robot.drive(18.0);
-        robot.drive(-100);
+        robot.sleep(125);
+        robot.drive(20);
+        robot.sleep(125);
+        robot.drive(-5);
     }
 
 }
