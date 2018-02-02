@@ -20,14 +20,14 @@ public class AmbitionsAsARider extends LinearOpMode {
        // robot.imuTurning(135);
       //  robot.imuTurning(-145);
 
-//        robot.imuTurning(45);
-//        robot.imuTurning(-45);
-//        robot.imuTurning(90);
-//        robot.imuTurning(-90);
-//        robot.imuTurning(135);
-//        robot.imuTurning(-135);
-//        robot.imuTurning(270);
-//        robot.imuTurning(-270);
+        robot.gyroTurning(45);
+        robot.gyroTurning(-45);
+        robot.gyroTurning(90);
+        robot.gyroTurning(-90);
+        robot.gyroTurning(135);
+        robot.gyroTurning(-135);
+        robot.gyroTurning(270);
+        robot.gyroTurning(-270);
         /*robot.imuTurning(350);
         robot.imuTurning(-30);
         robot.imuTurning(55);*/
