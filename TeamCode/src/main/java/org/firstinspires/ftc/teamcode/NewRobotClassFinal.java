@@ -323,19 +323,28 @@ public class NewRobotClassFinal {
         double redColor = colorSensor.red();
         opMode.telemetry.addData("exiting getJewelColour", "");
         opMode.telemetry.update();
-        return (blueColor > redColor ? -1 : 1);
+        for(int i = 0; i < 3; i++){
+            if(colorSensor.blue() > colorSensor.red() + 20){
+                return -1;
+            } else if( colorSensor.red() > colorSensor.blue() + 20){
+                return 1;
+            } else {
+                gyroTurning(2);
+            }
+        }
+
+        return 0;
     }
 
     public void scoreJewel(int side) { // 0 is red, 1 is blue.
         jewelServo.setPosition(0);
-        sleep(3000);
+        sleep(2000);
         int detected = getJewelColor();
         if(side == 0) {
             detected = -detected;
         }
-        if(colorSensor.blue() > colorSensor.red() + 20 || colorSensor.red() > colorSensor.blue() + 20){
-            gyroTurning(detected*25);
-        }
+
+        gyroTurning((detected*25) - gyro.getHeading());
         jewelServo.setPosition(1);
         sleep(3000);
         gyroTurning(-detected*25);
@@ -356,6 +365,7 @@ public class NewRobotClassFinal {
             } else {
                 opMode.telemetry.addData("VuMark", "not visible");
             }
+            opMode.telemetry.update();
         }
 
         if (vuMark == RelicRecoveryVuMark.CENTER) {

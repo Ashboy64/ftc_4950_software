@@ -12,7 +12,7 @@ public class AmbitionsBlueNotNearRelic extends LinearOpMode {
     int trackableViewed;
     double cryptoBoxWidth = 7.63;
     double armOffset = 2.8515;
-    int vuforiaDegrees = -23;
+    int vuforiaDegrees = -15;
 
     @Override
     public void runOpMode() {
