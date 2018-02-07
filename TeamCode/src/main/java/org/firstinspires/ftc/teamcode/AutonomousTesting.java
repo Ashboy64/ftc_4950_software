@@ -4,7 +4,7 @@ package org.firstinspires.ftc.teamcode;
 public class AutonomousTesting extends Autonomous {
     @Override
     void autonomous() {
-        encoderDrive(24, DRIVE_POWER);
+        //encoderDrive(24, DRIVE_POWER);
 
         //turn(3600, TURN_POWER);
 

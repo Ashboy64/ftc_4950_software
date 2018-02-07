@@ -29,12 +29,13 @@ public abstract class Autonomous extends LinearOpMode {
     private static final double TURN_DISTANCE = 12.75 * Math.PI;
 
     private static final double GLYPH_OFFSET_RIGHT = 5.375; //2.8515;
-    private static final double GLYPH_OFFSET_FORWARD = 7.588 + 3;
 
-    static final double DRIVE_POWER = 3.0 / 16;
-    static final double TURN_POWER = 1.0 / 8; //3.0 / 16; //0.3; //1.0 / 2;
+    static final double DRIVE_POWER_FREE = 1.0 / 3;
+    static final double DRIVE_POWER = 6.0 / 32; //1.0 / 8; //4.0 / 16;
+    static final double TURN_POWER = 3.0 / 32; //1.0 / 8; //3.0 / 16; //0.3; //1.0 / 2;
 
-    private static final double ENCODER_TURN_MULTIPLIER = 1.054;
+    private static final double ENCODER_TURN_MULTIPLIER_BOARD = 1.021;
+    private static final double ENCODER_TURN_MULTIPLIER_FOAM = 1.062; //1; //1.054; //experimentally determined
 
     private CRServo clampServo;
 
@@ -52,7 +53,7 @@ public abstract class Autonomous extends LinearOpMode {
 
     private static final int GYRO_TURN_THRESHOLD = 2;
 
-    int useGyro = 0; //0 for none, 1 for gyro, 2 for imu
+    private int useGyro = 0; //0 for none, 1 for gyro, 2 for imu
     private boolean useVuforia = true;
 
     private int targetHeading = 0;
@@ -60,6 +61,8 @@ public abstract class Autonomous extends LinearOpMode {
     private ElapsedTime autonomousTimer;
 
     private BNO055IMU imu;
+
+    private final int TIME_LIMIT = 25000;
 
     @Override
     public void runOpMode() {
@@ -127,11 +130,10 @@ public abstract class Autonomous extends LinearOpMode {
 
         //lower jewel arm
         setJewelArmPosition(0);
-        sleep(2000);
+        sleep(1000);
 
         //drive closer
         encoderDrive(adjustment, DRIVE_POWER);
-        sleep();
 
         //get jewel colour
         sensorTelemetry("jewel read colour");
@@ -143,17 +145,15 @@ public abstract class Autonomous extends LinearOpMode {
         while (jewelColour == 0 && tries < maxTries && opModeIsActive()) {
             tries++;
 
-            turn(turnRead, TURN_POWER);
+            turn(turnRead, TURN_POWER, true);
             turned += turnRead;
-
-            sleep();
 
             sensorTelemetry("jewel reread, try " + tries);
             jewelColour = jewelColour(jewelColourRaw());
         }
 
         sensorTelemetry("jewel read complete, turning back");
-        turn(-turned, TURN_POWER);
+        turn(-turned, TURN_POWER, true);
 
         //if certain about jewel colour
         if (jewelColour != 0) {
@@ -166,15 +166,13 @@ public abstract class Autonomous extends LinearOpMode {
             }
 
             //turns to knock off the jewel
-            turn(turnDegrees, TURN_POWER);
-            sleep();
+            turn(turnDegrees, TURN_POWER, true);
 
             //raise jewel arm
             setJewelArmPosition(1);
 
             //turns back
-            turn(-turnDegrees, TURN_POWER);
-            sleep();
+            turn(-turnDegrees, TURN_POWER, true);
         } else {
             sensorTelemetry("jewel not identified");
 
@@ -184,11 +182,10 @@ public abstract class Autonomous extends LinearOpMode {
 
         //backs away to starting position
         encoderDrive(-adjustment, DRIVE_POWER);
-        sleep();
     }
 
     void sleep() {
-        sleep(125);
+        sleep(100);
     }
 
     private int getColumn() {
@@ -202,8 +199,7 @@ public abstract class Autonomous extends LinearOpMode {
         int maxTries = 3;
 
         //turns toward vision target
-        turn(turn, TURN_POWER);
-        sleep();
+        turn(turn, TURN_POWER, true);
 
         //gets column value
         int column = targetColumn();
@@ -214,7 +210,7 @@ public abstract class Autonomous extends LinearOpMode {
 
             turned += turnMore;
 
-            encoderTurn(turnMore, TURN_POWER);
+            encoderTurn(turnMore, TURN_POWER, true);
             column = targetColumn();
         }
 
@@ -225,8 +221,7 @@ public abstract class Autonomous extends LinearOpMode {
         }
 
         //turns back
-        turn(-turned, TURN_POWER);
-        sleep();
+        turn(-turned, TURN_POWER, true);
 
         return column;
     }
@@ -235,18 +230,13 @@ public abstract class Autonomous extends LinearOpMode {
         sensorTelemetry("scoring glyph");
 
         //we drive a little farther because of dismounting the balancing stone
-        double balanceDismountOffset = -1; //-0.5; //2; //3.5;
+        double balanceDismountOffset = -1;
 
-        //distance to drive to insert the glyph into the cryptobox
-        //double cryptoboxInsertion = 24 - GLYPH_OFFSET_FORWARD;
-        int cryptoboxDriveMillis = 5000;
+        //time spent driving into cryptobox
+        int cryptoboxDriveMillis = 3000;
 
         //distance to back away at the end
         double backAway = -2.5;
-
-        //drives angled slightly away from cryptobox so we don't run into it
-        //in case turning is not accurate, will still score glyph
-        int outAngle = 0;
 
         //here we multiply by teamColour(), an integer representing -1 for blue or 1 for red
         //this reverses our turning direction if we are on the opposite alliance while
@@ -255,56 +245,52 @@ public abstract class Autonomous extends LinearOpMode {
         //if we are on the balancing stone closer to the relic scoring zone
         if (nearRelic()) {
             //turns to face cryptobox
-            turn((90 - outAngle) * teamColour(), TURN_POWER);
-            sleep();
+            turn(90 * teamColour(), TURN_POWER, true);
 
             //drives off and aligns with correct column
             encoderDrive(36 + balanceDismountOffset + glyphHorizontalOffset(column), DRIVE_POWER);
-            sleep();
-
-            //turns to face correct column
-            turn((90 + outAngle) * teamColour(), TURN_POWER);
-            sleep();
         } else {
             //turns to dismount balancing stone
-            turn(90 * teamColour(), TURN_POWER);
-            sleep();
+            turn(90 * teamColour(), TURN_POWER, true);
 
             //dismounts balancing stone
             encoderDrive(24 + balanceDismountOffset, DRIVE_POWER);
-            sleep();
 
             //turns parallel to cryptobox
-            turn((-90 - outAngle) * teamColour(), TURN_POWER);
-            sleep();
+            turn(-(90) * teamColour(), TURN_POWER, false);
 
             //aligns with correct column
             encoderDrive(glyphHorizontalOffset(column) + 12, DRIVE_POWER);
-            sleep();
-
-            //turns to face cryptobox
-            turn((90 + outAngle) * teamColour(), TURN_POWER);
-            sleep();
         }
 
-        //releases glyph
+        //turns to face correct column
+        turn(90 * teamColour(), TURN_POWER, false);
+
+        double stopTime;
+
         openClamp();
-        sleep();
+        sleep(500);
 
-        //inserts glyph, with timeout so that we back away before the 30 second time limit
-        double stopTime = Math.min(27000, autonomousTimer.milliseconds() + cryptoboxDriveMillis);
+        stopTime = Math.min(TIME_LIMIT, autonomousTimer.milliseconds() + cryptoboxDriveMillis);
+        freeTimeout(stopTime, DRIVE_POWER_FREE, DRIVE_POWER_FREE);
 
-        freeDrive(DRIVE_POWER, DRIVE_POWER);
-
-        while (autonomousTimer.milliseconds() < stopTime && opModeIsActive()) {
-            sensorTelemetry("pushing, stop " + stopTime);
-        }
-
-        stopDrive();
-        sleep();
+        stopClamp();
 
         //backs away from glyph so we aren't touching it
         encoderDrive(backAway, DRIVE_POWER);
+    }
+
+    private void freeTimeout(double stopTime, double left, double right)
+    {
+        freeDrive(DRIVE_POWER_FREE, DRIVE_POWER_FREE);
+        while (autonomousTimer.milliseconds() < stopTime && opModeIsActive()) {
+            if (getTouchOpen() && Math.abs(clampServo.getPower()) > 0.1)
+            {
+                stopClamp();
+            }
+            sensorTelemetry("free drive, stop " + stopTime);
+        }
+        stopDrive();
         sleep();
     }
 
@@ -382,20 +368,21 @@ public abstract class Autonomous extends LinearOpMode {
         telemetry.update();
     }
 
-    void turn(int angle, double power) {
+    void turn(int angle, double power, boolean board) {
         targetHeading = angleNormalize(targetHeading + angle);
         if (useGyro > 0) {
             gyroTurn(targetHeading, TURN_POWER);
         } else {
-            encoderTurn(angle, power);
+            encoderTurn(angle, power, board);
         }
     }
 
-    private void encoderTurn(int angle, double power) {
+    private void encoderTurn(int angle, double power, boolean board) {
         sensorTelemetry("encoder turn " + angle + " degrees");
 
         double robotRotations = angle / 360.0;
-        double distance = robotRotations * TURN_DISTANCE * ENCODER_TURN_MULTIPLIER;
+        double distance = robotRotations * TURN_DISTANCE * (board ? ENCODER_TURN_MULTIPLIER_BOARD : ENCODER_TURN_MULTIPLIER_FOAM);
+
 
         encoderDrive(distance, -distance, power);
     }
@@ -484,6 +471,8 @@ public abstract class Autonomous extends LinearOpMode {
         while (opModeIsActive() && encodersBusy()) {
             //sensorTelemetry("encoder drive");
         }
+
+        sleep();
     }
 
     private boolean encodersBusy() {
@@ -494,35 +483,35 @@ public abstract class Autonomous extends LinearOpMode {
         leftMotor.setPower(0);
         rightMotor.setPower(0);
 
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         if (encoder) {
+            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            leftMotor.setPower(0);
+            rightMotor.setPower(0);
+
             leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         } else {
             leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
+
+        sleep();
     }
 
     private boolean getTouchOpen() {
         return !armTouchOpen.getState();
     }
 
-    private void openClamp() {
-        telemetry.addData("clamp", "opening");
-        telemetry.update();
+    private void openClamp()
+    {
         clampServo.setPower(-1);
+    }
 
-        ElapsedTime openTime = new ElapsedTime();
-        while (opModeIsActive() && !getTouchOpen()) {
-            sensorTelemetry("clamp open " + openTime);
-        }
-
+    private void stopClamp()
+    {
         clampServo.setPower(0);
-        sensorTelemetry("clamp opened");
-        sleep();
     }
 
     //returns -2 for unknown, -1 for left, 0 for centre, 1 for right
