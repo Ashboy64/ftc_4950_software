@@ -30,9 +30,9 @@ public abstract class Autonomous extends LinearOpMode {
 
     private static final double GLYPH_OFFSET_RIGHT = 5.375; //2.8515;
 
-    static final double DRIVE_POWER_FREE = 1.0 / 3;
-    static final double DRIVE_POWER = 6.0 / 32; //1.0 / 8; //4.0 / 16;
-    static final double TURN_POWER = 3.0 / 32; //1.0 / 8; //3.0 / 16; //0.3; //1.0 / 2;
+    static final double DRIVE_POWER_FREE = 1.0 / 4; //1.0 / 3;
+    static final double DRIVE_POWER = 7.0 / 32; //1.0 / 8; //4.0 / 16;
+    static final double TURN_POWER = 4.0 / 32; //1.0 / 8; //3.0 / 16; //0.3; //1.0 / 2;
 
     private static final double ENCODER_TURN_MULTIPLIER_BOARD = 1.021;
     private static final double ENCODER_TURN_MULTIPLIER_FOAM = 1.062; //1; //1.054; //experimentally determined
@@ -185,7 +185,7 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     void sleep() {
-        sleep(100);
+        sleep(50);
     }
 
     private int getColumn() {
@@ -269,7 +269,7 @@ public abstract class Autonomous extends LinearOpMode {
         double stopTime;
 
         openClamp();
-        sleep(500);
+        sleep(1000);
 
         stopTime = Math.min(TIME_LIMIT, autonomousTimer.milliseconds() + cryptoboxDriveMillis);
         freeTimeout(stopTime, DRIVE_POWER_FREE, DRIVE_POWER_FREE);
@@ -330,6 +330,8 @@ public abstract class Autonomous extends LinearOpMode {
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         jewelServo = hardwareMap.servo.get("jewelServo");
         jewelColour = hardwareMap.colorSensor.get("jewelColor");
@@ -361,8 +363,6 @@ public abstract class Autonomous extends LinearOpMode {
             default:
                 break;
         }
-
-        setEncoder(false);
 
         telemetry.addData("hardware initialization", "complete");
         telemetry.update();
@@ -399,7 +399,6 @@ public abstract class Autonomous extends LinearOpMode {
             sensorTelemetry("turn to heading " + targetHeading + " error " + error);
         }
 
-
         stopDrive();
         sleep();
     }
@@ -417,8 +416,6 @@ public abstract class Autonomous extends LinearOpMode {
     }
 
     void freeDrive(double left, double right) {
-        setEncoder(false);
-
         leftMotor.setPower(left);
         rightMotor.setPower(right);
     }
@@ -460,10 +457,14 @@ public abstract class Autonomous extends LinearOpMode {
             return;
         }
 
-        setEncoder(true);
+        left += leftMotor.getCurrentPosition();
+        right += rightMotor.getCurrentPosition();
 
         leftMotor.setTargetPosition(left);
         rightMotor.setTargetPosition(right);
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         leftMotor.setPower(power);
         rightMotor.setPower(power);
@@ -472,32 +473,17 @@ public abstract class Autonomous extends LinearOpMode {
             //sensorTelemetry("encoder drive");
         }
 
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         sleep();
     }
 
     private boolean encodersBusy() {
         return leftMotor.isBusy() || rightMotor.isBusy();
-    }
-
-    private void setEncoder(boolean encoder) {
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
-
-        if (encoder) {
-            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-            leftMotor.setPower(0);
-            rightMotor.setPower(0);
-
-            leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        } else {
-            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
-
-        sleep();
     }
 
     private boolean getTouchOpen() {
