@@ -24,7 +24,7 @@ public class AmbitionsBlueNotNearRelic extends LinearOpMode {
         robot.sleep(125);
         trackableViewed = robot.getTargetColumn();
         robot.sleep(125);
-        robot.gyroTurning(-1*(90 + vuforiaDegrees));
+        robot.gyroTurning(-1*(90 + robot.gyro.getHeading()));
         robot.sleep(125);
         robot.drive(24);
         robot.sleep(125);
