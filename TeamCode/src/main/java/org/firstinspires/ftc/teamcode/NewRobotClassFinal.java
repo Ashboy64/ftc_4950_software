@@ -366,6 +366,8 @@ public class NewRobotClassFinal {
             }
 
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+                opMode.telemetry.addData("not unknown", "");
+                opMode.telemetry.update();
                 break;
             } else {
                 gyroTurning(-3);
