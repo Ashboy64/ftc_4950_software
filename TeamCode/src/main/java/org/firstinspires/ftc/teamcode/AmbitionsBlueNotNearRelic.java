@@ -12,7 +12,7 @@ public class AmbitionsBlueNotNearRelic extends LinearOpMode {
     int trackableViewed;
     double cryptoBoxWidth = 7.63;
     double armOffset = 2.8515;
-    int vuforiaDegrees = -15;
+    int vuforiaDegrees = -23;
 
     @Override
     public void runOpMode() {
@@ -24,7 +24,8 @@ public class AmbitionsBlueNotNearRelic extends LinearOpMode {
         robot.sleep(125);
         trackableViewed = robot.getTargetColumn();
         robot.sleep(125);
-        robot.gyroTurning(-1*(90 + vuforiaDegrees));
+        int gyroCurrentHeading = robot.gyro.getHeading();
+        robot.gyroTurning(-1*(90 + gyroCurrentHeading));
         robot.sleep(125);
         robot.drive(24);
         robot.sleep(125);

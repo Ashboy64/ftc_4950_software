@@ -352,20 +352,27 @@ public class NewRobotClassFinal {
     }
 
     public int getTargetColumn() {
-        while (opMode.opModeIsActive()) {
-            relicTemplate = relicTrackables.get(0);
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 10; j++) {
+                relicTemplate = relicTrackables.get(0);
+                vuMark = RelicRecoveryVuMark.from(relicTemplate);
+                if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+                    break;
 
-            vuMark = RelicRecoveryVuMark.from(relicTemplate);
+                } else {
+                    opMode.telemetry.addData("Vu+Mark", "not visible");
+                }
+                opMode.telemetry.update();
+            }
 
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-                opMode.telemetry.addData("VuMark", vuMark);
-
+                opMode.telemetry.addData("not unknown", "");
+                opMode.telemetry.update();
                 break;
-
             } else {
-                opMode.telemetry.addData("VuMark", "not visible");
+                gyroTurning(-3);
             }
-            opMode.telemetry.update();
+
         }
 
         if (vuMark == RelicRecoveryVuMark.CENTER) {
@@ -375,7 +382,7 @@ public class NewRobotClassFinal {
         } else if (vuMark == RelicRecoveryVuMark.LEFT) {
             return 0;
         } else {
-            return 3;
+            return 1;
         }
     }
 
