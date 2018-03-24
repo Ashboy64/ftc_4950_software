@@ -10,14 +10,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.Locale;
 
-import static org.firstinspires.ftc.teamcode.ControlUtils.*;
-
 @TeleOp(name = "Teleop", group = "Concept")
 public class Teleop extends OpMode {
     private enum DriveMode {
-        FORWARD(1, 0.5, 3, 0.75),
-        BACKWARD(0.75, 0.75, 2, 1.5),
-        TURN(0.75, 0.75, 4, 3);
+        FORWARD(1, 0.5, 3, 1),
+        BACKWARD(0.75, 0.75, 2, 1),
+        TURN(0.75, 0.5, 4, 2);
 
         private final double POWER_DOWN;
         private final double POWER_UP;
@@ -62,8 +60,9 @@ public class Teleop extends OpMode {
 
     private static final boolean TOUCH_LIMIT_ARM = true;
 
-    private static final double ARM_MIN_POWER_FALLING = 0.375;
-    private static final double ARM_MIN_POWER_LIFTING = 0.5;
+    private static final double ARM_MIN_POWER_FALLING = 0.25; //0.375;
+    private static final double ARM_MIN_POWER_LIFTING = 0.375; //0.5;
+    private static final double ARM_MAX_POWER = 0.75;
     private static final double ARM_BALANCE_ANGLE_OFFSET = 45;
 
     private RobotInput INPUT;
@@ -100,8 +99,8 @@ public class Teleop extends OpMode {
         rightMotor = hardwareMap.dcMotor.get("rightMotor");
         leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -130,8 +129,11 @@ public class Teleop extends OpMode {
         double leftIn = INPUT.getLeftPower();
         double rightIn = INPUT.getRightPower();
 
-        double power = DriveMode.power(armHeight, leftIn, rightIn);
-        double accel = DriveMode.accel(armHeight, leftIn, rightIn);
+        double leftAvg = leftIn; //average(LEFT_INTERPOLATOR.value(), leftIn);
+        double rightAvg = rightIn; //average(RIGHT_INTERPOLATOR.value(), rightIn);
+
+        double power = DriveMode.power(armHeight, leftAvg, rightAvg);
+        double accel = DriveMode.accel(armHeight, leftAvg, rightAvg);
 
         LEFT_INTERPOLATOR.setMaxDelta(accel);
         RIGHT_INTERPOLATOR.setMaxDelta(accel);
@@ -142,6 +144,11 @@ public class Teleop extends OpMode {
         freeDrive(left, right);
         telemetry.addLine(String.format(Locale.ENGLISH, "drive direction: %s, power: %.4f and %.4f (%.4f), accel: %.4f",
                 DriveMode.mode(leftIn, rightIn).toString(), left, right, power, accel));
+    }
+
+    private double average(double a, double b)
+    {
+        return (a + b) / 2.0;
     }
 
     private void updateClamp() {
@@ -179,7 +186,7 @@ public class Teleop extends OpMode {
         telemetry.addLine("arm lifting: " + lifting);
 
         if (lifting) {
-            return armPower * lerp(ARM_MIN_POWER_LIFTING, 1, Math.abs(x));
+            return armPower * lerp(ARM_MIN_POWER_LIFTING, ARM_MAX_POWER, Math.abs(x));
         } else {
             return armPower * ARM_MIN_POWER_FALLING;
         }
@@ -221,5 +228,69 @@ public class Teleop extends OpMode {
 
     private void setJewelArmPosition(double position) {
         jewelServo.setPosition(position);
+    }
+
+    static double lerp(double a, double b, double t)  {
+        return clamp((b - a) * t + a, Math.min(a, b), Math.max(a, b));
+    }
+
+    static double sin(double degrees) {
+        return Math.sin(Math.toRadians(degrees));
+    }
+
+    static double cos(double degrees) {
+        return Math.cos(Math.toRadians(degrees));
+    }
+
+    static double clamp(double d, double min, double max) {
+        return Math.min(max, Math.max(min, d));
+    }
+}
+
+class Interpolator {
+    private double maxDelta;
+    private double value;
+    private long lastTime;
+    private final double MIN;
+    private final double MAX;
+
+    public Interpolator(double perSecond) {
+        this(perSecond, 0, -1, 1);
+    }
+
+    public Interpolator(double perSecond, double init, double min, double max) {
+        maxDelta = perSecond;
+        value = init;
+        MIN = min;
+        MAX = max;
+        lastTime = System.currentTimeMillis();
+    }
+
+    public void setMaxDelta(double delta) {
+        this.maxDelta = delta;
+    }
+
+    public double value()
+    {
+        return value;
+    }
+
+    public double value(double in) {
+        long time = System.currentTimeMillis();
+
+        //seconds elapsed since last update
+        double deltaTime = (time - lastTime) / 1000.0;
+        lastTime = time;
+
+        double change = in - value;
+        change = Math.max(-maxDelta * deltaTime, Math.min(maxDelta * deltaTime, change));
+
+        //interpolates towards new value
+        value += change;
+
+        //clamps within range
+        value = Teleop.clamp(value, MIN, MAX);
+
+        return value;
     }
 }

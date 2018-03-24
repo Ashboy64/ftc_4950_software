@@ -28,11 +28,12 @@ public abstract class Autonomous extends LinearOpMode {
     private static final double DRIVE_GEAR_RATIO = 45.0 / 30;
     private static final double TURN_DISTANCE = 12.75 * Math.PI;
 
-    private static final double GLYPH_OFFSET_RIGHT = 5.375; //2.8515;
+    private static final double GLYPH_OFFSET_RIGHT = 5.75; //2.8515;
 
     static final double DRIVE_POWER_FREE = 1.0 / 4; //1.0 / 3;
     static final double DRIVE_POWER = 7.0 / 32; //1.0 / 8; //4.0 / 16;
-    static final double TURN_POWER = 4.0 / 32; //1.0 / 8; //3.0 / 16; //0.3; //1.0 / 2;
+    static final double TURN_POWER = 3.0 / 32; //1.0 / 8; //3.0 / 16; //0.3; //1.0 / 2;
+    static final double TURN_POWER_JEWEL = 2.0 / 32;
 
     private static final double ENCODER_TURN_MULTIPLIER_BOARD = 1.021;
     private static final double ENCODER_TURN_MULTIPLIER_FOAM = 1.062; //1; //1.054; //experimentally determined
@@ -62,7 +63,7 @@ public abstract class Autonomous extends LinearOpMode {
 
     private BNO055IMU imu;
 
-    private final int TIME_LIMIT = 25000;
+    private final int TIME_LIMIT = 28000;
 
     @Override
     public void runOpMode() {
@@ -166,13 +167,13 @@ public abstract class Autonomous extends LinearOpMode {
             }
 
             //turns to knock off the jewel
-            turn(turnDegrees, TURN_POWER, true);
+            turn(turnDegrees, TURN_POWER_JEWEL, true);
 
             //raise jewel arm
             setJewelArmPosition(1);
 
             //turns back
-            turn(-turnDegrees, TURN_POWER, true);
+            turn(-turnDegrees, TURN_POWER_JEWEL, true);
         } else {
             sensorTelemetry("jewel not identified");
 
@@ -236,7 +237,7 @@ public abstract class Autonomous extends LinearOpMode {
         int cryptoboxDriveMillis = 3000;
 
         //distance to back away at the end
-        double backAway = -2.5;
+        double backAway = -4;
 
         //here we multiply by teamColour(), an integer representing -1 for blue or 1 for red
         //this reverses our turning direction if we are on the opposite alliance while
@@ -354,7 +355,8 @@ public abstract class Autonomous extends LinearOpMode {
                 parameters_imu.angleUnit = BNO055IMU.AngleUnit.DEGREES;
                 parameters_imu.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
                 parameters_imu.loggingEnabled = false;
-                parameters_imu.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+                parameters_imu.accelerationIntegrationAlgorithm = new
+                        JustLoggingAccelerationIntegrator();
                 imu = hardwareMap.get(BNO055IMU.class, "imu");
                 telemetry.addLine("imu calibrating");
                 imu.initialize(parameters_imu);
@@ -394,9 +396,12 @@ public abstract class Autonomous extends LinearOpMode {
         double rightPower = -leftPower;
         freeDrive(leftPower, rightPower);
 
-        while (Math.abs(error) >= GYRO_TURN_THRESHOLD && opModeIsActive()) {
-            error = angleNormalize(targetHeading - gyroHeading());
-            sensorTelemetry("turn to heading " + targetHeading + " error " + error);
+        while (Math.abs(error) >= GYRO_TURN_THRESHOLD
+                && opModeIsActive()) {
+            error = angleNormalize(
+                    targetHeading - gyroHeading());
+            sensorTelemetry("turn to heading "
+                    + targetHeading + " error " + error);
         }
 
         stopDrive();

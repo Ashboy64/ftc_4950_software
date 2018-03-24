@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "AUTO TESTING")
+@com.qualcomm.robotcore.eventloop.opmode.Disabled
+
 public class AutonomousTesting extends Autonomous {
     @Override
     void autonomous() {

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.*;
  */
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Dumb ")
+@Disabled
 public class DumbAutonomous extends LinearOpMode{
     RobotClassFinalUse robot = new RobotClassFinalUse();
     double distance = Math.sqrt((12 * 12) + (36 * 36));

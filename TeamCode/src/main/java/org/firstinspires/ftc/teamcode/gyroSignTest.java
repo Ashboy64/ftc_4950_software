@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 /**
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  */
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "turn test")
+@Disabled
 public class gyroSignTest extends LinearOpMode {
     NewRobotClassFinal robot =  new NewRobotClassFinal();
     @Override
