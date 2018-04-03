@@ -2,23 +2,45 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-/**
- * A helper class that aggregates input from both Gamepads, allowing the
- * drivers to have the same set of controls on both Gamepads and also providing
- * redundancy in case of Gamepad failure during a match. Button presses on
- * either gamepad will be registered, while joystick and trigger input on
- * the first Gamepad will override any input from the second.
- */
-public class DoubleGamepad {
-    //the two Gamepads used for input
+public class RobotInput {
+    public final DoubleGamepad GAMEPAD;
+
+    public RobotInput(Gamepad gamepad1, Gamepad gamepad2) {
+        GAMEPAD = new DoubleGamepad(gamepad1, gamepad2);
+    }
+
+    public double getLeftPower() {
+        return -GAMEPAD.leftStickY();
+    }
+
+    public double getRightPower() {
+        return -GAMEPAD.rightStickY();
+    }
+
+    public double getArmPower() {
+        return GAMEPAD.rightTrigger() - GAMEPAD.leftTrigger();
+    }
+
+    public double getClampPower() {
+        double power = 0;
+
+        if (GAMEPAD.leftBumper())
+            power--;
+        if (GAMEPAD.rightBumper())
+            power++;
+
+        return power;
+    }
+
+    public boolean armReset() {
+        return GAMEPAD.x();
+    }
+}
+
+class DoubleGamepad {
     private final Gamepad GAMEPAD1;
     private final Gamepad GAMEPAD2;
 
-    /**
-     * Creates a new DoubleGamepad from the two given gamepads.
-     * @param gamepad1 the primary gamepad
-     * @param gamepad2 the secondary gamepad
-     */
     public DoubleGamepad(Gamepad gamepad1, Gamepad gamepad2) {
         GAMEPAD1 = gamepad1;
         GAMEPAD2 = gamepad2;
@@ -108,8 +130,9 @@ public class DoubleGamepad {
         return GAMEPAD1.back || GAMEPAD2.back;
     }
 
-    //input from the first Gamepad overrides input from the second
-    private float priority(float from1, float from2) {
-        return from1 == 0 ? from2 : from1;
+    private float priority(float a, float b) {
+        if (a != 0)
+            return a;
+        return b;
     }
 }
