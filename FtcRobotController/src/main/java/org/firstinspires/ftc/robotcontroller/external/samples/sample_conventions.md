@@ -92,7 +92,7 @@ digout
 
 ** Localization:
 compass
-gyro
+imu
 imu 
 navx
 

@@ -180,7 +180,7 @@ Changes include:
     - Auto scrollbar to projects and sounds pages.
     - Fixed blocks paste bug.
     - Blocks execute after while-opModeIsActive loop (to allow for cleanup before exiting op mode).
-    - Added gyro integratedZValue block.
+    - Added imu integratedZValue block.
     - Fixes bug with projects page for Firefox browser.
     - Added IsSpeaking block to AndroidTextToSpeech.  
  * Implements support for the REV Robotics Expansion Hub
@@ -352,8 +352,8 @@ Version 2.10 (released on 16.09.03)
  * Support for Adafruit IMU.
  * Improvements to ModernRoboticsI2cGyro class
     - Block on reset of z axis.
-    - isCalibrating() returns true while gyro is calibration.
- * Updated sample gyro program.
+    - isCalibrating() returns true while imu is calibration.
+ * Updated sample imu program.
  * Blockly enhancements
     - support for android.graphics.Color.
     - added support for ElapsedTime.
@@ -447,7 +447,7 @@ Release 16.03.09
  * Added missing clearI2cPortActionFlag.
  * Added code to create log messages while waiting for LinearOpMode shutdown.
  * Fix so Wifi Direct Config activity will no longer launch multiple times.
- * Added the ability to specify an alternate i2c address in software for the Modern Robotics gyro.
+ * Added the ability to specify an alternate i2c address in software for the Modern Robotics imu.
 
 **************************************************************************************
 
@@ -513,7 +513,7 @@ Release 15.11.04.001
  * Added Support for Modern Robotics Gyro.
   - The GyroSensor class now supports the MR Gyro Sensor.
   - Users can access heading data (about Z axis)
-  - Users can also access raw gyro data (X, Y, & Z axes).
+  - Users can also access raw imu data (X, Y, & Z axes).
   - Example MRGyroTest.java op mode included.
  * Improved error messages
   - More descriptive error messages for exceptions in user code.
